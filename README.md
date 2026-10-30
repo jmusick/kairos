@@ -144,6 +144,7 @@ The addon is split by what code is for. Anything that applies to one specializat
 | `Specs/MageArcane/CumulativePower.lua` | Cumulative Power (Season 2 4-piece) estimator: built by Missiles, consumed at 8 by Blast or Bolt |
 | `Specs/MageArcane/APL.lua` | Hand-written Sunfury APL (stopgap until the translator; not in the TOC yet) |
 | `tests/` | Specs, the WoW API stub, and the fallback runner |
+| `translator/` | Offline C# SimC APL translator (partial: Arcane Sunfury and cooldowns), with golden and coverage tests |
 | `tools/kairos-dump.lua` | Reads SavedVariables and combat logs offline, and replays logs through the Arcane modules |
 | `docs/probe/` | Probe and estimator results per client build, with findings |
 | `docs/replay/` | APL replays: Kairos, Assisted Combat and the player against the APL on true state |

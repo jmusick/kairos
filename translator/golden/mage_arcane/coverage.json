@@ -1,0 +1,3090 @@
+[
+  {
+    "Number": 9,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat=arcane_intellect",
+    "Status": "unsupported",
+    "Detail": "Precombat recommendations not implemented (variables only)"
+  },
+  {
+    "Number": 10,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "talent.spellfire_spheres",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022spellfire_spheres\u0022])"
+  },
+  {
+    "Number": 10,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "2\u002B(3*talent.spellfire_spheres)",
+    "Status": "bound",
+    "Detail": "value"
+  },
+  {
+    "Number": 10,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "name=aoe_count",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 10,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "op=set",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 10,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value=2\u002B(3*talent.spellfire_spheres)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 10,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/variable,name=aoe_count,op=set,value=2\u002B(3*talent.spellfire_spheres)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.signet_of_the_priory",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.incorporeal_essencegorger",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.sealed_chaos_urn",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.hex_lords_dooming_idol",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "equipped.signet_of_the_priory|equipped.incorporeal_essencegorger|equipped.sealed_chaos_urn|equipped.hex_lords_dooming_idol",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: equipped.signet_of_the_priory"
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "name=20ssteroid_trinket_equipped",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "op=set",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value=equipped.signet_of_the_priory|equipped.incorporeal_essencegorger|equipped.sealed_chaos_urn|equipped.hex_lords_dooming_idol",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/variable,name=20ssteroid_trinket_equipped,op=set,value=equipped.signet_of_the_priory|equipped.incorporeal_essencegorger|equipped.sealed_chaos_urn|equipped.hex_lords_dooming_idol",
+    "Status": "unsupported",
+    "Detail": "Only variable op=set with a bound value is supported"
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.lily_of_the_eternal_weave",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.sunblood_amethyst",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.astral_gladiators_badge_of_ferocity",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.arazs_ritual_forge",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.freightrunners_flask",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.emberwing_feather",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.vaelgors_final_stare",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.galactic_gladiators_badge_of_ferocity",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.vile_vial_of_volatile_venom",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.venomous_gladiators_badge_of_ferocity",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "equipped.lily_of_the_eternal_weave|equipped.sunblood_amethyst|equipped.astral_gladiators_badge_of_ferocity|equipped.arazs_ritual_forge|equipped.freightrunners_flask|equipped.emberwing_feather|equipped.vaelgors_final_stare|equipped.galactic_gladiators_badge_of_ferocity|equipped.vile_vial_of_volatile_venom|equipped.venomous_gladiators_badge_of_ferocity",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: equipped.lily_of_the_eternal_weave"
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "name=15ssteroid_trinket_equipped",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "op=set",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value=equipped.lily_of_the_eternal_weave|equipped.sunblood_amethyst|equipped.astral_gladiators_badge_of_ferocity|equipped.arazs_ritual_forge|equipped.freightrunners_flask|equipped.emberwing_feather|equipped.vaelgors_final_stare|equipped.galactic_gladiators_badge_of_ferocity|equipped.vile_vial_of_volatile_venom|equipped.venomous_gladiators_badge_of_ferocity",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/variable,name=15ssteroid_trinket_equipped,op=set,value=equipped.lily_of_the_eternal_weave|equipped.sunblood_amethyst|equipped.astral_gladiators_badge_of_ferocity|equipped.arazs_ritual_forge|equipped.freightrunners_flask|equipped.emberwing_feather|equipped.vaelgors_final_stare|equipped.galactic_gladiators_badge_of_ferocity|equipped.vile_vial_of_volatile_venom|equipped.venomous_gladiators_badge_of_ferocity",
+    "Status": "unsupported",
+    "Detail": "Only variable op=set with a bound value is supported"
+  },
+  {
+    "Number": 13,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.nevermelting_ice_crystal",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 13,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.ever_collapsing_void_fissure",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 13,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "equipped.nevermelting_ice_crystal|equipped.ever_collapsing_void_fissure",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: equipped.nevermelting_ice_crystal"
+  },
+  {
+    "Number": 13,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "name=12ssteroid_trinket_equipped",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 13,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "op=set",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 13,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value=equipped.nevermelting_ice_crystal|equipped.ever_collapsing_void_fissure",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 13,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/variable,name=12ssteroid_trinket_equipped,op=set,value=equipped.nevermelting_ice_crystal|equipped.ever_collapsing_void_fissure",
+    "Status": "unsupported",
+    "Detail": "Only variable op=set with a bound value is supported"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.lily_of_the_eternal_weave",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.sunblood_amethyst",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.astral_gladiators_badge_of_ferocity",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.arazs_ritual_forge",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.freightrunners_flask",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.emberwing_feather",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.vaelgors_final_stare",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.galactic_gladiators_badge_of_ferocity",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.nevermelting_ice_crystal",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.ever_collapsing_void_fissure",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.signet_of_the_priory",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.incorporeal_essencegorger",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.sealed_chaos_urn",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.venomous_gladiators_badge_of_ferocity",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.vile_vial_of_volatile_venom",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.stormbound_emblem_of_dazar",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.hex_lords_dooming_idol",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "equipped.lily_of_the_eternal_weave|equipped.sunblood_amethyst|equipped.astral_gladiators_badge_of_ferocity|equipped.arazs_ritual_forge|equipped.freightrunners_flask|equipped.emberwing_feather|equipped.vaelgors_final_stare|equipped.galactic_gladiators_badge_of_ferocity|equipped.nevermelting_ice_crystal|equipped.ever_collapsing_void_fissure|equipped.signet_of_the_priory|equipped.incorporeal_essencegorger|equipped.sealed_chaos_urn|equipped.venomous_gladiators_badge_of_ferocity|equipped.vile_vial_of_volatile_venom|equipped.stormbound_emblem_of_dazar|equipped.hex_lords_dooming_idol",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: equipped.lily_of_the_eternal_weave"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "name=steroid_trinket_equipped",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "op=set",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value=equipped.lily_of_the_eternal_weave|equipped.sunblood_amethyst|equipped.astral_gladiators_badge_of_ferocity|equipped.arazs_ritual_forge|equipped.freightrunners_flask|equipped.emberwing_feather|equipped.vaelgors_final_stare|equipped.galactic_gladiators_badge_of_ferocity|equipped.nevermelting_ice_crystal|equipped.ever_collapsing_void_fissure|equipped.signet_of_the_priory|equipped.incorporeal_essencegorger|equipped.sealed_chaos_urn|equipped.venomous_gladiators_badge_of_ferocity|equipped.vile_vial_of_volatile_venom|equipped.stormbound_emblem_of_dazar|equipped.hex_lords_dooming_idol",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/variable,name=steroid_trinket_equipped,op=set,value=equipped.lily_of_the_eternal_weave|equipped.sunblood_amethyst|equipped.astral_gladiators_badge_of_ferocity|equipped.arazs_ritual_forge|equipped.freightrunners_flask|equipped.emberwing_feather|equipped.vaelgors_final_stare|equipped.galactic_gladiators_badge_of_ferocity|equipped.nevermelting_ice_crystal|equipped.ever_collapsing_void_fissure|equipped.signet_of_the_priory|equipped.incorporeal_essencegorger|equipped.sealed_chaos_urn|equipped.venomous_gladiators_badge_of_ferocity|equipped.vile_vial_of_volatile_venom|equipped.stormbound_emblem_of_dazar|equipped.hex_lords_dooming_idol",
+    "Status": "unsupported",
+    "Detail": "Only variable op=set with a bound value is supported"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.mereldars_toll",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.perfidious_projector",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.chaotic_nethergate",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.wraps_of_cosmic_madness",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.astalors_anguish_agitator",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.sethraliss_defiled_relic",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.vexhuls_everflowing_gland",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.font_of_venomous_rage",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.ophidian_bone_whistle",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.spiritrending_poison",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "equipped.mereldars_toll|equipped.perfidious_projector|equipped.chaotic_nethergate|equipped.wraps_of_cosmic_madness|equipped.astalors_anguish_agitator|equipped.sethraliss_defiled_relic|equipped.vexhuls_everflowing_gland|equipped.font_of_venomous_rage|equipped.ophidian_bone_whistle|equipped.spiritrending_poison",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: equipped.mereldars_toll"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "name=nonsteroid_trinket_equipped",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "op=set",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value=equipped.mereldars_toll|equipped.perfidious_projector|equipped.chaotic_nethergate|equipped.wraps_of_cosmic_madness|equipped.astalors_anguish_agitator|equipped.sethraliss_defiled_relic|equipped.vexhuls_everflowing_gland|equipped.font_of_venomous_rage|equipped.ophidian_bone_whistle|equipped.spiritrending_poison",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/variable,name=nonsteroid_trinket_equipped,op=set,value=equipped.mereldars_toll|equipped.perfidious_projector|equipped.chaotic_nethergate|equipped.wraps_of_cosmic_madness|equipped.astalors_anguish_agitator|equipped.sethraliss_defiled_relic|equipped.vexhuls_everflowing_gland|equipped.font_of_venomous_rage|equipped.ophidian_bone_whistle|equipped.spiritrending_poison",
+    "Status": "unsupported",
+    "Detail": "Only variable op=set with a bound value is supported"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.lily_of_the_eternal_weave",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.sunblood_amethyst",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.astral_gladiators_badge_of_ferocity",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.arazs_ritual_forge",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.freightrunners_flask",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.emberwing_feather",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.vaelgors_final_stare",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.galactic_gladiators_badge_of_ferocity",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.nevermelting_ice_crystal",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.ever_collapsing_void_fissure",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.signet_of_the_priory",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.incorporeal_essencegorger",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.sealed_chaos_urn",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.venomous_gladiators_badge_of_ferocity",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.vile_vial_of_volatile_venom",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.stormbound_emblem_of_dazar",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "equipped.hex_lords_dooming_idol",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "(equipped.lily_of_the_eternal_weave|equipped.sunblood_amethyst|equipped.astral_gladiators_badge_of_ferocity|equipped.arazs_ritual_forge|equipped.freightrunners_flask|equipped.emberwing_feather|equipped.vaelgors_final_stare|equipped.galactic_gladiators_badge_of_ferocity|equipped.nevermelting_ice_crystal|equipped.ever_collapsing_void_fissure|equipped.signet_of_the_priory|equipped.incorporeal_essencegorger|equipped.sealed_chaos_urn|equipped.venomous_gladiators_badge_of_ferocity|equipped.vile_vial_of_volatile_venom|equipped.stormbound_emblem_of_dazar)\u0026equipped.hex_lords_dooming_idol",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: equipped.lily_of_the_eternal_weave"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "name=hex_double_on_use",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "op=set",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value=(equipped.lily_of_the_eternal_weave|equipped.sunblood_amethyst|equipped.astral_gladiators_badge_of_ferocity|equipped.arazs_ritual_forge|equipped.freightrunners_flask|equipped.emberwing_feather|equipped.vaelgors_final_stare|equipped.galactic_gladiators_badge_of_ferocity|equipped.nevermelting_ice_crystal|equipped.ever_collapsing_void_fissure|equipped.signet_of_the_priory|equipped.incorporeal_essencegorger|equipped.sealed_chaos_urn|equipped.venomous_gladiators_badge_of_ferocity|equipped.vile_vial_of_volatile_venom|equipped.stormbound_emblem_of_dazar)\u0026equipped.hex_lords_dooming_idol",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/variable,name=hex_double_on_use,op=set,value=(equipped.lily_of_the_eternal_weave|equipped.sunblood_amethyst|equipped.astral_gladiators_badge_of_ferocity|equipped.arazs_ritual_forge|equipped.freightrunners_flask|equipped.emberwing_feather|equipped.vaelgors_final_stare|equipped.galactic_gladiators_badge_of_ferocity|equipped.nevermelting_ice_crystal|equipped.ever_collapsing_void_fissure|equipped.signet_of_the_priory|equipped.incorporeal_essencegorger|equipped.sealed_chaos_urn|equipped.venomous_gladiators_badge_of_ferocity|equipped.vile_vial_of_volatile_venom|equipped.stormbound_emblem_of_dazar)\u0026equipped.hex_lords_dooming_idol",
+    "Status": "unsupported",
+    "Detail": "Only variable op=set with a bound value is supported"
+  },
+  {
+    "Number": 17,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/snapshot_stats",
+    "Status": "unsupported",
+    "Detail": "Precombat recommendations not implemented (variables only)"
+  },
+  {
+    "Number": 18,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/mirror_image",
+    "Status": "unsupported",
+    "Detail": "Precombat recommendations not implemented (variables only)"
+  },
+  {
+    "Number": 19,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "talent.spellfire_spheres",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022spellfire_spheres\u0022])"
+  },
+  {
+    "Number": 19,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "talent.spellfire_spheres",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 19,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "if=talent.spellfire_spheres",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 19,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/potion,if=talent.spellfire_spheres",
+    "Status": "unsupported",
+    "Detail": "Precombat recommendations not implemented (variables only)"
+  },
+  {
+    "Number": 20,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "talent.spellfire_spheres",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022spellfire_spheres\u0022])"
+  },
+  {
+    "Number": 20,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "talent.spellfire_spheres",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 20,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "if=talent.spellfire_spheres",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 20,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/arcane_surge,if=talent.spellfire_spheres",
+    "Status": "unsupported",
+    "Detail": "Precombat recommendations not implemented (variables only)"
+  },
+  {
+    "Number": 21,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/arcane_blast",
+    "Status": "unsupported",
+    "Detail": "Precombat recommendations not implemented (variables only)"
+  },
+  {
+    "Number": 24,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions=counterspell",
+    "Status": "unsupported",
+    "Detail": "Action has no supported spell metadata"
+  },
+  {
+    "Number": 25,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "buff.arcane_surge.up",
+    "Status": "bound",
+    "Detail": "N(s.surgeUp)"
+  },
+  {
+    "Number": 25,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "debuff.touch_of_the_magi.up",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 25,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 25,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "(buff.arcane_surge.up\u0026debuff.touch_of_the_magi.up)|(fight_remains\u003C16)",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: debuff.touch_of_the_magi.up"
+  },
+  {
+    "Number": 25,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=power_infusion",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 25,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=(buff.arcane_surge.up\u0026debuff.touch_of_the_magi.up)|(fight_remains\u003C16)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 25,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/invoke_external_buff,name=power_infusion,if=(buff.arcane_surge.up\u0026debuff.touch_of_the_magi.up)|(fight_remains\u003C16)",
+    "Status": "unsupported",
+    "Detail": "Action has no supported spell metadata"
+  },
+  {
+    "Number": 26,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "cooldown.arcane_surge.ready",
+    "Status": "bound",
+    "Detail": "N(has(s, 365350) and s.ready[365350])"
+  },
+  {
+    "Number": 26,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 26,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "cooldown.arcane_surge.ready|fight_remains\u003C35",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: fight_remains"
+  },
+  {
+    "Number": 26,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=cooldown.arcane_surge.ready|fight_remains\u003C35",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 26,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/potion,if=cooldown.arcane_surge.ready|fight_remains\u003C35",
+    "Status": "unsupported",
+    "Detail": "Action has no supported spell metadata"
+  },
+  {
+    "Number": 27,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "buff.arcane_surge.up",
+    "Status": "bound",
+    "Detail": "N(s.surgeUp)"
+  },
+  {
+    "Number": 27,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "debuff.touch_of_the_magi.up",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 27,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 27,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "(buff.arcane_surge.up\u0026debuff.touch_of_the_magi.up)|(fight_remains\u003C13)",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: debuff.touch_of_the_magi.up"
+  },
+  {
+    "Number": 27,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=(buff.arcane_surge.up\u0026debuff.touch_of_the_magi.up)|(fight_remains\u003C13)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 27,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/berserking,if=(buff.arcane_surge.up\u0026debuff.touch_of_the_magi.up)|(fight_remains\u003C13)",
+    "Status": "unsupported",
+    "Detail": "Action has no supported spell metadata"
+  },
+  {
+    "Number": 28,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "buff.arcane_surge.up",
+    "Status": "bound",
+    "Detail": "N(s.surgeUp)"
+  },
+  {
+    "Number": 28,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "debuff.touch_of_the_magi.up",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 28,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 28,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "(buff.arcane_surge.up\u0026debuff.touch_of_the_magi.up)|(fight_remains\u003C9)",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: debuff.touch_of_the_magi.up"
+  },
+  {
+    "Number": 28,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=(buff.arcane_surge.up\u0026debuff.touch_of_the_magi.up)|(fight_remains\u003C9)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 28,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/blood_fury,if=(buff.arcane_surge.up\u0026debuff.touch_of_the_magi.up)|(fight_remains\u003C9)",
+    "Status": "unsupported",
+    "Detail": "Action has no supported spell metadata"
+  },
+  {
+    "Number": 29,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "buff.arcane_surge.up",
+    "Status": "bound",
+    "Detail": "N(s.surgeUp)"
+  },
+  {
+    "Number": 29,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "debuff.touch_of_the_magi.up",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 29,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 29,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "(buff.arcane_surge.up\u0026debuff.touch_of_the_magi.up)|(fight_remains\u003C16)",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: debuff.touch_of_the_magi.up"
+  },
+  {
+    "Number": 29,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=(buff.arcane_surge.up\u0026debuff.touch_of_the_magi.up)|(fight_remains\u003C16)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 29,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/fireblood,if=(buff.arcane_surge.up\u0026debuff.touch_of_the_magi.up)|(fight_remains\u003C16)",
+    "Status": "unsupported",
+    "Detail": "Action has no supported spell metadata"
+  },
+  {
+    "Number": 30,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "buff.arcane_surge.up",
+    "Status": "bound",
+    "Detail": "N(s.surgeUp)"
+  },
+  {
+    "Number": 30,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "debuff.touch_of_the_magi.up",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 30,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 30,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "(buff.arcane_surge.up\u0026debuff.touch_of_the_magi.up)|(fight_remains\u003C16)",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: debuff.touch_of_the_magi.up"
+  },
+  {
+    "Number": 30,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=(buff.arcane_surge.up\u0026debuff.touch_of_the_magi.up)|(fight_remains\u003C16)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 30,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/ancestral_call,if=(buff.arcane_surge.up\u0026debuff.touch_of_the_magi.up)|(fight_remains\u003C16)",
+    "Status": "unsupported",
+    "Detail": "Action has no supported spell metadata"
+  },
+  {
+    "Number": 31,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "buff.arcane_surge.down",
+    "Status": "bound",
+    "Detail": "N(not s.surgeUp)"
+  },
+  {
+    "Number": 31,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "buff.arcane_soul.down",
+    "Status": "bound",
+    "Detail": "N(not s.soul)"
+  },
+  {
+    "Number": 31,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "debuff.touch_of_the_magi.down",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 31,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "potion.liquid_luster",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 31,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "time",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 31,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "time",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 31,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "variable.steroid_trinket_equipped",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 31,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "equipped.hex_lords_dooming_idol",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 31,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 31,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "((buff.arcane_surge.down\u0026buff.arcane_soul.down\u0026debuff.touch_of_the_magi.down)|(!potion.liquid_luster\u0026time\u003C5))\u0026(time\u003E25|!variable.steroid_trinket_equipped|equipped.hex_lords_dooming_idol)|fight_remains\u003C30",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: debuff.touch_of_the_magi.down"
+  },
+  {
+    "Number": 31,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=font_of_venomous_rage",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 31,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=((buff.arcane_surge.down\u0026buff.arcane_soul.down\u0026debuff.touch_of_the_magi.down)|(!potion.liquid_luster\u0026time\u003C5))\u0026(time\u003E25|!variable.steroid_trinket_equipped|equipped.hex_lords_dooming_idol)|fight_remains\u003C30",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 31,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/use_item,name=font_of_venomous_rage,if=((buff.arcane_surge.down\u0026buff.arcane_soul.down\u0026debuff.touch_of_the_magi.down)|(!potion.liquid_luster\u0026time\u003C5))\u0026(time\u003E25|!variable.steroid_trinket_equipped|equipped.hex_lords_dooming_idol)|fight_remains\u003C30",
+    "Status": "unsupported",
+    "Detail": "Action has no supported spell metadata"
+  },
+  {
+    "Number": 32,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "buff.hex_lords_doom.stack",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 32,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "equipped.vile_vial_of_volatile_venom",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 32,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "cooldown.arcane_surge.ready",
+    "Status": "bound",
+    "Detail": "N(has(s, 365350) and s.ready[365350])"
+  },
+  {
+    "Number": 32,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "buff.arcane_surge.up",
+    "Status": "bound",
+    "Detail": "N(s.surgeUp)"
+  },
+  {
+    "Number": 32,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "variable.hex_double_on_use",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 32,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "cooldown.arcane_surge.ready",
+    "Status": "bound",
+    "Detail": "N(has(s, 365350) and s.ready[365350])"
+  },
+  {
+    "Number": 32,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "buff.arcane_surge.up",
+    "Status": "bound",
+    "Detail": "N(s.surgeUp)"
+  },
+  {
+    "Number": 32,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "variable.hex_double_on_use",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 32,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "(buff.hex_lords_doom.stack\u003E(24-(15*equipped.vile_vial_of_volatile_venom))\u0026(cooldown.arcane_surge.ready|buff.arcane_surge.up)\u0026variable.hex_double_on_use)|((cooldown.arcane_surge.ready|buff.arcane_surge.up)\u0026!variable.hex_double_on_use)",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: buff.hex_lords_doom.stack"
+  },
+  {
+    "Number": 32,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=hex_lords_dooming_idol",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 32,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=(buff.hex_lords_doom.stack\u003E(24-(15*equipped.vile_vial_of_volatile_venom))\u0026(cooldown.arcane_surge.ready|buff.arcane_surge.up)\u0026variable.hex_double_on_use)|((cooldown.arcane_surge.ready|buff.arcane_surge.up)\u0026!variable.hex_double_on_use)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 32,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/use_item,name=hex_lords_dooming_idol,if=(buff.hex_lords_doom.stack\u003E(24-(15*equipped.vile_vial_of_volatile_venom))\u0026(cooldown.arcane_surge.ready|buff.arcane_surge.up)\u0026variable.hex_double_on_use)|((cooldown.arcane_surge.ready|buff.arcane_surge.up)\u0026!variable.hex_double_on_use)",
+    "Status": "unsupported",
+    "Detail": "Action has no supported spell metadata"
+  },
+  {
+    "Number": 33,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "cooldown.arcane_surge.remains",
+    "Status": "bound",
+    "Detail": "(s.remains[365350] or 0)"
+  },
+  {
+    "Number": 33,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "cooldown.arcane_surge.ready",
+    "Status": "bound",
+    "Detail": "N(has(s, 365350) and s.ready[365350])"
+  },
+  {
+    "Number": 33,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 33,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "(cooldown.arcane_surge.remains\u003C2)|cooldown.arcane_surge.ready|(fight_remains\u003C22)",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: fight_remains"
+  },
+  {
+    "Number": 33,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=stormbound_emblem_of_dazar",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 33,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=(cooldown.arcane_surge.remains\u003C2)|cooldown.arcane_surge.ready|(fight_remains\u003C22)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 33,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/use_item,name=stormbound_emblem_of_dazar,if=(cooldown.arcane_surge.remains\u003C2)|cooldown.arcane_surge.ready|(fight_remains\u003C22)",
+    "Status": "unsupported",
+    "Detail": "Action has no supported spell metadata"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "buff.arcane_surge.up",
+    "Status": "bound",
+    "Detail": "N(s.surgeUp)"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "variable.12ssteroid_trinket_equipped",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "debuff.touch_of_the_magi.up",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "variable.15ssteroid_trinket_equipped",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "cooldown.arcane_surge.ready",
+    "Status": "bound",
+    "Detail": "N(has(s, 365350) and s.ready[365350])"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "variable.20ssteroid_trinket_equipped",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "variable.12ssteroid_trinket_equipped",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "variable.15ssteroid_trinket_equipped",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "variable.20ssteroid_trinket_equipped",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "variable.nonsteroid_trinket_equipped",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "buff.arcane_surge.down",
+    "Status": "bound",
+    "Detail": "N(not s.surgeUp)"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "cooldown.arcane_surge.remains",
+    "Status": "bound",
+    "Detail": "(s.remains[365350] or 0)"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "variable.steroid_trinket_equipped",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "variable.steroid_trinket_equipped",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "variable.nonsteroid_trinket_equipped",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "equipped.hex_lords_dooming_idol",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "((buff.arcane_surge.up\u0026((variable.12ssteroid_trinket_equipped\u0026debuff.touch_of_the_magi.up)|variable.15ssteroid_trinket_equipped))|(cooldown.arcane_surge.ready\u0026variable.20ssteroid_trinket_equipped))|(fight_remains\u003C13\u0026variable.12ssteroid_trinket_equipped)|(fight_remains\u003C16\u0026variable.15ssteroid_trinket_equipped)|(fight_remains\u003C21\u0026variable.20ssteroid_trinket_equipped)|(variable.nonsteroid_trinket_equipped\u0026((buff.arcane_surge.down\u0026cooldown.arcane_surge.remains\u003E20)|!variable.steroid_trinket_equipped))|fight_remains\u003C((20*variable.steroid_trinket_equipped)\u002B(20*variable.nonsteroid_trinket_equipped)\u002B(10*equipped.hex_lords_dooming_idol))",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: variable.12ssteroid_trinket_equipped"
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=((buff.arcane_surge.up\u0026((variable.12ssteroid_trinket_equipped\u0026debuff.touch_of_the_magi.up)|variable.15ssteroid_trinket_equipped))|(cooldown.arcane_surge.ready\u0026variable.20ssteroid_trinket_equipped))|(fight_remains\u003C13\u0026variable.12ssteroid_trinket_equipped)|(fight_remains\u003C16\u0026variable.15ssteroid_trinket_equipped)|(fight_remains\u003C21\u0026variable.20ssteroid_trinket_equipped)|(variable.nonsteroid_trinket_equipped\u0026((buff.arcane_surge.down\u0026cooldown.arcane_surge.remains\u003E20)|!variable.steroid_trinket_equipped))|fight_remains\u003C((20*variable.steroid_trinket_equipped)\u002B(20*variable.nonsteroid_trinket_equipped)\u002B(10*equipped.hex_lords_dooming_idol))",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 34,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/use_items,if=((buff.arcane_surge.up\u0026((variable.12ssteroid_trinket_equipped\u0026debuff.touch_of_the_magi.up)|variable.15ssteroid_trinket_equipped))|(cooldown.arcane_surge.ready\u0026variable.20ssteroid_trinket_equipped))|(fight_remains\u003C13\u0026variable.12ssteroid_trinket_equipped)|(fight_remains\u003C16\u0026variable.15ssteroid_trinket_equipped)|(fight_remains\u003C21\u0026variable.20ssteroid_trinket_equipped)|(variable.nonsteroid_trinket_equipped\u0026((buff.arcane_surge.down\u0026cooldown.arcane_surge.remains\u003E20)|!variable.steroid_trinket_equipped))|fight_remains\u003C((20*variable.steroid_trinket_equipped)\u002B(20*variable.nonsteroid_trinket_equipped)\u002B(10*equipped.hex_lords_dooming_idol))",
+    "Status": "unsupported",
+    "Detail": "Action has no supported spell metadata"
+  },
+  {
+    "Number": 35,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 35,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "variable.nonsteroid_trinket_equipped",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 35,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "variable.hex_double_on_use",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 35,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "equipped.vile_vial_of_volatile_venom",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 35,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "(fight_remains\u003C(40\u002B(3*variable.nonsteroid_trinket_equipped)\u002B(20*variable.hex_double_on_use)-(15*equipped.vile_vial_of_volatile_venom)))",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: fight_remains"
+  },
+  {
+    "Number": 35,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=hex_lords_dooming_idol",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 35,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=(fight_remains\u003C(40\u002B(3*variable.nonsteroid_trinket_equipped)\u002B(20*variable.hex_double_on_use)-(15*equipped.vile_vial_of_volatile_venom)))",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 35,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/use_item,name=hex_lords_dooming_idol,if=(fight_remains\u003C(40\u002B(3*variable.nonsteroid_trinket_equipped)\u002B(20*variable.hex_double_on_use)-(15*equipped.vile_vial_of_volatile_venom)))",
+    "Status": "unsupported",
+    "Detail": "Action has no supported spell metadata"
+  },
+  {
+    "Number": 36,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 36,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "gcd.max",
+    "Status": "bound",
+    "Detail": "s.gcdMax"
+  },
+  {
+    "Number": 36,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "buff.arcane_charge.stack",
+    "Status": "bound",
+    "Detail": "s.charges"
+  },
+  {
+    "Number": 36,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "fight_remains\u003Cgcd.max*2\u0026buff.arcane_charge.stack=4",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: fight_remains"
+  },
+  {
+    "Number": 36,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=fight_remains\u003Cgcd.max*2\u0026buff.arcane_charge.stack=4",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 36,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/arcane_barrage,if=fight_remains\u003Cgcd.max*2\u0026buff.arcane_charge.stack=4",
+    "Status": "unsupported",
+    "Detail": "Unsupported expression or option; entire action omitted"
+  },
+  {
+    "Number": 37,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=cooldowns",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 37,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/call_action_list,name=cooldowns",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 38,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "talent.splintering_sorcery",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022splintering_sorcery\u0022])"
+  },
+  {
+    "Number": 38,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "talent.splintering_sorcery",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 38,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=spellslinger",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 38,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=talent.splintering_sorcery",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 38,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/call_action_list,name=spellslinger,if=talent.splintering_sorcery",
+    "Status": "unsupported",
+    "Detail": "Target list outside initial Sunfury scope"
+  },
+  {
+    "Number": 39,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "talent.splintering_sorcery",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022splintering_sorcery\u0022])"
+  },
+  {
+    "Number": 39,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "!talent.splintering_sorcery",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 39,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=sunfury",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 39,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=!talent.splintering_sorcery",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 39,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/call_action_list,name=sunfury,if=!talent.splintering_sorcery",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 40,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "talent.spellfire_spheres",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022spellfire_spheres\u0022])"
+  },
+  {
+    "Number": 40,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "buff.arcane_surge.up",
+    "Status": "bound",
+    "Detail": "N(s.surgeUp)"
+  },
+  {
+    "Number": 40,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "talent.spellfire_spheres\u0026!buff.arcane_surge.up",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 40,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=talent.spellfire_spheres\u0026!buff.arcane_surge.up",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 40,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/arcane_barrage,if=talent.spellfire_spheres\u0026!buff.arcane_surge.up",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 42,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "talent.splintering_sorcery",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022splintering_sorcery\u0022])"
+  },
+  {
+    "Number": 42,
+    "List": "cooldowns",
+    "Kind": "expression",
+    "Text": "talent.splintering_sorcery",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 42,
+    "List": "cooldowns",
+    "Kind": "option",
+    "Text": "if=talent.splintering_sorcery",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 42,
+    "List": "cooldowns",
+    "Kind": "option",
+    "Text": "line_cd=999",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 42,
+    "List": "cooldowns",
+    "Kind": "action",
+    "Text": "actions.cooldowns=arcane_orb,if=talent.splintering_sorcery,line_cd=999",
+    "Status": "unsupported",
+    "Detail": "Unsupported expression or option; entire action omitted"
+  },
+  {
+    "Number": 43,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "prev_gcd.1.prismatic_bolt",
+    "Status": "bound",
+    "Detail": "N(s.prevGcd == 1295924)"
+  },
+  {
+    "Number": 43,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "prev_gcd.1.arcane_barrage",
+    "Status": "bound",
+    "Detail": "N(s.prevGcd == 44425)"
+  },
+  {
+    "Number": 43,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "buff.arcane_surge.up",
+    "Status": "bound",
+    "Detail": "N(s.surgeUp)"
+  },
+  {
+    "Number": 43,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "buff.arcane_surge.remains",
+    "Status": "bound",
+    "Detail": "s.surgeRemains"
+  },
+  {
+    "Number": 43,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "buff.arcane_surge.up",
+    "Status": "bound",
+    "Detail": "N(s.surgeUp)"
+  },
+  {
+    "Number": 43,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "cooldown.arcane_surge.remains",
+    "Status": "bound",
+    "Detail": "(s.remains[365350] or 0)"
+  },
+  {
+    "Number": 43,
+    "List": "cooldowns",
+    "Kind": "expression",
+    "Text": "(prev_gcd.1.prismatic_bolt|prev_gcd.1.arcane_barrage|(buff.arcane_surge.up\u0026buff.arcane_surge.remains\u003C12))\u0026(buff.arcane_surge.up|cooldown.arcane_surge.remains\u003E30)",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 43,
+    "List": "cooldowns",
+    "Kind": "option",
+    "Text": "use_off_gcd=1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 43,
+    "List": "cooldowns",
+    "Kind": "option",
+    "Text": "if=(prev_gcd.1.prismatic_bolt|prev_gcd.1.arcane_barrage|(buff.arcane_surge.up\u0026buff.arcane_surge.remains\u003C12))\u0026(buff.arcane_surge.up|cooldown.arcane_surge.remains\u003E30)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 43,
+    "List": "cooldowns",
+    "Kind": "action",
+    "Text": "actions.cooldowns\u002B=/touch_of_the_magi,use_off_gcd=1,if=(prev_gcd.1.prismatic_bolt|prev_gcd.1.arcane_barrage|(buff.arcane_surge.up\u0026buff.arcane_surge.remains\u003C12))\u0026(buff.arcane_surge.up|cooldown.arcane_surge.remains\u003E30)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 44,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "buff.lustrous_gleam.stack",
+    "Status": "bound",
+    "Detail": "s.lustrousGleam"
+  },
+  {
+    "Number": 44,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "buff.lustrous_gleam.down",
+    "Status": "bound",
+    "Detail": "N(s.lustrousGleam == 0)"
+  },
+  {
+    "Number": 44,
+    "List": "cooldowns",
+    "Kind": "expression",
+    "Text": "buff.lustrous_gleam.stack\u003E=2|buff.lustrous_gleam.down",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 44,
+    "List": "cooldowns",
+    "Kind": "option",
+    "Text": "if=buff.lustrous_gleam.stack\u003E=2|buff.lustrous_gleam.down",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 44,
+    "List": "cooldowns",
+    "Kind": "action",
+    "Text": "actions.cooldowns\u002B=/arcane_surge,if=buff.lustrous_gleam.stack\u003E=2|buff.lustrous_gleam.down",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 45,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "action.evocation.channeling",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 45,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "mana.pct",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 45,
+    "List": "cooldowns",
+    "Kind": "expression",
+    "Text": "action.evocation.channeling\u0026mana.pct\u003E=95",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: action.evocation.channeling"
+  },
+  {
+    "Number": 45,
+    "List": "cooldowns",
+    "Kind": "option",
+    "Text": "if=action.evocation.channeling\u0026mana.pct\u003E=95",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 45,
+    "List": "cooldowns",
+    "Kind": "action",
+    "Text": "actions.cooldowns\u002B=/cancel_action,if=action.evocation.channeling\u0026mana.pct\u003E=95",
+    "Status": "unsupported",
+    "Detail": "Action has no supported spell metadata"
+  },
+  {
+    "Number": 46,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "mana.pct",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 46,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "buff.arcane_surge.down",
+    "Status": "bound",
+    "Detail": "N(not s.surgeUp)"
+  },
+  {
+    "Number": 46,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "debuff.touch_of_the_magi.down",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 46,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "cooldown.arcane_surge.remains",
+    "Status": "bound",
+    "Detail": "(s.remains[365350] or 0)"
+  },
+  {
+    "Number": 46,
+    "List": "cooldowns",
+    "Kind": "expression",
+    "Text": "mana.pct\u003C10\u0026buff.arcane_surge.down\u0026debuff.touch_of_the_magi.down\u0026cooldown.arcane_surge.remains\u003E10",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: mana.pct"
+  },
+  {
+    "Number": 46,
+    "List": "cooldowns",
+    "Kind": "option",
+    "Text": "if=mana.pct\u003C10\u0026buff.arcane_surge.down\u0026debuff.touch_of_the_magi.down\u0026cooldown.arcane_surge.remains\u003E10",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 46,
+    "List": "cooldowns",
+    "Kind": "action",
+    "Text": "actions.cooldowns\u002B=/evocation,if=mana.pct\u003C10\u0026buff.arcane_surge.down\u0026debuff.touch_of_the_magi.down\u0026cooldown.arcane_surge.remains\u003E10",
+    "Status": "unsupported",
+    "Detail": "Action has no supported spell metadata"
+  },
+  {
+    "Number": 47,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "buff.arcane_charge.stack",
+    "Status": "bound",
+    "Detail": "s.charges"
+  },
+  {
+    "Number": 47,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "buff.prismatic_bolt.up",
+    "Status": "bound",
+    "Detail": "N(s.boltReady)"
+  },
+  {
+    "Number": 47,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "cooldown.arcane_orb.ready",
+    "Status": "bound",
+    "Detail": "N(has(s, 153626) and s.ready[153626])"
+  },
+  {
+    "Number": 47,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "cooldown.arcane_pulse.ready",
+    "Status": "bound",
+    "Detail": "N(has(s, 260364) and s.ready[260364])"
+  },
+  {
+    "Number": 47,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "cooldown.touch_of_the_magi.ready",
+    "Status": "bound",
+    "Detail": "N(has(s, 321507) and s.ready[321507])"
+  },
+  {
+    "Number": 47,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "buff.clearcasting.react",
+    "Status": "bound",
+    "Detail": "s.clearcasting"
+  },
+  {
+    "Number": 47,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "talent.high_voltage",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022high_voltage\u0022])"
+  },
+  {
+    "Number": 47,
+    "List": "cooldowns",
+    "Kind": "binding",
+    "Text": "prev_gcd.1.arcane_barrage",
+    "Status": "bound",
+    "Detail": "N(s.prevGcd == 44425)"
+  },
+  {
+    "Number": 47,
+    "List": "cooldowns",
+    "Kind": "expression",
+    "Text": "buff.arcane_charge.stack\u003C1\u0026!buff.prismatic_bolt.up\u0026!cooldown.arcane_orb.ready\u0026!cooldown.arcane_pulse.ready\u0026!cooldown.touch_of_the_magi.ready\u0026(buff.clearcasting.react=0|!talent.high_voltage)\u0026prev_gcd.1.arcane_barrage",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 47,
+    "List": "cooldowns",
+    "Kind": "option",
+    "Text": "use_off_gcd=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 47,
+    "List": "cooldowns",
+    "Kind": "option",
+    "Text": "if=buff.arcane_charge.stack\u003C1\u0026!buff.prismatic_bolt.up\u0026!cooldown.arcane_orb.ready\u0026!cooldown.arcane_pulse.ready\u0026!cooldown.touch_of_the_magi.ready\u0026(buff.clearcasting.react=0|!talent.high_voltage)\u0026prev_gcd.1.arcane_barrage",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 47,
+    "List": "cooldowns",
+    "Kind": "action",
+    "Text": "actions.cooldowns\u002B=/presence_of_mind,use_off_gcd=1,if=buff.arcane_charge.stack\u003C1\u0026!buff.prismatic_bolt.up\u0026!cooldown.arcane_orb.ready\u0026!cooldown.arcane_pulse.ready\u0026!cooldown.touch_of_the_magi.ready\u0026(buff.clearcasting.react=0|!talent.high_voltage)\u0026prev_gcd.1.arcane_barrage",
+    "Status": "unsupported",
+    "Detail": "Action has no supported spell metadata"
+  },
+  {
+    "Number": 49,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "set_bonus.midnight_season_2_4pc",
+    "Status": "bound",
+    "Detail": "N(s.setS2_4pc)"
+  },
+  {
+    "Number": 49,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "buff.cumulative_power.stack",
+    "Status": "bound",
+    "Detail": "s.cumulativePower"
+  },
+  {
+    "Number": 49,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 49,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "variable.aoe_count",
+    "Status": "bound",
+    "Detail": "(v[\u0022aoe_count\u0022] or 0)"
+  },
+  {
+    "Number": 49,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "buff.clearcasting.react",
+    "Status": "bound",
+    "Detail": "s.clearcasting"
+  },
+  {
+    "Number": 49,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 49,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "variable.aoe_count",
+    "Status": "bound",
+    "Detail": "(v[\u0022aoe_count\u0022] or 0)"
+  },
+  {
+    "Number": 49,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "buff.clearcasting.react",
+    "Status": "bound",
+    "Detail": "s.clearcasting"
+  },
+  {
+    "Number": 49,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "buff.arcane_salvo.react",
+    "Status": "bound",
+    "Detail": "s.salvo"
+  },
+  {
+    "Number": 49,
+    "List": "spellslinger",
+    "Kind": "expression",
+    "Text": "(!set_bonus.midnight_season_2_4pc|buff.cumulative_power.stack\u003E=6|active_enemies\u003E=variable.aoe_count\u0026buff.clearcasting.react=0)\u0026(active_enemies\u003E=variable.aoe_count\u0026buff.clearcasting.react\u003C3|buff.arcane_salvo.react\u003E13)",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 49,
+    "List": "spellslinger",
+    "Kind": "option",
+    "Text": "if=(!set_bonus.midnight_season_2_4pc|buff.cumulative_power.stack\u003E=6|active_enemies\u003E=variable.aoe_count\u0026buff.clearcasting.react=0)\u0026(active_enemies\u003E=variable.aoe_count\u0026buff.clearcasting.react\u003C3|buff.arcane_salvo.react\u003E13)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 49,
+    "List": "spellslinger",
+    "Kind": "action",
+    "Text": "actions.spellslinger=prismatic_bolt,if=(!set_bonus.midnight_season_2_4pc|buff.cumulative_power.stack\u003E=6|active_enemies\u003E=variable.aoe_count\u0026buff.clearcasting.react=0)\u0026(active_enemies\u003E=variable.aoe_count\u0026buff.clearcasting.react\u003C3|buff.arcane_salvo.react\u003E13)",
+    "Status": "unsupported",
+    "Detail": "List outside initial Sunfury scope"
+  },
+  {
+    "Number": 50,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "cooldown.arcane_orb.charges_fractional",
+    "Status": "bound",
+    "Detail": "(s.chargesFractional[153626] or 0)"
+  },
+  {
+    "Number": 50,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "talent.charged_orb",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022charged_orb\u0022])"
+  },
+  {
+    "Number": 50,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "talent.orb_mastery",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022orb_mastery\u0022])"
+  },
+  {
+    "Number": 50,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 50,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "variable.aoe_count",
+    "Status": "bound",
+    "Detail": "(v[\u0022aoe_count\u0022] or 0)"
+  },
+  {
+    "Number": 50,
+    "List": "spellslinger",
+    "Kind": "expression",
+    "Text": "cooldown.arcane_orb.charges_fractional\u003E=1\u002B(0.95*talent.charged_orb)\u0026talent.orb_mastery\u0026active_enemies\u003E=variable.aoe_count",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 50,
+    "List": "spellslinger",
+    "Kind": "option",
+    "Text": "if=cooldown.arcane_orb.charges_fractional\u003E=1\u002B(0.95*talent.charged_orb)\u0026talent.orb_mastery\u0026active_enemies\u003E=variable.aoe_count",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 50,
+    "List": "spellslinger",
+    "Kind": "action",
+    "Text": "actions.spellslinger\u002B=/arcane_orb,if=cooldown.arcane_orb.charges_fractional\u003E=1\u002B(0.95*talent.charged_orb)\u0026talent.orb_mastery\u0026active_enemies\u003E=variable.aoe_count",
+    "Status": "unsupported",
+    "Detail": "List outside initial Sunfury scope"
+  },
+  {
+    "Number": 51,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "buff.arcane_salvo.react",
+    "Status": "bound",
+    "Detail": "s.salvo"
+  },
+  {
+    "Number": 51,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "talent.orb_barrage",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022orb_barrage\u0022])"
+  },
+  {
+    "Number": 51,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 51,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "variable.aoe_count",
+    "Status": "bound",
+    "Detail": "(v[\u0022aoe_count\u0022] or 0)"
+  },
+  {
+    "Number": 51,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "buff.arcane_charge.stack",
+    "Status": "bound",
+    "Detail": "s.charges"
+  },
+  {
+    "Number": 51,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "prev_gcd.1.arcane_surge",
+    "Status": "bound",
+    "Detail": "N(s.prevGcd == 365350)"
+  },
+  {
+    "Number": 51,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "buff.arcane_salvo.stack",
+    "Status": "bound",
+    "Detail": "s.salvo"
+  },
+  {
+    "Number": 51,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "talent.orb_barrage",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022orb_barrage\u0022])"
+  },
+  {
+    "Number": 51,
+    "List": "spellslinger",
+    "Kind": "expression",
+    "Text": "buff.arcane_salvo.react\u003E=(20-talent.orb_barrage)\u0026(active_enemies\u003Cvariable.aoe_count|buff.arcane_charge.stack=4)|prev_gcd.1.arcane_surge\u0026buff.arcane_salvo.stack\u003E=(10\u002B5*talent.orb_barrage)",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 51,
+    "List": "spellslinger",
+    "Kind": "option",
+    "Text": "if=buff.arcane_salvo.react\u003E=(20-talent.orb_barrage)\u0026(active_enemies\u003Cvariable.aoe_count|buff.arcane_charge.stack=4)|prev_gcd.1.arcane_surge\u0026buff.arcane_salvo.stack\u003E=(10\u002B5*talent.orb_barrage)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 51,
+    "List": "spellslinger",
+    "Kind": "action",
+    "Text": "actions.spellslinger\u002B=/arcane_barrage,if=buff.arcane_salvo.react\u003E=(20-talent.orb_barrage)\u0026(active_enemies\u003Cvariable.aoe_count|buff.arcane_charge.stack=4)|prev_gcd.1.arcane_surge\u0026buff.arcane_salvo.stack\u003E=(10\u002B5*talent.orb_barrage)",
+    "Status": "unsupported",
+    "Detail": "List outside initial Sunfury scope"
+  },
+  {
+    "Number": 52,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "buff.clearcasting.react",
+    "Status": "bound",
+    "Detail": "s.clearcasting"
+  },
+  {
+    "Number": 52,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "buff.arcane_salvo.stack",
+    "Status": "bound",
+    "Detail": "s.salvo"
+  },
+  {
+    "Number": 52,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 52,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "variable.aoe_count",
+    "Status": "bound",
+    "Detail": "(v[\u0022aoe_count\u0022] or 0)"
+  },
+  {
+    "Number": 52,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "buff.clearcasting.react",
+    "Status": "bound",
+    "Detail": "s.clearcasting"
+  },
+  {
+    "Number": 52,
+    "List": "spellslinger",
+    "Kind": "expression",
+    "Text": "buff.clearcasting.react\u0026(buff.arcane_salvo.stack\u003C15|active_enemies\u003Cvariable.aoe_count\u0026buff.clearcasting.react=3)",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 52,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "tick_time",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 52,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "gcd.remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 52,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "buff.overpowered_missiles.react",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 52,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 52,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "variable.aoe_count",
+    "Status": "bound",
+    "Detail": "(v[\u0022aoe_count\u0022] or 0)"
+  },
+  {
+    "Number": 52,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "talent.high_voltage",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022high_voltage\u0022])"
+  },
+  {
+    "Number": 52,
+    "List": "spellslinger",
+    "Kind": "expression",
+    "Text": "tick_time\u003Egcd.remains\u0026(buff.overpowered_missiles.react=0|active_enemies\u003E=variable.aoe_count|!talent.high_voltage)",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: tick_time"
+  },
+  {
+    "Number": 52,
+    "List": "spellslinger",
+    "Kind": "option",
+    "Text": "if=buff.clearcasting.react\u0026(buff.arcane_salvo.stack\u003C15|active_enemies\u003Cvariable.aoe_count\u0026buff.clearcasting.react=3)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 52,
+    "List": "spellslinger",
+    "Kind": "option",
+    "Text": "interrupt_if=tick_time\u003Egcd.remains\u0026(buff.overpowered_missiles.react=0|active_enemies\u003E=variable.aoe_count|!talent.high_voltage)",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 52,
+    "List": "spellslinger",
+    "Kind": "option",
+    "Text": "interrupt_global=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 52,
+    "List": "spellslinger",
+    "Kind": "option",
+    "Text": "interrupt_immediate=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 52,
+    "List": "spellslinger",
+    "Kind": "action",
+    "Text": "actions.spellslinger\u002B=/arcane_missiles,if=buff.clearcasting.react\u0026(buff.arcane_salvo.stack\u003C15|active_enemies\u003Cvariable.aoe_count\u0026buff.clearcasting.react=3),interrupt_if=tick_time\u003Egcd.remains\u0026(buff.overpowered_missiles.react=0|active_enemies\u003E=variable.aoe_count|!talent.high_voltage),interrupt_global=1,interrupt_immediate=1",
+    "Status": "unsupported",
+    "Detail": "List outside initial Sunfury scope"
+  },
+  {
+    "Number": 53,
+    "List": "spellslinger",
+    "Kind": "action",
+    "Text": "actions.spellslinger\u002B=/prismatic_bolt",
+    "Status": "unsupported",
+    "Detail": "List outside initial Sunfury scope"
+  },
+  {
+    "Number": 54,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "buff.arcane_charge.stack",
+    "Status": "bound",
+    "Detail": "s.charges"
+  },
+  {
+    "Number": 54,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 54,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "variable.aoe_count",
+    "Status": "bound",
+    "Detail": "(v[\u0022aoe_count\u0022] or 0)"
+  },
+  {
+    "Number": 54,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "talent.orb_mastery",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022orb_mastery\u0022])"
+  },
+  {
+    "Number": 54,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 54,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "variable.aoe_count",
+    "Status": "bound",
+    "Detail": "(v[\u0022aoe_count\u0022] or 0)"
+  },
+  {
+    "Number": 54,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "cooldown.arcane_orb.charges_fractional",
+    "Status": "bound",
+    "Detail": "(s.chargesFractional[153626] or 0)"
+  },
+  {
+    "Number": 54,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "talent.orb_mastery",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022orb_mastery\u0022])"
+  },
+  {
+    "Number": 54,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 54,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "variable.aoe_count",
+    "Status": "bound",
+    "Detail": "(v[\u0022aoe_count\u0022] or 0)"
+  },
+  {
+    "Number": 54,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "buff.arcane_surge.down",
+    "Status": "bound",
+    "Detail": "N(not s.surgeUp)"
+  },
+  {
+    "Number": 54,
+    "List": "spellslinger",
+    "Kind": "expression",
+    "Text": "buff.arcane_charge.stack\u003C(3\u002B(active_enemies\u003E=variable.aoe_count))|(talent.orb_mastery|active_enemies\u003E=(variable.aoe_count\u002B2))\u0026cooldown.arcane_orb.charges_fractional\u003E=(1\u002B0.5*(talent.orb_mastery\u0026active_enemies\u003Cvariable.aoe_count\u0026buff.arcane_surge.down))",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 54,
+    "List": "spellslinger",
+    "Kind": "option",
+    "Text": "if=buff.arcane_charge.stack\u003C(3\u002B(active_enemies\u003E=variable.aoe_count))|(talent.orb_mastery|active_enemies\u003E=(variable.aoe_count\u002B2))\u0026cooldown.arcane_orb.charges_fractional\u003E=(1\u002B0.5*(talent.orb_mastery\u0026active_enemies\u003Cvariable.aoe_count\u0026buff.arcane_surge.down))",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 54,
+    "List": "spellslinger",
+    "Kind": "action",
+    "Text": "actions.spellslinger\u002B=/arcane_orb,if=buff.arcane_charge.stack\u003C(3\u002B(active_enemies\u003E=variable.aoe_count))|(talent.orb_mastery|active_enemies\u003E=(variable.aoe_count\u002B2))\u0026cooldown.arcane_orb.charges_fractional\u003E=(1\u002B0.5*(talent.orb_mastery\u0026active_enemies\u003Cvariable.aoe_count\u0026buff.arcane_surge.down))",
+    "Status": "unsupported",
+    "Detail": "List outside initial Sunfury scope"
+  },
+  {
+    "Number": 55,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "buff.arcane_charge.stack",
+    "Status": "bound",
+    "Detail": "s.charges"
+  },
+  {
+    "Number": 55,
+    "List": "spellslinger",
+    "Kind": "binding",
+    "Text": "buff.arcane_surge.down",
+    "Status": "bound",
+    "Detail": "N(not s.surgeUp)"
+  },
+  {
+    "Number": 55,
+    "List": "spellslinger",
+    "Kind": "expression",
+    "Text": "buff.arcane_charge.stack\u003C3\u0026buff.arcane_surge.down",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 55,
+    "List": "spellslinger",
+    "Kind": "option",
+    "Text": "if=buff.arcane_charge.stack\u003C3\u0026buff.arcane_surge.down",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 55,
+    "List": "spellslinger",
+    "Kind": "action",
+    "Text": "actions.spellslinger\u002B=/arcane_pulse,if=buff.arcane_charge.stack\u003C3\u0026buff.arcane_surge.down",
+    "Status": "unsupported",
+    "Detail": "List outside initial Sunfury scope"
+  },
+  {
+    "Number": 56,
+    "List": "spellslinger",
+    "Kind": "action",
+    "Text": "actions.spellslinger\u002B=/arcane_blast",
+    "Status": "unsupported",
+    "Detail": "List outside initial Sunfury scope"
+  },
+  {
+    "Number": 58,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "buff.clearcasting.react",
+    "Status": "bound",
+    "Detail": "s.clearcasting"
+  },
+  {
+    "Number": 58,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "buff.arcane_salvo.stack",
+    "Status": "bound",
+    "Detail": "s.salvo"
+  },
+  {
+    "Number": 58,
+    "List": "sunfury",
+    "Kind": "expression",
+    "Text": "buff.clearcasting.react\u0026buff.arcane_salvo.stack\u003C12",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 58,
+    "List": "sunfury",
+    "Kind": "option",
+    "Text": "if=buff.clearcasting.react\u0026buff.arcane_salvo.stack\u003C12",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 58,
+    "List": "sunfury",
+    "Kind": "option",
+    "Text": "chain=1",
+    "Status": "approximated",
+    "Detail": "Recommendation only; no channel timing/clip cue (D32)"
+  },
+  {
+    "Number": 58,
+    "List": "sunfury",
+    "Kind": "action",
+    "Text": "actions.sunfury=arcane_missiles,if=buff.clearcasting.react\u0026buff.arcane_salvo.stack\u003C12,chain=1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 59,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "set_bonus.midnight_season_2_4pc",
+    "Status": "bound",
+    "Detail": "N(s.setS2_4pc)"
+  },
+  {
+    "Number": 59,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "buff.cumulative_power.stack",
+    "Status": "bound",
+    "Detail": "s.cumulativePower"
+  },
+  {
+    "Number": 59,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "buff.arcane_soul.down",
+    "Status": "bound",
+    "Detail": "N(not s.soul)"
+  },
+  {
+    "Number": 59,
+    "List": "sunfury",
+    "Kind": "expression",
+    "Text": "((!set_bonus.midnight_season_2_4pc)|buff.cumulative_power.stack=8)\u0026buff.arcane_soul.down",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 59,
+    "List": "sunfury",
+    "Kind": "option",
+    "Text": "if=((!set_bonus.midnight_season_2_4pc)|buff.cumulative_power.stack=8)\u0026buff.arcane_soul.down",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 59,
+    "List": "sunfury",
+    "Kind": "action",
+    "Text": "actions.sunfury\u002B=/prismatic_bolt,if=((!set_bonus.midnight_season_2_4pc)|buff.cumulative_power.stack=8)\u0026buff.arcane_soul.down",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 60,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "buff.arcane_charge.stack",
+    "Status": "bound",
+    "Detail": "s.charges"
+  },
+  {
+    "Number": 60,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "cooldown.arcane_orb.charges_fractional",
+    "Status": "bound",
+    "Detail": "(s.chargesFractional[153626] or 0)"
+  },
+  {
+    "Number": 60,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "cooldown.arcane_pulse.charges_fractional",
+    "Status": "bound",
+    "Detail": "(s.chargesFractional[260364] or 0)"
+  },
+  {
+    "Number": 60,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 60,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "variable.aoe_count",
+    "Status": "bound",
+    "Detail": "(v[\u0022aoe_count\u0022] or 0)"
+  },
+  {
+    "Number": 60,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "buff.clearcasting.react",
+    "Status": "bound",
+    "Detail": "s.clearcasting"
+  },
+  {
+    "Number": 60,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "buff.arcane_salvo.react",
+    "Status": "bound",
+    "Detail": "s.salvo"
+  },
+  {
+    "Number": 60,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "buff.arcane_surge.remains",
+    "Status": "bound",
+    "Detail": "s.surgeRemains"
+  },
+  {
+    "Number": 60,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "gcd.max",
+    "Status": "bound",
+    "Detail": "s.gcdMax"
+  },
+  {
+    "Number": 60,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "buff.arcane_surge.down",
+    "Status": "bound",
+    "Detail": "N(not s.surgeUp)"
+  },
+  {
+    "Number": 60,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "buff.arcane_salvo.react",
+    "Status": "bound",
+    "Detail": "s.salvo"
+  },
+  {
+    "Number": 60,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "buff.arcane_soul.up",
+    "Status": "bound",
+    "Detail": "N(s.soul)"
+  },
+  {
+    "Number": 60,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "buff.arcane_salvo.react",
+    "Status": "bound",
+    "Detail": "s.salvo"
+  },
+  {
+    "Number": 60,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "cooldown.touch_of_the_magi.ready",
+    "Status": "bound",
+    "Detail": "N(has(s, 321507) and s.ready[321507])"
+  },
+  {
+    "Number": 60,
+    "List": "sunfury",
+    "Kind": "expression",
+    "Text": "(buff.arcane_charge.stack=4\u0026(((((cooldown.arcane_orb.charges_fractional\u003E0.95|cooldown.arcane_pulse.charges_fractional\u003E0.95)\u0026active_enemies\u003E=variable.aoe_count)|buff.clearcasting.react)\u0026buff.arcane_salvo.react\u003E=12)|((buff.arcane_surge.remains\u003Egcd.max|buff.arcane_surge.down)\u0026buff.arcane_salvo.react=25)))|buff.arcane_soul.up|(buff.arcane_salvo.react\u003E8\u0026cooldown.touch_of_the_magi.ready)",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 60,
+    "List": "sunfury",
+    "Kind": "option",
+    "Text": "if=(buff.arcane_charge.stack=4\u0026(((((cooldown.arcane_orb.charges_fractional\u003E0.95|cooldown.arcane_pulse.charges_fractional\u003E0.95)\u0026active_enemies\u003E=variable.aoe_count)|buff.clearcasting.react)\u0026buff.arcane_salvo.react\u003E=12)|((buff.arcane_surge.remains\u003Egcd.max|buff.arcane_surge.down)\u0026buff.arcane_salvo.react=25)))|buff.arcane_soul.up|(buff.arcane_salvo.react\u003E8\u0026cooldown.touch_of_the_magi.ready)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 60,
+    "List": "sunfury",
+    "Kind": "action",
+    "Text": "actions.sunfury\u002B=/arcane_barrage,if=(buff.arcane_charge.stack=4\u0026(((((cooldown.arcane_orb.charges_fractional\u003E0.95|cooldown.arcane_pulse.charges_fractional\u003E0.95)\u0026active_enemies\u003E=variable.aoe_count)|buff.clearcasting.react)\u0026buff.arcane_salvo.react\u003E=12)|((buff.arcane_surge.remains\u003Egcd.max|buff.arcane_surge.down)\u0026buff.arcane_salvo.react=25)))|buff.arcane_soul.up|(buff.arcane_salvo.react\u003E8\u0026cooldown.touch_of_the_magi.ready)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 61,
+    "List": "sunfury",
+    "Kind": "action",
+    "Text": "actions.sunfury\u002B=/prismatic_bolt",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 62,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "buff.arcane_charge.stack",
+    "Status": "bound",
+    "Detail": "s.charges"
+  },
+  {
+    "Number": 62,
+    "List": "sunfury",
+    "Kind": "expression",
+    "Text": "buff.arcane_charge.stack\u003C3",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 62,
+    "List": "sunfury",
+    "Kind": "option",
+    "Text": "if=buff.arcane_charge.stack\u003C3",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 62,
+    "List": "sunfury",
+    "Kind": "action",
+    "Text": "actions.sunfury\u002B=/arcane_orb,if=buff.arcane_charge.stack\u003C3",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 63,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 63,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "variable.aoe_count",
+    "Status": "bound",
+    "Detail": "(v[\u0022aoe_count\u0022] or 0)"
+  },
+  {
+    "Number": 63,
+    "List": "sunfury",
+    "Kind": "binding",
+    "Text": "buff.arcane_charge.stack",
+    "Status": "bound",
+    "Detail": "s.charges"
+  },
+  {
+    "Number": 63,
+    "List": "sunfury",
+    "Kind": "expression",
+    "Text": "active_enemies\u003E=(variable.aoe_count-1)|buff.arcane_charge.stack\u003C1",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 63,
+    "List": "sunfury",
+    "Kind": "option",
+    "Text": "if=active_enemies\u003E=(variable.aoe_count-1)|buff.arcane_charge.stack\u003C1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 63,
+    "List": "sunfury",
+    "Kind": "action",
+    "Text": "actions.sunfury\u002B=/arcane_pulse,if=active_enemies\u003E=(variable.aoe_count-1)|buff.arcane_charge.stack\u003C1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 64,
+    "List": "sunfury",
+    "Kind": "action",
+    "Text": "actions.sunfury\u002B=/arcane_blast",
+    "Status": "bound",
+    "Detail": ""
+  }
+]

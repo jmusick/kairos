@@ -1,0 +1,290 @@
+[
+  {
+    "Number": 3,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "talent.spellfire_spheres",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022spellfire_spheres\u0022])"
+  },
+  {
+    "Number": 3,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "2\u002B3*talent.spellfire_spheres",
+    "Status": "bound",
+    "Detail": "value"
+  },
+  {
+    "Number": 3,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "name=threshold",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 3,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "op=set",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 3,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value=2\u002B3*talent.spellfire_spheres",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 3,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat=variable,name=threshold,op=set,value=2\u002B3*talent.spellfire_spheres",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 4,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 4,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "active_enemies\u003E10",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 4,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "1",
+    "Status": "bound",
+    "Detail": "value"
+  },
+  {
+    "Number": 4,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=threshold",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 4,
+    "List": "default",
+    "Kind": "option",
+    "Text": "op=set",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 4,
+    "List": "default",
+    "Kind": "option",
+    "Text": "value=1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 4,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=active_enemies\u003E10",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 4,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions=variable,name=threshold,op=set,value=1,if=active_enemies\u003E10",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 5,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 5,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "variable.threshold",
+    "Status": "bound",
+    "Detail": "(v[\u0022threshold\u0022] or 0)"
+  },
+  {
+    "Number": 5,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "active_enemies\u003E=variable.threshold",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 5,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=first",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 5,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=active_enemies\u003E=variable.threshold",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 5,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/call_action_list,name=first,if=active_enemies\u003E=variable.threshold",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 6,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=second",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 6,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/call_action_list,name=second",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 7,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/arcane_blast",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 8,
+    "List": "first",
+    "Kind": "binding",
+    "Text": "buff.arcane_charge.stack",
+    "Status": "bound",
+    "Detail": "s.charges"
+  },
+  {
+    "Number": 8,
+    "List": "first",
+    "Kind": "expression",
+    "Text": "buff.arcane_charge.stack=4",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 8,
+    "List": "first",
+    "Kind": "option",
+    "Text": "if=buff.arcane_charge.stack=4",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 8,
+    "List": "first",
+    "Kind": "action",
+    "Text": "actions.first=arcane_barrage,if=buff.arcane_charge.stack=4",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 9,
+    "List": "second",
+    "Kind": "binding",
+    "Text": "prev_gcd.1.arcane_barrage",
+    "Status": "bound",
+    "Detail": "N(s.prevGcd == 44425)"
+  },
+  {
+    "Number": 9,
+    "List": "second",
+    "Kind": "expression",
+    "Text": "prev_gcd.1.arcane_barrage",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 9,
+    "List": "second",
+    "Kind": "option",
+    "Text": "use_off_gcd=1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 9,
+    "List": "second",
+    "Kind": "option",
+    "Text": "if=prev_gcd.1.arcane_barrage",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 9,
+    "List": "second",
+    "Kind": "action",
+    "Text": "actions.second=touch_of_the_magi,use_off_gcd=1,if=prev_gcd.1.arcane_barrage",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 10,
+    "List": "second",
+    "Kind": "binding",
+    "Text": "buff.arcane_charge.stack",
+    "Status": "bound",
+    "Detail": "s.charges"
+  },
+  {
+    "Number": 10,
+    "List": "second",
+    "Kind": "expression",
+    "Text": "buff.arcane_charge.stack\u003C3",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 10,
+    "List": "second",
+    "Kind": "option",
+    "Text": "if=buff.arcane_charge.stack\u003C3",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 10,
+    "List": "second",
+    "Kind": "action",
+    "Text": "actions.second\u002B=/arcane_orb,if=buff.arcane_charge.stack\u003C3",
+    "Status": "bound",
+    "Detail": ""
+  }
+]

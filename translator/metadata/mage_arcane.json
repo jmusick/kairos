@@ -1,0 +1,38 @@
+{
+  "name": "mage_arcane sunfury",
+  "spec": 62,
+  "simc": "515f4a3fe9",
+  "excludedLists": ["spellslinger"],
+  "spells": {
+    "arcane_missiles": { "id": 5143, "availability": "s.clearcasting > 0" },
+    "arcane_blast": { "id": 30451, "availability": "true" },
+    "arcane_barrage": { "id": 44425, "availability": "true" },
+    "arcane_orb": { "id": 153626, "availability": "(s.chargesFractional[{id}] or 0) >= 1" },
+    "arcane_pulse": { "id": 260364, "availability": "(s.chargesFractional[{id}] or 0) >= 1" },
+    "prismatic_bolt": { "id": 1295924, "availability": "s.boltReady" },
+    "arcane_surge": { "id": 365350, "availability": "s.ready[{id}]", "toggle": "cooldowns" },
+    "touch_of_the_magi": { "id": 321507, "availability": "s.ready[{id}]", "toggle": "cooldowns" }
+  },
+  "bindings": {
+    "active_enemies": "s.enemies",
+    "gcd.max": "s.gcdMax",
+    "set_bonus.midnight_season_2_4pc": "N(s.setS2_4pc)",
+    "buff.arcane_charge.stack": "s.charges",
+    "buff.arcane_salvo.stack": "s.salvo",
+    "buff.arcane_salvo.react": "s.salvo",
+    "buff.clearcasting.react": "s.clearcasting",
+    "buff.clearcasting.stack": "s.clearcasting",
+    "buff.clearcasting.up": "N(s.clearcasting > 0)",
+    "buff.clearcasting.down": "N(s.clearcasting == 0)",
+    "buff.cumulative_power.stack": "s.cumulativePower",
+    "buff.lustrous_gleam.stack": "s.lustrousGleam",
+    "buff.lustrous_gleam.up": "N(s.lustrousGleam > 0)",
+    "buff.lustrous_gleam.down": "N(s.lustrousGleam == 0)",
+    "buff.arcane_soul.up": "N(s.soul)",
+    "buff.arcane_soul.down": "N(not s.soul)",
+    "buff.arcane_surge.up": "N(s.surgeUp)",
+    "buff.arcane_surge.down": "N(not s.surgeUp)",
+    "buff.arcane_surge.remains": "s.surgeRemains",
+    "buff.prismatic_bolt.up": "N(s.boltReady)"
+  }
+}

@@ -3,3 +3,6 @@
 .idea/
 .DS_Store
 Thumbs.db
+translator/**/bin/
+translator/**/obj/
+translator/.local/

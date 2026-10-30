@@ -1,0 +1,10 @@
+# A small fully supported program: ordered calls, return/fallthrough, variables,
+# numeric talent ranks, conditional assignments, and on/off-GCD separation.
+actions.precombat=variable,name=threshold,op=set,value=2+3*talent.spellfire_spheres
+actions=variable,name=threshold,op=set,value=1,if=active_enemies>10
+actions+=/call_action_list,name=first,if=active_enemies>=variable.threshold
+actions+=/call_action_list,name=second
+actions+=/arcane_blast
+actions.first=arcane_barrage,if=buff.arcane_charge.stack=4
+actions.second=touch_of_the_magi,use_off_gcd=1,if=prev_gcd.1.arcane_barrage
+actions.second+=/arcane_orb,if=buff.arcane_charge.stack<3
