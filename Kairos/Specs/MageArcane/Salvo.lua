@@ -32,8 +32,10 @@ Salvo.CHAIN_GAP = 0.1 -- a channel opened this recently belongs to the cast even
 
 -- Arcane Soul starts when Arcane Surge's buff ends, 17.3-17.5 s after the Surge cast, and
 -- lasts 4.0-4.1 s (three cycles in the 12.1.5 logs). It's timed from the cast, with a
--- small margin. Inside it, a Barrage glow means Soul, not Salvo at 25.
+-- small margin. Inside it, a Barrage glow means Soul, not Salvo at 25. Soul keeps the
+-- glow lit, so the glow going dark inside the window means Soul ended early.
 Salvo.SOUL = { 17.1, 21.5 }
+Salvo.GLOW_GAP = 0.1 -- a glow change this soon after a Barrage was caused by it
 
 local function clamp(value, low, high)
     if value < low then return low end
@@ -54,6 +56,8 @@ function Salvo:ResetState()
     self.lit = false
     self.surgeAt = nil
     self.soulPending = false
+    self.soulOver = false
+    self.barrageAt = nil
 end
 Salvo:ResetState()
 
@@ -74,10 +78,11 @@ function Salvo:CommitChannel(t)
     self.channel = nil
 end
 
---- Whether Arcane Soul is up at time t, timed from the last Arcane Surge cast.
+--- Whether Arcane Soul is up at time t, timed from the last Arcane Surge cast, unless the
+--- glow already showed it ended.
 function Salvo:InSoul(t)
     local since = self.surgeAt and (t - self.surgeAt)
-    return since ~= nil and since >= self.SOUL[1] and since <= self.SOUL[2]
+    return since ~= nil and not self.soulOver and since >= self.SOUL[1] and since <= self.SOUL[2]
 end
 
 --- Once Soul is over, a glow that's still lit means Salvo reached 25 during Soul (no new
@@ -105,6 +110,7 @@ function Salvo:OnCast(spellID, t)
     if spellID == self.MISSILES and self:FreshChannel(t) then return end
     self:CommitChannel(t)
     if spellID == self.BARRAGE then
+        self.barrageAt = t
         if self:InSoul(t) then
             add(self, self.SOUL_BARRAGE)
         else
@@ -113,6 +119,7 @@ function Salvo:OnCast(spellID, t)
     elseif spellID == self.SURGE then
         self.surgeAt = t
         self.soulPending = true
+        self.soulOver = false
     elseif spellID == self.MISSILES then
         self.channel = { start = t, finish = t + self.CHANNEL }
         self.exact = false
@@ -145,6 +152,11 @@ function Salvo:OnGlow(spellID, on, t)
     self.lit = on
     if on and not self:InSoul(t) then
         self:Anchor(self.MAX)
+    elseif not on and self:InSoul(t) then
+        -- Soul is over. A Barrage cast just now, taken for a Soul Barrage, consumed instead.
+        self.soulOver = true
+        self.soulPending = false
+        if self.barrageAt and t - self.barrageAt <= self.GLOW_GAP then self:Anchor(0) end
     end
 end
 

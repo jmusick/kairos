@@ -123,6 +123,31 @@ describe("Salvo estimator", function()
         assert.are.equal("known", Salvo:Read(23).state)
     end)
 
+    it("ends Soul when the glow goes dark inside the timed window", function()
+        Salvo:OnCast(SURGE, 0)
+        Salvo:OnGlow(BARRAGE, true, 17.4)
+        Salvo:OnCast(BARRAGE, 18)
+        Salvo:OnCast(BARRAGE, 19)
+        -- Soul ended at 21.40 with Salvo at 25 (glow still lit); a Barrage 5 ms later
+        -- consumed it, and its glow went dark at the same instant.
+        Salvo:OnCast(BARRAGE, 21.405)
+        Salvo:OnGlow(BARRAGE, false, 21.405)
+        assert.are.equal(0, Salvo:Read(21.41).value)
+        assert.are.equal("known", Salvo:Read(21.41).state)
+        Salvo:OnCast(BLAST, 21.45)
+        Salvo:OnCast(BARRAGE, 21.48) -- still inside the window, but Soul is over: consumes
+        assert.are.equal(0, (Salvo:Estimate(21.48)))
+    end)
+
+    it("ends Soul early on a dark glow without anchoring when no Barrage caused it", function()
+        Salvo:OnCast(SURGE, 0)
+        Salvo:OnGlow(BARRAGE, true, 17.4)
+        Salvo:OnCast(BLAST, 18)
+        Salvo:OnGlow(BARRAGE, false, 21.35)
+        assert.are.equal(2, (Salvo:Estimate(21.4)))
+        assert.are.equal("estimated", Salvo:Read(21.4).state)
+    end)
+
     it("treats a glow already lit for Salvo as Soul once Soul is due", function()
         Salvo:OnCast(SURGE, 0)
         Salvo:OnGlow(BARRAGE, true, 10)
