@@ -9,6 +9,7 @@
 --   result = {
 --       spellID = n,            -- main pick (what to press when the current cast or GCD ends)
 --       line = "actions.x+=/…", -- the APL line that produced it, for /kairos why
+--       label = "x:spell (i/k)", -- optional short form: list, action, which top-level clause
 --       uncertain = bool,       -- the main pick read unknown fields -> fall back to AC
 --       queuedID = n,           -- one-step lookahead pick
 --       queuedUncertain = bool, -- the queued pick read unknown fields -> hide it

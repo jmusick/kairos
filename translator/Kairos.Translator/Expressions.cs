@@ -10,10 +10,13 @@ public sealed class ExpressionCompiler(Func<string, string?> bind)
     private readonly List<string> tokens = [];
     private int position;
     public HashSet<string> Identifiers { get; } = new(StringComparer.Ordinal);
+    // The last expression's top-level `|` clauses, compiled; one entry when there is no
+    // top-level `|`. Reports use them to say which clause of a condition fired.
+    public List<string> Clauses { get; } = [];
 
     public string Compile(string input)
     {
-        tokens.Clear(); Identifiers.Clear(); position = 0;
+        tokens.Clear(); Identifiers.Clear(); Clauses.Clear(); position = 0;
         for (int offset = 0; offset < input.TrimEnd().Length;)
         {
             var match = Token.Match(input, offset);
@@ -22,8 +25,9 @@ public sealed class ExpressionCompiler(Func<string, string?> bind)
                 : match.Groups["name"].Success ? match.Groups["name"].Value : match.Groups["op"].Value);
             offset = match.Index + match.Length;
         }
-        var result = Parse(0);
+        var result = Parse(0, top: true);
         if (position != tokens.Count) throw new FormatException($"Unexpected token {tokens[position]}");
+        if (Clauses.Count == 0) Clauses.Add(result);
         return result;
     }
 
@@ -34,7 +38,9 @@ public sealed class ExpressionCompiler(Func<string, string?> bind)
         "+" or "-" => 5, "*" => 6, _ => -1
     };
 
-    private string Parse(int minimum)
+    // At the top level, `|` has the lowest precedence, so everything before the first `|`
+    // is the first clause and each right operand of a top-level `|` is one more clause.
+    private string Parse(int minimum, bool top = false)
     {
         if (position == tokens.Count) throw new FormatException("Expected operand");
         var token = tokens[position++];
@@ -61,6 +67,11 @@ public sealed class ExpressionCompiler(Func<string, string?> bind)
         {
             var op = tokens[position++];
             var right = Parse(Precedence(op) + 1);
+            if (top && op == "|")
+            {
+                if (Clauses.Count == 0) Clauses.Add(left);
+                Clauses.Add(right);
+            }
             left = op switch
             {
                 "&" => $"N(T({left}) and T({right}))",

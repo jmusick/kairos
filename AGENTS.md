@@ -16,7 +16,7 @@ Hard lines from the spec, which no change may cross:
 
 - Pure Lua 5.1 **WoW Retail addon** for Midnight (12.x), with **no library dependencies** (no Ace3, no LibStub) (D27). The game loads the files listed in `Kairos/Kairos.toc`, in order, straight from the `Kairos/` folder. There's no build step.
 - Persistence is one account-wide SavedVariable, `KairosDB`: `global` settings, `profiles[charKey][specID]`, `flight` (recorder) and `probes`. It reaches disk only on logout or `/reload`.
-- The C# SimC translator (SPEC §8.2) is a partial scaffold in `translator/` (.NET 10, no NuGet packages): it translates the Arcane Sunfury and cooldowns lists, writes a coverage report, and its golden output lives under `translator/golden/`, not in the addon yet (see `translator/README.md`). Planned but not built: generated APL modules in the addon, and the C# replay harness (SPEC §8.3). Generated Lua will be committed and never hand-edited (D21).
+- The C# SimC translator (SPEC §8.2) is a partial scaffold in `translator/` (.NET 10, no NuGet packages): it translates the Arcane Sunfury and cooldowns lists into `Kairos/Specs/MageArcane/APL.lua` and writes a coverage report to `translator/golden/mage_arcane/` (see `translator/README.md`). Planned but not built: the C# replay harness (SPEC §8.3). Generated Lua will be committed and never hand-edited (D21).
 
 ## Conventions
 
@@ -35,7 +35,7 @@ Hard lines from the spec, which no change may cross:
 ## Commands
 
 - Tests: `busted` from the repo root (Lua 5.1). Without busted: `lua tests/run.lua`, or run `tests/run.lua` with the `lua-language-server.exe` bundled in the LuaLS VS Code extension, which works as a Lua interpreter.
-- Translator tests: `pwsh -File translator/test.ps1` from the repo root (.NET 10 SDK plus a Lua interpreter; it finds the LuaLS binary). Goldens are never updated by the tests; refresh one by running the CLI into `translator/golden/<name>` and reviewing the diff.
+- Translator tests: `pwsh -File translator/test.ps1` from the repo root (.NET 10 SDK plus a Lua interpreter; it finds the LuaLS binary). Goldens are never updated by the tests; regenerate as `translator/README.md` describes and review the diff.
 - Lint: `luacheck .` (config in `.luacheckrc`). Type and API checks: LuaLS with Ketho's WoW API annotations (`.luarc.json`; the VS Code extension adds the annotations).
 - In game: the `Kairos/` folder is junctioned into `C:\Games\World of Warcraft\_retail_\Interface\AddOns\Kairos`. `/reload` after edits, with `/console scriptErrors 1` on. `/kairos status` confirms it loaded.
 - In-game data, read offline (the user doesn't need to run commands or paste reports):
@@ -56,6 +56,6 @@ The version lives in `## Version` in `Kairos/Kairos.toc` and in `CHANGELOG.md` (
 ## Notes
 
 - A spec's `probe` table (in its `Spec.lua`) lists spells, auras and powers **by name**, because several Midnight spells are new and their IDs aren't confirmed. Aura names must match the aura, not the spell: the Prismatic Bolt proc is "Prismatic Bolt!" (`1295942`). Put confirmed IDs in `auraIDs`.
-- `Specs/MageArcane/APL.lua` is hand-written from SimC `515f4a3fe9` as a stopgap (D21 says APL Lua is generated). It isn't in the TOC because the in-game state doesn't provide its fields yet. The translator's output (`translator/golden/mage_arcane/APL.lua`) makes the same picks on 20,000 random states and on every replayed decision, and will replace this file once it also exposes `SPELLS` (used by `tools/kairos-dump.lua` and `tests/arcane_apl_spec.lua`). `tests/arcane_apl_spec.lua` plus the replay logs then become golden tests.
+- `Specs/MageArcane/APL.lua` is **generated** by the translator from SimC `515f4a3fe9` (D21): never edit it by hand. Change `translator/metadata/mage_arcane.json` or the translator and regenerate (`translator/README.md`); the translator tests fail if the file and the generator disagree. It isn't in the TOC because the in-game state doesn't provide its fields yet. Picks carry `line` (the SimC line) and `label` (`list:action`, `#n` for a repeated action, `(i/k)` for the top-level `|` clause that fired). The hand-written translation it replaced is kept as the tests' reference (`translator/Kairos.Translator.Tests/reference/`).
 - The Keybinds map keeps its last full build if a rebuild hits secret reads in combat, and retries at most once a second. Don't make it rebuild every frame.
 - The display refreshes on a throttled `OnUpdate` (`KairosDB.global.updateInterval`, 0.1 s by default) plus a few events. Keep per-refresh work small: SPEC §7.3 targets under 0.5 ms per evaluation.

@@ -3,8 +3,10 @@ using System.Text.RegularExpressions;
 
 namespace Kairos.Translator;
 
-public sealed record Spell(int Id, string Availability, string? Toggle = null);
-public sealed record Metadata(string Name, int Spec, string Simc, Dictionary<string, Spell> Spells,
+// Key names the spell in the module's SPELLS table (default: the action name, upper-cased).
+public sealed record Spell(int Id, string Availability, string? Toggle = null, string? Key = null);
+// Module is the namespace field the generated table is exposed as (Kairos.<Module>).
+public sealed record Metadata(string Name, int Spec, string Simc, string Module, Dictionary<string, Spell> Spells,
     Dictionary<string, string> Bindings, string[] ExcludedLists)
 {
     public static Metadata Load(string path) => JsonSerializer.Deserialize<Metadata>(File.ReadAllText(path),

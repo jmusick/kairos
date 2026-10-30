@@ -1,9 +1,9 @@
-# Offline SimC APL translator scaffold
+# Offline SimC APL translator
 
-C#/.NET 10, with no NuGet dependencies. Nothing in this directory reads the game,
-changes the addon, or sends input. The supplied `fixtures/mage_arcane.simc` is
-preserved from the task's stdin: SimC `midnight`, commit `515f4a3fe9`, upstream
-`ActionPriorityLists/default/mage_arcane.simc`. The pin is manual; there is no
+C#/.NET 10, with no NuGet dependencies. Nothing in this directory reads the game or
+sends input; its only output into the addon is the generated APL module. The
+fixture `fixtures/mage_arcane.simc` is upstream's file byte for byte: SimC `midnight`,
+commit `515f4a3fe9`, `ActionPriorityLists/default/mage_arcane.simc`. The pin is manual; there is no
 upstream fetch or automatic update. Generated headers include the pin and translator version.
 
 ## Run tests
@@ -32,35 +32,46 @@ dotnet run --no-restore --project translator/Kairos.Translator.Tests
 
 Tests include exact Lua and coverage goldens for the full Arcane fixture and a
 small control-flow fixture; expression compilation/rejection and actual Lua
-numeric/boolean semantics; coverage completeness; and 20,028 deterministic
-main/off-GCD state comparisons against the hand-written Arcane APL, including
-the boundary cases in `tests/arcane_apl_spec.lua`. The reference files are read
-without editing them. Test output goes under the test project's ignored `obj/`.
-This validates translation against the existing stopgap, not full SimC simulation
-or combat-log replay accuracy.
+numeric/boolean semantics; labels and clauses; coverage completeness; and 20,028
+deterministic main/off-GCD state comparisons against an independent hand-written
+translation (`Kairos.Translator.Tests/reference/mage_arcane_sunfury.lua`, the APL the
+addon shipped before this one), including the boundary cases in
+`tests/arcane_apl_spec.lua`. The Arcane golden Lua is the addon's own
+`Kairos/Specs/MageArcane/APL.lua`, so the shipped file can't drift from the generator.
+Test output goes under the test project's ignored `obj/`. This validates the
+translation against the reference, not against a SimC simulation or a combat-log replay.
 
 ## Generate
 
 ```sh
-dotnet run --project translator/Kairos.Translator -- translator/fixtures/mage_arcane.simc translator/metadata/mage_arcane.json translator/Kairos.Translator/obj/generated
+dotnet run --project translator/Kairos.Translator -- translator/fixtures/mage_arcane.simc translator/metadata/mage_arcane.json translator/golden/mage_arcane Kairos/Specs/MageArcane/APL.lua
+dotnet run --project translator/Kairos.Translator -- translator/fixtures/control.simc translator/metadata/mage_arcane.json translator/golden/control
 ```
 
-Produces `APL.lua` and `coverage.json`. Exit codes: **0** no unsupported records,
-**2** output written with unsupported records, **1** invalid input or I/O failure.
-Use an output directory under `translator/` while this scaffold is under review.
-The checked-in goldens are expected output, never updated by tests. To intentionally
-refresh one, run the CLI with `translator/golden/mage_arcane` (or `control`) as the
-output directory, then review both diffs. Any future SimC pin update needs an
-explicit source and coverage review (D20); the automated bump/diff script is deferred.
+Writes `coverage.json` to the output directory, and the Lua module to the fourth
+argument (or `APL.lua` in the output directory without one). Exit codes: **0** no
+unsupported records, **2** output written with unsupported records (Arcane today),
+**1** invalid input or I/O failure. The goldens are expected output, never updated
+by tests: regenerate with the commands above, then review the diffs. Any future
+SimC pin update needs an explicit source and coverage review (D20); the automated
+bump/diff script is deferred.
 
 ## Contract and implementation
 
 The generated module returns a table with `Evaluate(state)` and `OffGcd(state)`
-methods, called with Lua colon syntax. Each returns `{ spellID, line }` or nil.
-`line` contains the original SimC assignment for diagnostics. The module is also
-exposed as `Kairos.ArcaneAPL`, matching the reference's offline loading shape.
-It deliberately has no runtime registration, TOC entry, or installation step:
-the current `Kairos.State` does not supply this replay contract yet.
+methods, called with Lua colon syntax. Each returns `{ spellID, line, label }` or nil:
+
+- `line` is the original SimC assignment (the `Engine/APL.lua` contract's `line`).
+- `label` is a short form for reports: `list:action`, then `#n` when the action
+  appears more than once in its list (counting every source line, so labels don't
+  move as coverage grows), then `(i/k)` when the condition is an `|` of k clauses
+  at the top level and clause i fired. Clauses are tested in order, which gives
+  the same answer as testing the whole condition.
+
+`SPELLS` maps each metadata spell's `key` (default: the action name upper-cased) to
+its ID. The module is exposed as `Kairos.<module>` from the metadata (`ArcaneAPL`).
+It has no runtime registration or TOC entry yet: the current `Kairos.State` does
+not supply this state.
 
 The caller must provide a complete, plain, **non-secret** state table:
 
@@ -82,8 +93,8 @@ this module, apply the cooldown toggle in the state adapter (D15), and fall back
 to Assisted Combat for unknown state or unsupported paths. Missing entries above
 are replay conventions, **not** a policy for secret or unknown live reads.
 
-`metadata/mage_arcane.json` owns spell IDs, availability predicates, toggle tags,
-and exact expression-to-state bindings. Availability is checked independently of
+`metadata/mage_arcane.json` owns the module name, spell IDs and their `SPELLS` keys,
+availability predicates, toggle tags, and exact expression-to-state bindings. Availability is checked independently of
 the rule's `if`: for example, Bolt needs its proc, Orb/Pulse need a full charge,
 and Surge/Touch must be ready. IDs and availability come from the supplied
 hand-written reference; this scaffold has no new spell-ID discovery or cooldown

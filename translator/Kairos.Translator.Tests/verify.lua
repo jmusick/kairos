@@ -1,7 +1,7 @@
 -- Offline only. Load the reference without changing any addon/test source file.
 local scratch = assert(arg[1], "verification output directory required")
 dofile(scratch .. "/expressions.lua")
-local reference = assert(loadfile("Kairos/Specs/MageArcane/APL.lua"))("Kairos", {})
+local reference = assert(loadfile("translator/Kairos.Translator.Tests/reference/mage_arcane_sunfury.lua"))("Kairos", {})
 local generated = assert(loadfile(scratch .. "/mage_arcane.lua"))("Kairos", {})
 local control = assert(loadfile(scratch .. "/control.lua"))("Kairos", {})
 local SURGE, TOUCH, ORB, PULSE = 365350, 321507, 153626, 260364

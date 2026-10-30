@@ -34,12 +34,18 @@ void Throws<T>(Action test) where T : Exception
     throw new Exception($"Expected {typeof(T).Name}");
 }
 string Normalize(string text) => text.Replace("\r\n", "\n");
+// The Arcane module's golden Lua is the file the addon ships, so it can't drift from the translator.
+var goldenLua = new Dictionary<string, string>
+{
+    ["mage_arcane"] = "Kairos/Specs/MageArcane/APL.lua",
+    ["control"] = "translator/golden/control/APL.lua",
+};
 foreach (var fixture in new[] { "mage_arcane", "control" })
 {
     Test($"golden Lua and coverage: {fixture}", () =>
     {
         var result = translator.Translate(File.ReadAllText($"translator/fixtures/{fixture}.simc"));
-        Equal(Normalize(File.ReadAllText($"translator/golden/{fixture}/APL.lua")), result.Lua);
+        Equal(Normalize(File.ReadAllText(goldenLua[fixture])), result.Lua);
         Equal(Normalize(File.ReadAllText($"translator/golden/{fixture}/coverage.json")), result.Report);
         File.WriteAllText(Path.Combine(scratch, fixture + ".lua"), result.Lua);
     });
@@ -73,6 +79,24 @@ foreach (var malformed in new[] { "", "a+", "(a", "a)", "a b", "a&&b", "a?b", "a
     Test("reject expression: " + malformed, () => Throws<FormatException>(() => expressionCompiler.Compile(malformed)));
 Test("unbound identifier is explicit", () => Throws<NotSupportedException>(() => expressionCompiler.Compile("unbound.name")));
 Test("compiler can be reused after a failure", () => Equal("(a + b)", expressionCompiler.Compile(" a + b ")));
+Test("top-level | clauses", () =>
+{
+    expressionCompiler.Compile("a&b|c|(a|b)");
+    Equal("N(T(a) and T(b)), c, N(T(a) or T(b))", string.Join(", ", expressionCompiler.Clauses));
+    expressionCompiler.Compile("(a|b)&c");
+    Equal(1, expressionCompiler.Clauses.Count);
+    expressionCompiler.Compile("a|b^c");
+    Equal("a, N(T(b) ~= T(c))", string.Join(", ", expressionCompiler.Clauses));
+});
+Test("labels name the list, the repeat and the clause", () =>
+{
+    var lua = translator.Translate("actions=arcane_blast,if=active_enemies>3\nactions+=/arcane_barrage,if=active_enemies>2|gcd.max>1\nactions+=/arcane_blast").Lua;
+    Equal(true, lua.Contains("label = \"default:arcane_blast#1\""));
+    Equal(true, lua.Contains("label = \"default:arcane_blast#2\""));
+    Equal(true, lua.Contains("label = \"default:arcane_barrage (\" .. clause .. \"/2)\""));
+    Equal(true, lua.Contains("APL.SPELLS = { MISSILES = 5143,"));
+    Equal(true, lua.Contains("Kairos.ArcaneAPL = APL"));
+});
 Test("all identifiers reported after first unsupported binding", () =>
 {
     var result = translator.Translate("actions=arcane_blast,if=missing.one&missing.two");

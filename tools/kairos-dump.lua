@@ -634,13 +634,13 @@ function commands.apl(logPath, svPath, player, ...)
     print("  Player cast              = APL on true state: " .. rate(records, function(r)
         return r.cast == r.aplTrue.spellID end))
 
-    -- By the APL line that decided the true-state pick.
+    -- By the APL line (and clause) that decided the true-state pick.
     local lines, order = {}, {}
     for _, r in ipairs(records) do
-        local key = r.aplTrue.line
+        local key = r.aplTrue.label or r.aplTrue.line
         local row = lines[key]
         if not row then
-            row = { n = 0, kairos = 0, acN = 0, ac = 0, player = 0, acInstead = {} }
+            row = { n = 0, kairos = 0, acN = 0, ac = 0, player = 0, acInstead = {}, source = r.aplTrue.line }
             lines[key] = row
             order[#order + 1] = key
         end
@@ -671,6 +671,19 @@ function commands.apl(logPath, svPath, player, ...)
         print(("| %s | %d | %d | %d/%d | %d | %s |"):format(key, row.n, row.kairos, row.ac, row.acN, row.player,
             table.concat(parts, ", ")))
     end
+    -- What each label stands for: "(i/k)" is the i-th top-level `|` clause of its line.
+    local legend, seen = {}, {}
+    for _, key in ipairs(order) do
+        local base = key:gsub(" %(%d+/%d+%)$", "")
+        if not seen[base] and lines[key].source ~= key then
+            seen[base] = true
+            legend[#legend + 1] = ("  %s: %s"):format(base, lines[key].source)
+        end
+    end
+    if #legend > 0 then
+        print("")
+        print(table.concat(legend, "\n"))
+    end
 
     if verbose then
         print("")
@@ -678,7 +691,7 @@ function commands.apl(logPath, svPath, player, ...)
             print(("%s  salvo %2d (est %2d)  APL %-16s Kairos %-16s AC %-16s cast %-16s %s"):format(clockText(r.t),
                 r.truth, r.est, names[r.aplTrue.spellID] or r.aplTrue.spellID,
                 names[r.aplEst.spellID] or r.aplEst.spellID, r.ac and (names[r.ac] or r.ac) or "-",
-                names[r.cast] or r.cast, r.aplTrue.line))
+                names[r.cast] or r.cast, r.aplTrue.label or r.aplTrue.line))
         end
     end
 end
