@@ -12,9 +12,16 @@ All notable changes to Kairos are documented here. The format follows [Keep a Ch
 - The probe checks aura secrecy against each aura's own spell ID instead of the ID of the spell that applies it, and shows which ID it used.
 - The probe no longer reports spec spells as missing when they're already probed from the Assisted Combat rotation list (Evocation).
 
+### Changed
+
+- The addon is organized by purpose: `Core/`, `Engine/`, `Data/`, `UI/`, and `Specs/<Spec>/` for spec-specific code. Arcane's metadata (probe lists, aura IDs) moved out of the probe into `Specs/MageArcane/Spec.lua`, read through a new spec registry (`Kairos:NewSpec`, `Kairos:CurrentSpec`). The Salvo estimator is now `Specs/MageArcane/Salvo.lua` (`Kairos.ArcaneSalvo`).
+- The probe and trace track the Prismatic Bolt proc as "Prismatic Bolt!" (`1295942`), not the spell.
+
 ### Added
 
-- Arcane Salvo estimator (`Kairos/Salvo.lua`) for Arcane. It rebuilds Salvo stacks in combat from casts, Missiles channels, the Arcane Barrage glow (Salvo at 25) and Arcane Soul timing, re-anchoring on Barrage, the glow and out-of-combat reads. It records its estimate to the flight recorder.
+- A hand-written Arcane Sunfury APL (`Specs/MageArcane/APL.lua`, from SimC `515f4a3fe9`) with line-by-line tests. It's a stopgap until the translator generates it, and isn't loaded in game yet.
+- `tools/kairos-dump.lua apl` replays a combat log and compares, per decision and per APL line, the APL on true state with Kairos (the APL on the Salvo estimate), Assisted Combat and the player. On the three test sessions Kairos agreed 93%, Assisted Combat 49% (`docs/replay/12.1.5-arcane-sunfury.md`).
+- Arcane Salvo estimator (now `Specs/MageArcane/Salvo.lua`) for Arcane. It rebuilds Salvo stacks in combat from casts, Missiles channels, the Arcane Barrage glow (Salvo at 25) and Arcane Soul timing, re-anchoring on Barrage, the glow and out-of-combat reads. It records its estimate to the flight recorder.
 - `tools/kairos-dump.lua salvo` replays a combat log through the estimator and scores it against true stacks, optionally between two times. v1 and v2 (Soul timed from the Surge cast, Missiles +11) each put 90% of decisions on the right side of 12 on a session they hadn't seen. The rest is the random Missiles gain.
 - `tools/kairos-dump.lua` prints the estimator's recorded `salvo` entries.
 - Automatic probes at login, 3 s into each fight, right after each fight, and at encounter and keystone starts. They're silent, on by default, and stored compactly.

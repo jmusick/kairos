@@ -19,32 +19,11 @@ Probe.AUTO_THROTTLE = 60
 Probe.LOGIN_DELAY = 10
 Probe.GCD_SPELL = 61304
 
--- Spec extras on top of Assisted Combat's rotation spells. Names, not IDs: several
--- Midnight spells are new, and the client resolves names for known spells and auras.
-Probe.EXTRA = {
-    [62] = { -- Arcane Mage (SPEC §10.2)
-        spells = { "Arcane Blast", "Arcane Barrage", "Arcane Missiles", "Arcane Orb", "Arcane Pulse",
-            "Arcane Explosion", "Arcane Surge", "Touch of the Magi", "Evocation", "Presence of Mind",
-            "Counterspell", "Arcane Intellect" },
-        buffs = { "Clearcasting", "Arcane Salvo", "Arcane Soul", "Intuition", "Arcane Surge", "Presence of Mind",
-            "Prismatic Bolt", "Overpowered Missiles", "Lustrous Gleam", "Cumulative Power", "Arcane Intellect" },
-        debuffs = { "Touch of the Magi" },
-        powers = { "Mana", "ArcaneCharges" },
-    },
-}
-
--- Auras often have their own spell ID, different from the spell that applies them
--- (Arcane Surge casts 365350 but its buff is 365362). IDs learned in game win over these.
-Probe.AURA_IDS = {
-    ["Clearcasting"] = 263725,
-    ["Arcane Surge"] = 365362,
-    ["Touch of the Magi"] = 210824,
-    ["Presence of Mind"] = 205025,
-    ["Arcane Intellect"] = 1459,
-    -- From the 12.1.5 combat log: both make Arcane Barrage glow, as does Salvo at 25.
-    ["Arcane Soul"] = 451038,
-    ["Intuition"] = 1223797,
-}
+--- The active spec's probe extras (Specs/<Spec>/Spec.lua), or an empty set.
+local function specExtras()
+    local spec = Kairos:CurrentSpec()
+    return spec and spec.probe or {}
+end
 
 local function describe(value)
     local kind = type(value)
@@ -153,11 +132,13 @@ function Probe:CheckSpell(run, spellID, label)
 end
 
 --- The aura's spell ID and where it came from: "seen" (learned in game), "table"
---- (Probe.AURA_IDS) or "name" (resolved from the spell name, often the wrong ID).
+--- (the spec's auraIDs) or "name" (resolved from the spell name, often the wrong ID).
 function Probe:AuraID(name)
     local learned = Kairos.db.global.auraIDs[name]
     if learned then return learned, "seen" end
-    if self.AURA_IDS[name] then return self.AURA_IDS[name], "table" end
+    local spec = Kairos:CurrentSpec()
+    local known = spec and spec.auraIDs and spec.auraIDs[name]
+    if known then return known, "table" end
     local spellID = spellIDFor(name)
     if spellID then return spellID, "name" end
     return nil
@@ -198,7 +179,7 @@ end
 
 function Probe:Collect(run)
     local secrets = C_Secrets or {}
-    local extra = self.EXTRA[Kairos.specID] or {}
+    local extra = specExtras()
     Kairos.Trace:Refresh() -- fresh aura and instance IDs (does nothing in combat)
 
     run:Check("secrets HasSecretRestrictions", secrets.HasSecretRestrictions)

@@ -7,19 +7,24 @@
 ## IconTexture: Interface\Icons\Spell_Nature_TimeStop
 ## SavedVariables: KairosDB
 
-Core.lua
-Signal.lua
-DB.lua
-State.lua
-Keybinds.lua
-Toggles.lua
-Assisted.lua
-APL.lua
-Recorder.lua
-Trace.lua
-Salvo.lua
-CombatLog.lua
-Display.lua
-Probe.lua
-Settings.lua
-Commands.lua
+Core\Core.lua
+Core\Signal.lua
+Core\DB.lua
+
+Engine\State.lua
+Engine\Keybinds.lua
+Engine\Toggles.lua
+Engine\Assisted.lua
+Engine\APL.lua
+
+Data\Recorder.lua
+Data\Trace.lua
+Data\CombatLog.lua
+
+Specs\MageArcane\Spec.lua
+Specs\MageArcane\Salvo.lua
+
+UI\Display.lua
+Data\Probe.lua
+UI\Settings.lua
+UI\Commands.lua

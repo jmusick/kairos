@@ -19,6 +19,22 @@ function Kairos:NewModule(name)
     return module
 end
 
+-- Spec registry. Code and data for one specialization live in Specs/<Spec>/; its
+-- Spec.lua registers metadata here, and generic modules read the active spec's through
+-- CurrentSpec instead of naming spec spells themselves.
+Kairos.Specs = {}
+
+function Kairos:NewSpec(specID, spec)
+    spec.specID = specID
+    self.Specs[specID] = spec
+    return spec
+end
+
+--- The active spec's metadata, or nil for specs Kairos has no data for.
+function Kairos:CurrentSpec()
+    return self.Specs[self.specID]
+end
+
 -- Event bus. Names starting with KAIROS_ are internal messages and never reach the client.
 local call = securecallfunction or function(fn, ...) return fn(...) end
 local eventFrame = CreateFrame("Frame")

@@ -8,7 +8,7 @@
 -- Every method takes an explicit time, so tools/kairos-dump.lua can replay a combat log
 -- through this file outside the game.
 local _, Kairos = ...
-local Salvo = Kairos:NewModule("Salvo")
+local Salvo = Kairos:NewModule("ArcaneSalvo")
 local Signal = Kairos.Signal
 
 Salvo.SPEC = 62

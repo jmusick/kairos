@@ -8,7 +8,7 @@ describe("Salvo estimator", function()
     before_each(function()
         Stub.Install()
         Kairos = Stub.LoadAddon()
-        Salvo = Kairos.Salvo
+        Salvo = Kairos.ArcaneSalvo
         Salvo:ResetState()
     end)
 
@@ -153,7 +153,7 @@ describe("Salvo estimator in game", function()
             if name == "Arcane Salvo" then return salvoAura end
         end
         Kairos = Stub.LoadAddon()
-        Salvo = Kairos.Salvo
+        Salvo = Kairos.ArcaneSalvo
     end)
 
     it("starts from the out-of-combat read", function()

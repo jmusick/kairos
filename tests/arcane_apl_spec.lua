@@ -1,0 +1,99 @@
+-- The hand-written Sunfury APL (Kairos/Specs/MageArcane/APL.lua), line by line.
+local function load()
+    local ns = {}
+    return assert(loadfile("Kairos/Specs/MageArcane/APL.lua"))("Kairos", ns)
+end
+
+describe("Arcane Sunfury APL", function()
+    local APL, S
+
+    -- Mid-fight defaults: nothing procced, cooldowns down, 2 charges, single target.
+    local function state(overrides)
+        local s = {
+            salvo = 0, clearcasting = 0, charges = 2, cumulativePower = 0, lustrousGleam = 0,
+            soul = false, surgeUp = false, surgeRemains = 0, boltReady = false,
+            enemies = 1, gcdMax = 1.2, prevGcd = nil,
+            ready = {}, remains = { [365350] = 60 }, chargesFractional = { [153626] = 0.5 },
+            known = { [260364] = false }, talent = { spellfire_spheres = true }, setS2_4pc = true,
+        }
+        for k, v in pairs(overrides or {}) do s[k] = v end
+        return s
+    end
+    local function line(overrides) return APL:Evaluate(state(overrides)).line end
+    local function spell(overrides) return APL:Evaluate(state(overrides)).spellID end
+
+    before_each(function()
+        APL = load()
+        S = APL.SPELLS
+    end)
+
+    it("falls through to Arcane Blast", function()
+        assert.are.equal(S.BLAST, spell())
+        assert.are.equal("sunfury:arcane_blast", line())
+    end)
+
+    it("casts Arcane Surge first when it's ready", function()
+        assert.are.equal(S.SURGE, spell({ ready = { [S.SURGE] = true }, clearcasting = 1 }))
+        assert.are.equal(S.MISSILES, spell({ ready = { [S.SURGE] = true }, clearcasting = 1, lustrousGleam = 1 }))
+    end)
+
+    it("channels Missiles on Clearcasting below 12 Salvo", function()
+        assert.are.equal(S.MISSILES, spell({ clearcasting = 1, salvo = 11 }))
+        assert.are.equal(S.BLAST, spell({ clearcasting = 1, salvo = 12, charges = 3 }))
+    end)
+
+    it("takes Barrage at 4 charges with Clearcasting and 12+ Salvo", function()
+        assert.are.equal("sunfury:arcane_barrage (charges=4, salvo>=12)",
+            line({ clearcasting = 1, salvo = 12, charges = 4 }))
+        assert.are.equal(S.BLAST, spell({ clearcasting = 0, salvo = 12, charges = 4 }))
+    end)
+
+    it("needs enough enemies for the Orb clause of that Barrage", function()
+        local aoe = { salvo = 12, charges = 4, chargesFractional = { [S.ORB] = 1.5 } }
+        assert.are.equal(S.BLAST, spell(aoe))
+        aoe.enemies = 5
+        assert.are.equal(S.BARRAGE, spell(aoe))
+    end)
+
+    it("takes Barrage at 25 Salvo unless Surge is about to end", function()
+        assert.are.equal(S.BARRAGE, spell({ salvo = 25, charges = 4 }))
+        assert.are.equal(S.BARRAGE, spell({ salvo = 25, charges = 4, surgeUp = true, surgeRemains = 5 }))
+        assert.are.equal(S.BLAST, spell({ salvo = 25, charges = 4, surgeUp = true, surgeRemains = 1 }))
+    end)
+
+    it("spams Barrage during Arcane Soul, but Missiles still comes first", function()
+        assert.are.equal("sunfury:arcane_barrage (arcane_soul)", line({ soul = true }))
+        assert.are.equal(S.MISSILES, spell({ soul = true, clearcasting = 1 }))
+    end)
+
+    it("takes Barrage above 8 Salvo when Touch is ready", function()
+        assert.are.equal(S.BARRAGE, spell({ salvo = 9, ready = { [S.TOUCH] = true } }))
+        assert.are.equal(S.BLAST, spell({ salvo = 8, ready = { [S.TOUCH] = true } }))
+    end)
+
+    it("casts Prismatic Bolt at 8 Cumulative Power outside Soul, otherwise after Barrage", function()
+        assert.are.equal("sunfury:prismatic_bolt (cumulative_power=8)", line({ boltReady = true, cumulativePower = 8 }))
+        assert.are.equal("sunfury:prismatic_bolt", line({ boltReady = true, cumulativePower = 7 }))
+        assert.are.equal(S.BARRAGE, spell({ boltReady = true, cumulativePower = 8, soul = true }))
+        assert.are.equal("sunfury:prismatic_bolt (cumulative_power=8)",
+            line({ boltReady = true, cumulativePower = 3, setS2_4pc = false }))
+    end)
+
+    it("uses Orb below 3 charges, and skips spells the character doesn't have", function()
+        assert.are.equal(S.ORB, spell({ chargesFractional = { [S.ORB] = 1 } }))
+        assert.are.equal(S.BLAST, spell({ chargesFractional = { [S.ORB] = 1 }, charges = 3 }))
+        assert.are.equal(S.BLAST, spell({ charges = 0, chargesFractional = { [S.PULSE] = 1 } }))
+        assert.are.equal(S.PULSE, spell({ charges = 0, chargesFractional = { [S.PULSE] = 1 }, known = {} }))
+    end)
+
+    it("calls Touch of the Magi off the GCD after Barrage or Bolt, or late in Surge", function()
+        local s = state({ ready = { [S.TOUCH] = true }, prevGcd = S.BARRAGE, remains = { [S.SURGE] = 45 } })
+        assert.are.equal(S.TOUCH, APL:OffGcd(s).spellID)
+        s.remains[S.SURGE] = 20
+        assert.is_nil(APL:OffGcd(s))
+        s.surgeUp, s.surgeRemains, s.prevGcd = true, 10, S.BLAST
+        assert.are.equal(S.TOUCH, APL:OffGcd(s).spellID)
+        s.ready[S.TOUCH] = false
+        assert.is_nil(APL:OffGcd(s))
+    end)
+end)

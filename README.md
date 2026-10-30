@@ -85,7 +85,13 @@ lua tools/kairos-dump.lua combatlog <WoWCombatLog.txt> <Kairos.lua> [player]
 lua tools/kairos-dump.lua salvo <WoWCombatLog.txt> <player> [from HH:MM:SS [to HH:MM:SS]] [verbose]
 ```
 
-Results worth keeping go under `docs/probe/`, named by client build and context. Probes, auto-probing and combat logging can each be turned off in the settings panel.
+```bash
+lua tools/kairos-dump.lua apl <WoWCombatLog.txt> <Kairos.lua> <player> [from HH:MM:SS [to HH:MM:SS]] [verbose]
+```
+
+`salvo` scores the Arcane Salvo estimator against the log's true stacks. `apl` compares, at every decision, the Arcane APL on true state, the APL with Kairos's Salvo estimate, Assisted Combat's pick and the player's cast, grouped by APL line.
+
+Results worth keeping go under `docs/probe/` (probe and estimator findings) and `docs/replay/` (APL replays), named by client build and context. Probes, auto-probing and combat logging can each be turned off in the settings panel.
 
 ## Tests
 
@@ -103,26 +109,36 @@ Without busted, the bundled runner runs the same specs on any Lua 5.1+ interpret
 
 ## Files
 
+The addon is split by what code is for. Anything that applies to one specialization lives under `Specs/`; everything else is spec-agnostic.
+
 | File | Purpose |
 |---|---|
 | `Kairos/Kairos.toc` | Load order, version, SavedVariables |
 | `Kairos/Bindings.xml` | The Cooldowns toggle keybind |
-| `Kairos/Core.lua` | Namespace, module registry, event bus |
-| `Kairos/Signal.lua` | Secret-safe reads (known, estimated, unknown) and restriction tracking |
-| `Kairos/DB.lua` | `KairosDB` defaults and per-character, per-spec profiles |
-| `Kairos/State.lua` | Own casts, cast in progress, combat, movement, enemy nameplates |
-| `Kairos/Keybinds.lua` | Slot-to-key map, macro resolution, overrides |
-| `Kairos/Toggles.lua` | The Cooldowns toggle |
-| `Kairos/Assisted.lua` | Blizzard's Assisted Combat (the fallback floor) |
-| `Kairos/APL.lua` | APL runtime shell and module contract |
-| `Kairos/Recorder.lua` | Flight recorder |
-| `Kairos/Trace.lua` | Fight traces: charges, glows, aura events, stacks before and after each fight |
-| `Kairos/Salvo.lua` | Arcane Salvo estimator: stacks in combat from casts and the Barrage glow |
-| `Kairos/CombatLog.lua` | Turns on advanced combat logging |
-| `Kairos/Display.lua` | The icons |
-| `Kairos/Probe.lua` | Secrecy probe and report |
-| `Kairos/Settings.lua` | Settings panel |
-| `Kairos/Commands.lua` | Slash commands and the copy-text window |
+| **`Kairos/Core/`** | **Foundation** |
+| `Core/Core.lua` | Namespace, module and spec registries, event bus |
+| `Core/Signal.lua` | Secret-safe reads (known, estimated, unknown) and restriction tracking |
+| `Core/DB.lua` | `KairosDB` defaults, migrations, per-character and per-spec profiles |
+| **`Kairos/Engine/`** | **Spec-agnostic runtime** |
+| `Engine/State.lua` | Own casts, cast in progress, combat, movement, enemy nameplates |
+| `Engine/Keybinds.lua` | Slot-to-key map, macro resolution, overrides |
+| `Engine/Toggles.lua` | The Cooldowns toggle |
+| `Engine/Assisted.lua` | Blizzard's Assisted Combat (the fallback floor) |
+| `Engine/APL.lua` | APL runtime shell and module contract |
+| **`Kairos/Data/`** | **Collection and diagnostics** |
+| `Data/Recorder.lua` | Flight recorder |
+| `Data/Trace.lua` | Fight traces: charges, glows, aura events, stacks before and after each fight |
+| `Data/CombatLog.lua` | Turns on advanced combat logging |
+| `Data/Probe.lua` | Secrecy probe and report |
+| **`Kairos/UI/`** | **Display and controls** |
+| `UI/Display.lua` | The icons |
+| `UI/Settings.lua` | Settings panel |
+| `UI/Commands.lua` | Slash commands and the copy-text window |
+| **`Kairos/Specs/MageArcane/`** | **Arcane Mage only** |
+| `Specs/MageArcane/Spec.lua` | Metadata: aura IDs, and the spells, auras and powers to probe and trace |
+| `Specs/MageArcane/Salvo.lua` | Arcane Salvo estimator: stacks in combat from casts and the Barrage glow |
+| `Specs/MageArcane/APL.lua` | Hand-written Sunfury APL (stopgap until the translator; not in the TOC yet) |
 | `tests/` | Specs, the WoW API stub, and the fallback runner |
-| `tools/kairos-dump.lua` | Reads SavedVariables and combat logs offline |
-| `docs/probe/` | Probe results per client build and context, with findings |
+| `tools/kairos-dump.lua` | Reads SavedVariables and combat logs offline, and replays logs through the Arcane modules |
+| `docs/probe/` | Probe and estimator results per client build, with findings |
+| `docs/replay/` | APL replays: Kairos, Assisted Combat and the player against the APL on true state |

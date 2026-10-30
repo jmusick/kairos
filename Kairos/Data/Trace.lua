@@ -23,7 +23,8 @@ end
 Trace:ResetEvents()
 
 local function tracked()
-    local extra = Kairos.Probe and Kairos.Probe.EXTRA[Kairos.specID]
+    local spec = Kairos:CurrentSpec()
+    local extra = spec and spec.probe
     return extra and extra.buffs or {}, extra and extra.debuffs or {}
 end
 

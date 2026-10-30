@@ -191,7 +191,10 @@ function Stub.LoadAddon(options)
     options = options or {}
     local files = {}
     for line in io.lines("Kairos/Kairos.toc") do
-        if line:match("%.lua%s*$") then files[#files + 1] = line:match("^%s*(.-)%s*$") end
+        if line:match("%.lua%s*$") then
+            -- The TOC uses Windows separators; loadfile wants forward slashes everywhere.
+            files[#files + 1] = line:match("^%s*(.-)%s*$"):gsub("\\", "/")
+        end
     end
     local ns = {}
     for _, file in ipairs(files) do

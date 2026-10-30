@@ -20,6 +20,8 @@ Hard lines from the spec, which no change may cross:
 
 ## Conventions
 
+- **Layout:** `Kairos/Core/` (namespace, Signal, DB), `Engine/` (spec-agnostic runtime: State, Keybinds, Toggles, Assisted, APL), `Data/` (Recorder, Trace, CombatLog, Probe), `UI/` (Display, Settings, Commands), and `Specs/<Class><Spec>/` for anything that applies to one specialization. Generic code never names a spec's spells or auras.
+- **Specs:** each spec folder has a `Spec.lua` that calls `Kairos:NewSpec(specID, { key, name, probe = {...}, auraIDs = {...} })`; generic modules (Probe, Trace) read the active spec through `Kairos:CurrentSpec()`. Spec state models (`Specs/MageArcane/Salvo.lua`) are modules named with the spec prefix (`ArcaneSalvo`) and stay inert on other specs. A spec's APL lives in the same folder (`APL.lua`).
 - **Module pattern:** each file opens with `local _, Kairos = ...` and registers with `local X = Kairos:NewModule("X")`, which also sets `Kairos.X`. Modules may define `OnInit` (SavedVariables ready) and `OnLogin` (character and spec known). Core calls them in TOC order, so a module may use modules listed above it at file scope, and any module at runtime.
 - **Events:** use `Kairos:On(event, fn)` for client events and `Kairos:Fire`/`Kairos:On` with a `KAIROS_` prefix for internal messages (`KAIROS_PROFILE_CHANGED`, `KAIROS_TOGGLE_CHANGED`, `KAIROS_PLAYER_CAST`, `KAIROS_COMBAT_CHANGED`, `KAIROS_RESTRICTIONS_CHANGED`). For unit events use `Kairos:OnUnit(event, unit, fn)`, which filters in the client. Never compare a unit token from a payload in Lua: it can be secret.
 - **Secret values:** every read of combat state goes through `Kairos.Signal` (`Read`, `ReadField`), which returns `{ state = "known"|"estimated"|"unknown", value, reason }` and never throws. Don't compare, do arithmetic on, index, `#`, concatenate or `tostring` a value without checking it with `issecretvalue` first. Secrets may be passed to widgets that accept them; logic may not branch on them.
@@ -38,8 +40,11 @@ Hard lines from the spec, which no change may cross:
 - In-game data, read offline (the user doesn't need to run commands or paste reports):
   - SavedVariables: `C:\Games\World of Warcraft\_retail_\WTF\Account\ANGELUS35C\SavedVariables\Kairos.lua`, written on `/reload`, logout or exit. Check its timestamp; data from the current play session isn't there until one of those happens.
   - Combat logs: `C:\Games\World of Warcraft\_retail_\Logs\WoWCombatLog-*.txt`. Kairos turns logging on at login.
-  - `tools/kairos-dump.lua` (`probes`, `fights`, `summary`, `events`, `combatlog`, `salvo`) reads both. `salvo` replays a log through `Kairos/Salvo.lua` and scores it; rerun it on every new log before and after changing `Salvo.GAINS`, and don't tune on the log you report as validation. To compare a trace with a combat log, align them by matching casts (recorder `t` is `GetTime()`; `at` has only one-second resolution).
-  - Open-world training dummies drop combat within seconds of a pause, even mid-channel, so one dummy session shows up as many short fights. Run it with the LuaLS binary if there's no `lua` on PATH.
+  - `tools/kairos-dump.lua` (`probes`, `fights`, `summary`, `events`, `combatlog`, `salvo`, `apl`) reads both. Run it with the LuaLS binary if there's no `lua` on PATH.
+  - `salvo` replays a log through `Specs/MageArcane/Salvo.lua` and scores it; rerun it on every new log before and after changing `Salvo.GAINS`, and don't tune on the log you report as validation.
+  - `apl` compares the APL on the log's true state with Kairos (the APL on the Salvo estimate), Assisted Combat (from the recorder) and the player's casts, per APL line. Decisions are cast starts for cast-time spells and successes otherwise; the recorder is aligned to cast successes.
+  - To compare a trace with a combat log, align them by matching casts (recorder `t` is `GetTime()`; `at` has only one-second resolution). A Blast or Prismatic Bolt success and the next queued spell land milliseconds apart; both are real presses.
+  - Open-world training dummies drop combat within seconds of a pause, even mid-channel, so one dummy session shows up as many short fights.
 - Packaging: BigWigs packager with `.pkgmeta` (`Kairos/Kairos` moves to the package root). No CI yet (D23).
 
 ## Releases
@@ -48,6 +53,7 @@ The version lives in `## Version` in `Kairos/Kairos.toc` and in `CHANGELOG.md` (
 
 ## Notes
 
-- `Probe.EXTRA[specID]` lists spec-specific spells, auras and powers **by name**, because several Midnight spells are new and their IDs aren't confirmed. Prefer names there until the probe confirms IDs.
+- A spec's `probe` table (in its `Spec.lua`) lists spells, auras and powers **by name**, because several Midnight spells are new and their IDs aren't confirmed. Aura names must match the aura, not the spell: the Prismatic Bolt proc is "Prismatic Bolt!" (`1295942`). Put confirmed IDs in `auraIDs`.
+- `Specs/MageArcane/APL.lua` is hand-written from SimC `515f4a3fe9` as a stopgap (D21 says APL Lua is generated). It isn't in the TOC because the in-game state doesn't provide its fields yet. When the translator exists, its output replaces this file, and `tests/arcane_apl_spec.lua` plus the replay logs become golden tests.
 - The Keybinds map keeps its last full build if a rebuild hits secret reads in combat, and retries at most once a second. Don't make it rebuild every frame.
 - The display refreshes on a throttled `OnUpdate` (`KairosDB.global.updateInterval`, 0.1 s by default) plus a few events. Keep per-refresh work small: SPEC §7.3 targets under 0.5 ms per evaluation.
