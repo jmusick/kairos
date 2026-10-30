@@ -20,6 +20,7 @@ All notable changes to Kairos are documented here. The format follows [Keep a Ch
 ### Added
 
 - Trace records a signature of each watched spell's visible state when it changes (Arcane: Missiles' override, icon, counts, glow and action button), to test whether the secret Overpowered Missiles proc is visible in game.
+- `tools/kairos-dump.lua watch` lines those signatures up with auras from the combat log and reports whether any field tracks one. On the first session it found that nothing visible tracks Overpowered Missiles (the counts are secret in combat, and the glow tracks Clearcasting).
 - Cumulative Power estimator (`Specs/MageArcane/CumulativePower.lua`) for the Season 2 Arcane 4-piece, which is secret in combat. It's built by Missiles channels, consumed at 8 by Arcane Blast or Prismatic Bolt, and expires after 12 s. It records to the flight recorder and drives the replay; it got `= 8` right on 98% of 372 decisions (`docs/probe/12.1.5-70575-cumulative-power.md`).
 - A hand-written Arcane Sunfury APL (`Specs/MageArcane/APL.lua`, from SimC `515f4a3fe9`) with line-by-line tests. It's a stopgap until the translator generates it, and isn't loaded in game yet.
 - `tools/kairos-dump.lua apl` replays a combat log and compares, per decision and per APL line, the APL on true state with Kairos (the APL on the Salvo and Cumulative Power estimates), Assisted Combat and the player. On the three test sessions Kairos agreed 93%, Assisted Combat 49% (`docs/replay/12.1.5-arcane-sunfury.md`).

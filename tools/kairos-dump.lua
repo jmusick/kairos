@@ -8,6 +8,12 @@
 --       the player's casts and tracked aura stack changes from a combat log
 --   lua tools/kairos-dump.lua salvo <WoWCombatLog.txt> <player> [from HH:MM:SS [to HH:MM:SS]] [verbose]
 --       replays the log through Kairos/Specs/MageArcane/Salvo.lua and scores the estimate against true stacks
+--   lua tools/kairos-dump.lua apl <WoWCombatLog.txt> <SavedVariables\Kairos.lua> <player> [from [to]] [verbose]
+--       the Arcane APL on true state vs Kairos's estimates, Assisted Combat and the player's casts
+--   lua tools/kairos-dump.lua watch <WoWCombatLog.txt> <SavedVariables\Kairos.lua> <player> [auraID ...]
+--           [from [to]] [verbose]
+--       lines the recorder's watch signatures up with auras from the log (default: Overpowered
+--       Missiles, Clearcasting, Arcane Soul) and reports whether any field tracks one
 --
 -- SavedVariables live in _retail_\WTF\Account\<ACCOUNT>\SavedVariables\Kairos.lua and
 -- are written on /reload, logout or exit. Combat logs live in _retail_\Logs.
@@ -279,6 +285,17 @@ local function parseOptions(...)
     return from, to, verbose
 end
 
+--- Calls fn(clock, fields) for every combat log event the player is the source of.
+local function eachPlayerEvent(logPath, player, fn)
+    local file = io.open(logPath, "r") or fail("Can't open " .. logPath)
+    for line in file:lines() do
+        local stamp, payload = line:match("^(%S+ %S+)%s%s(.*)$")
+        local fields = payload and splitCSV(payload)
+        if fields and fields[3] and fields[3]:sub(1, #player) == player then fn(clock(stamp), fields) end
+    end
+    file:close()
+end
+
 --- Loads addon files against a minimal namespace (no WoW API needed at file scope).
 local function loadAddonFiles(paths)
     local ns = {}
@@ -389,15 +406,7 @@ local function replayArcane(logPath, player)
         }
     end
 
-    local function each(fn)
-        local file = io.open(logPath, "r") or fail("Can't open " .. logPath)
-        for line in file:lines() do
-            local stamp, payload = line:match("^(%S+ %S+)%s%s(.*)$")
-            local fields = payload and splitCSV(payload)
-            if fields and fields[3] and fields[3]:sub(1, #player) == player then fn(clock(stamp), fields) end
-        end
-        file:close()
-    end
+    local function each(fn) eachPlayerEvent(logPath, player, fn) end
 
     -- Pass 1: what the character has (talents and set bonus show up as auras or casts).
     each(function(_, f)
@@ -674,8 +683,232 @@ function commands.apl(logPath, svPath, player, ...)
     end
 end
 
+--- Auras the watch is compared with by default: Overpowered Missiles (secret in combat),
+--- plus Clearcasting and Arcane Soul as controls (the Missiles glow tracks Clearcasting).
+local WATCH_AURAS = { 1277009, A.CLEARCASTING, A.SOUL }
+local WATCH_SLACK = 0.25 -- seconds between an aura change and a field change that count as one
+
+--- Parses a watch signature ("ov=5143 tex=136096 dc=S ...") into its fields, in order.
+local function watchFields(sig)
+    local order, values = {}, {}
+    for key, value in sig:gmatch("(%w+)=(%S*)") do
+        order[#order + 1] = key
+        values[key] = value
+    end
+    return order, values
+end
+
+-- Lines the recorder's `watch` signatures (Data/Trace.lua) up with auras on the player
+-- from the combat log, field by field, over the time spent in fights: does a field change
+-- when the aura changes, and does its value tell whether the aura is up?
+function commands.watch(logPath, svPath, player, ...)
+    player = player or fail("Usage: watch <WoWCombatLog.txt> <Kairos.lua> <player> [auraID ...] [from [to]] [verbose]")
+    local auraIDs, options = {}, {}
+    for _, option in ipairs({ ... }) do
+        if option:match("^%d+$") then auraIDs[#auraIDs + 1] = tonumber(option) else options[#options + 1] = option end
+    end
+    if #auraIDs == 0 then auraIDs = WATCH_AURAS end
+    local from, to, verbose = parseOptions((table.unpack or unpack)(options))
+
+    local wanted, auraNames, changes, casts = {}, {}, {}, {}
+    for _, id in ipairs(auraIDs) do wanted[id], changes[id] = true, {} end
+    eachPlayerEvent(logPath, player, function(t, f)
+        local event, id = f[1], tonumber(f[10])
+        if event == "SPELL_CAST_SUCCESS" and id then
+            casts[#casts + 1] = { t = t, spell = id }
+        elseif id and wanted[id] and f[7] and f[7]:sub(1, #player) == player
+            and (event == "SPELL_AURA_APPLIED" or event == "SPELL_AURA_REMOVED") then
+            auraNames[id] = f[11]
+            changes[id][#changes[id] + 1] = { t = t, up = event == "SPELL_AURA_APPLIED" }
+        end
+    end)
+
+    local db = loadDB(svPath)
+    local names = spellNames(db, loadProbe())
+    local recorded = entries(db)
+    local offset, hits, recCasts = alignRecorder(recorded, casts)
+    if not offset then fail("No recorder casts to align with the log") end
+
+    -- Watch signatures per spell, and the fights, on the log's clock.
+    local watches, spellOrder, fightSpans, open = {}, {}, {}, nil
+    for _, e in ipairs(recorded) do
+        local t = e.t and e.t + offset
+        if e.k == "watch" and t and e.sig then
+            if not watches[e.spell] then
+                watches[e.spell] = {}
+                spellOrder[#spellOrder + 1] = e.spell
+            end
+            local order, values = watchFields(e.sig)
+            local list = watches[e.spell]
+            list[#list + 1] = { t = t, sig = e.sig, order = order, values = values }
+        elseif e.k == "fight" and e.phase == "start" and t then
+            open = t
+        elseif e.k == "fight" and e.phase == "end" and t and open then
+            fightSpans[#fightSpans + 1] = { open, t }
+            open = nil
+        end
+    end
+    if #spellOrder == 0 then fail("No watch entries in " .. svPath) end
+
+    --- Seconds of [a, b] spent in fights, inside the from/to window.
+    local function fightTime(a, b)
+        a, b = math.max(a, from or a), math.min(b, to or b)
+        local total = 0
+        for _, span in ipairs(fightSpans) do
+            local lo, hi = math.max(a, span[1]), math.min(b, span[2])
+            if hi > lo then total = total + hi - lo end
+        end
+        return total
+    end
+    local function inFight(t) return fightTime(t - 0.001, t + 0.001) > 0 end
+    local function auraUp(id, t)
+        local list, up = changes[id], nil
+        for _, c in ipairs(list) do
+            if c.t > t then break end
+            up = c.up
+        end
+        if up == nil then return list[1] ~= nil and not list[1].up end
+        return up
+    end
+    local function near(list, t)
+        for _, item in ipairs(list) do
+            if math.abs(item.t - t) <= WATCH_SLACK then return true end
+        end
+        return false
+    end
+
+    print(("Watch replay: recorder aligned %d/%d casts (offset %s)"):format(hits, recCasts, tostring(offset)))
+
+    for _, spell in ipairs(spellOrder) do
+        local list = watches[spell]
+        -- Watched: in a fight and the from/to window, from the spell's first signature to
+        -- the last fight end.
+        local first, last = list[1].t, fightSpans[#fightSpans] and fightSpans[#fightSpans][2] or list[#list].t
+        local function watched(t)
+            return t >= first and t <= last and (not from or t >= from) and (not to or t <= to) and inFight(t)
+        end
+        local total = fightTime(first, last)
+        local shownIn = 0
+        for _, w in ipairs(list) do if watched(w.t) then shownIn = shownIn + 1 end end
+        print("")
+        print(("%s: %d signatures, %d in fights, %.1f s of fight time watched"):format(spellLabel(names, spell),
+            #list, shownIn, total))
+        for _, id in ipairs(auraIDs) do
+            local n, upTime, auraList = 0, 0, changes[id]
+            for i, c in ipairs(auraList) do
+                if watched(c.t) then n = n + 1 end
+                if c.up then
+                    local nextT = auraList[i + 1] and auraList[i + 1].t or last
+                    upTime = upTime + fightTime(math.max(c.t, first), math.min(nextT, last))
+                end
+            end
+            print(("  %s (%d): %d changes, up %.1f s"):format(auraNames[id] or "?", id, n, upTime))
+        end
+        print("")
+        print("Each aura cell: aura changes with a field change within 0.25 s, field changes with an aura")
+        print("change within 0.25 s, and how often the field's value gives the aura's state (time-weighted,")
+        print("best mapping of value to up or down; in brackets, always guessing the more common state).")
+        print("")
+        local header, rule = { "| Field | Values in fights" }, { "|---|---" }
+        for _, id in ipairs(auraIDs) do
+            header[#header + 1] = auraNames[id] or tostring(id)
+            rule[#rule + 1] = "---"
+        end
+        print(table.concat(header, " | ") .. " |")
+        print(table.concat(rule, "|") .. "|")
+
+        local tracking = {}
+        for _, field in ipairs(list[1].order) do
+            -- Value timeline and change times of this field.
+            local fieldChanges, seen, seenOrder = {}, {}, {}
+            for i, w in ipairs(list) do
+                local value = w.values[field]
+                if i > 1 and value ~= list[i - 1].values[field] and watched(w.t) then
+                    fieldChanges[#fieldChanges + 1] = { t = w.t }
+                end
+                if watched(w.t) and not seen[value] then
+                    seen[value] = true
+                    seenOrder[#seenOrder + 1] = value == "" and '""' or value
+                end
+            end
+            local row = { "| " .. field, table.concat(seenOrder, ", ") }
+            for _, id in ipairs(auraIDs) do
+                local auraChanges, matched, ownMatched, n = {}, 0, 0, 0
+                for _, c in ipairs(changes[id]) do
+                    if watched(c.t) then
+                        n = n + 1
+                        auraChanges[#auraChanges + 1] = c
+                        if near(fieldChanges, c.t) then matched = matched + 1 end
+                    end
+                end
+                for _, c in ipairs(fieldChanges) do
+                    if near(auraChanges, c.t) then ownMatched = ownMatched + 1 end
+                end
+                -- Time-weighted value-vs-state table over every interval between breakpoints.
+                local points = { first, last }
+                for _, w in ipairs(list) do points[#points + 1] = w.t end
+                for _, c in ipairs(changes[id]) do points[#points + 1] = c.t end
+                for _, span in ipairs(fightSpans) do
+                    points[#points + 1] = span[1]
+                    points[#points + 1] = span[2]
+                end
+                table.sort(points)
+                local byValue, upTotal = {}, 0
+                for i = 1, #points - 1 do
+                    local a, b = points[i], points[i + 1]
+                    local length = (a >= first and b <= last) and fightTime(a, b) or 0
+                    if length > 0 then
+                        local mid, value = (a + b) / 2, nil
+                        for _, w in ipairs(list) do
+                            if w.t > mid then break end
+                            value = w.values[field]
+                        end
+                        local up = auraUp(id, mid)
+                        local cell = byValue[value or "?"] or { [true] = 0, [false] = 0 }
+                        byValue[value or "?"] = cell
+                        cell[up] = cell[up] + length
+                        if up then upTotal = upTotal + length end
+                    end
+                end
+                local right = 0
+                for _, cell in pairs(byValue) do right = right + math.max(cell[true], cell[false]) end
+                local accuracy = total > 0 and right / total or 0
+                local base = total > 0 and math.max(upTotal, total - upTotal) / total or 0
+                row[#row + 1] = ("%d/%d, %d/%d, %.0f%% (%.0f%%)"):format(matched, n, ownMatched, #fieldChanges,
+                    100 * accuracy, 100 * base)
+                if n > 0 and matched >= 0.8 * n and #fieldChanges > 0 and ownMatched >= 0.8 * #fieldChanges
+                    and accuracy >= 0.9 and accuracy > base then
+                    tracking[#tracking + 1] = ("%s tracks %s"):format(field, auraNames[id] or tostring(id))
+                end
+            end
+            print(table.concat(row, " | ") .. " |")
+        end
+        print("")
+        print("Tracking: " .. (#tracking > 0 and table.concat(tracking, "; ") or "no field tracks any of these auras"))
+
+        if verbose then
+            print("")
+            local timeline = {}
+            for _, w in ipairs(list) do timeline[#timeline + 1] = { t = w.t, text = "watch  " .. w.sig } end
+            for _, id in ipairs(auraIDs) do
+                for _, c in ipairs(changes[id]) do
+                    timeline[#timeline + 1] = { t = c.t, text = ("aura   %s %s"):format(auraNames[id] or id,
+                        c.up and "applied" or "removed") }
+                end
+            end
+            table.sort(timeline, function(a, b) return a.t < b.t end)
+            for _, item in ipairs(timeline) do
+                if item.t >= first - 1 and item.t <= last + 1 and (not from or item.t >= from)
+                    and (not to or item.t <= to) then
+                    print(("%s %s %s"):format(clockText(item.t), inFight(item.t) and " " or "*", item.text))
+                end
+            end
+        end
+    end
+end
+
 local command = arg and arg[1]
 if not command or not commands[command] then
-    fail("Usage: lua tools/kairos-dump.lua probes|fights|summary|events|combatlog|salvo <file> [...]")
+    fail("Usage: lua tools/kairos-dump.lua probes|fights|summary|events|combatlog|salvo|apl|watch <file> [...]")
 end
 commands[command](select(2, (table.unpack or unpack)(arg)))

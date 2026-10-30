@@ -89,7 +89,11 @@ lua tools/kairos-dump.lua salvo <WoWCombatLog.txt> <player> [from HH:MM:SS [to H
 lua tools/kairos-dump.lua apl <WoWCombatLog.txt> <Kairos.lua> <player> [from HH:MM:SS [to HH:MM:SS]] [verbose]
 ```
 
-`salvo` scores the Arcane Salvo estimator against the log's true stacks. `apl` compares, at every decision, the Arcane APL on true state, the APL with Kairos's Salvo and Cumulative Power estimates, Assisted Combat's pick and the player's cast, grouped by APL line.
+```bash
+lua tools/kairos-dump.lua watch <WoWCombatLog.txt> <Kairos.lua> <player> [auraID ...] [from HH:MM:SS [to HH:MM:SS]] [verbose]
+```
+
+`salvo` scores the Arcane Salvo estimator against the log's true stacks. `apl` compares, at every decision, the Arcane APL on true state, the APL with Kairos's Salvo and Cumulative Power estimates, Assisted Combat's pick and the player's cast, grouped by APL line. `watch` checks whether any field of the recorder's spell-watch signatures tracks a hidden aura from the log.
 
 Results worth keeping go under `docs/probe/` (probe and estimator findings) and `docs/replay/` (APL replays), named by client build and context. Probes, auto-probing and combat logging can each be turned off in the settings panel.
 

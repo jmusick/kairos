@@ -40,9 +40,10 @@ Hard lines from the spec, which no change may cross:
 - In-game data, read offline (the user doesn't need to run commands or paste reports):
   - SavedVariables: `C:\Games\World of Warcraft\_retail_\WTF\Account\ANGELUS35C\SavedVariables\Kairos.lua`, written on `/reload`, logout or exit. Check its timestamp; data from the current play session isn't there until one of those happens.
   - Combat logs: `C:\Games\World of Warcraft\_retail_\Logs\WoWCombatLog-*.txt`. Kairos turns logging on at login.
-  - `tools/kairos-dump.lua` (`probes`, `fights`, `summary`, `events`, `combatlog`, `salvo`, `apl`) reads both. Run it with the LuaLS binary if there's no `lua` on PATH.
+  - `tools/kairos-dump.lua` (`probes`, `fights`, `summary`, `events`, `combatlog`, `salvo`, `apl`, `watch`) reads both. Run it with the LuaLS binary if there's no `lua` on PATH.
   - `salvo` replays a log through `Specs/MageArcane/Salvo.lua` and scores it; rerun it on every new log before and after changing `Salvo.GAINS`, and don't tune on the log you report as validation.
   - `apl` compares the APL on the log's true state with Kairos (the APL on the Salvo and Cumulative Power estimates, each also shown alone), Assisted Combat (from the recorder) and the player's casts, per APL line. Decisions are cast starts for cast-time spells and successes otherwise; the recorder is aligned to cast successes.
+  - `watch` lines the recorder's spell-watch signatures (`Data/Trace.lua`) up with auras from the log, field by field, and reports whether any field tracks one. Pass aura IDs to check others; by default it checks Overpowered Missiles, with Clearcasting and Arcane Soul as controls.
   - To compare a trace with a combat log, align them by matching casts (recorder `t` is `GetTime()`; `at` has only one-second resolution). A Blast or Prismatic Bolt success and the next queued spell land milliseconds apart; both are real presses.
   - Open-world training dummies drop combat within seconds of a pause, even mid-channel, so one dummy session shows up as many short fights.
 - Packaging: BigWigs packager with `.pkgmeta` (`Kairos/Kairos` moves to the package root). No CI yet (D23).
