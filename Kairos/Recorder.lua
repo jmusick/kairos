@@ -3,7 +3,8 @@
 local _, Kairos = ...
 local Recorder = Kairos:NewModule("Recorder")
 
-Recorder.SIZE = 1000
+-- Fight traces add a few hundred entries per pull, so keep several pulls' worth.
+Recorder.SIZE = 5000
 
 local function buffer()
     local flight = Kairos.db.flight

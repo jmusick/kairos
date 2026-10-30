@@ -13,8 +13,9 @@ What works:
 - **Display:** a main icon, a queued icon, and an interrupt icon, with keybind text, the AC badge and a CD pip. It's always visible, movable, scalable and lockable. The queued and interrupt icons stay hidden until a Kairos APL supplies them, since Assisted Combat gives one spell.
 - **Keybinds:** default action bar slots (with paging and bonus bars), macros resolved to their spell, and per-spec manual overrides.
 - **Cooldowns toggle:** a keybind (Key Bindings > AddOns > Kairos) and `/kairos cd`. It has no effect until a Kairos APL runs, because Assisted Combat ignores it.
-- **Secrecy probe:** records which reads come back secret in the current context and renders a copyable Markdown matrix (SPEC §8.1).
-- **Flight recorder:** logs pick changes and your casts to `KairosDB` for the future replay harness.
+- **Secrecy probe:** records which reads come back secret in the current context, automatically (SPEC §8.1).
+- **Flight recorder and fight traces:** pick changes, casts, charges, glows and aura events, saved to `KairosDB` for offline analysis.
+- **Combat logging:** turned on automatically, with advanced logging.
 - **Settings:** a native Settings panel (Options > AddOns > Kairos) and per-character, per-spec profiles.
 
 ## Install for development
@@ -39,19 +40,48 @@ Turn on `/console scriptErrors 1` (or use BugSack) while testing.
 | `/kairos status` | Version, spec, profile, APL, restrictions |
 | `/kairos probe [label]` | Run the secrecy probe now |
 | `/kairos probe report [n]` | Copyable Markdown matrix of the last n runs (default 8) |
-| `/kairos probe auto on\|off` | Probe on entering combat, encounters and keystones |
+| `/kairos probe in <seconds> [label]` | Run the probe after a delay |
+| `/kairos probe auto on\|off` | Automatic probes (on by default) |
 | `/kairos probe clear` | Delete stored probe runs |
 | `/kairos recorder on\|off\|clear` | Flight recorder |
 | `/kairos config` | Open the settings panel |
 
-## Running the probe (the first real task)
+## Collecting data (no commands needed)
 
-The probe answers the questions that decide the fallback gate (SPEC §10.1): whether Arcane Charges, Arcane Salvo stacks, Arcane Soul and cooldowns are readable in combat. To collect a full matrix on 12.1.x:
+Kairos collects what the fallback gate (SPEC §10.1) needs on its own:
 
-1. Out of combat in the open world: `/kairos probe world-ooc`.
-2. In open-world combat (on a training dummy works): `/kairos probe world-combat`.
-3. Turn on `/kairos probe auto on`, then run a dungeon (M+ if possible) and a raid boss.
-4. `/kairos probe report`, copy the matrix, and commit it under `docs/probe/` with the client build in the file name.
+- **Probes** run at login, 3 s into each fight, right after each fight, and at encounter and keystone starts (throttled to once a minute per kind).
+- **Fight traces** go into the flight recorder: your casts, Arcane Charges, proc glows, in-combat aura events, and the real stacks of tracked auras (Arcane Salvo, Clearcasting, …) just before and after each fight.
+- **Combat logging** is switched on (with advanced logging) at login, so every session leaves a `WoWCombatLog` file.
+
+Just play, then `/reload` or log out so the game writes SavedVariables. The data lands in:
+
+- `C:\Games\World of Warcraft\_retail_\WTF\Account\<ACCOUNT>\SavedVariables\Kairos.lua`
+- `C:\Games\World of Warcraft\_retail_\Logs\WoWCombatLog-*.txt`
+
+Read it with the dump tool (any Lua 5.1+ interpreter, including the LuaLS binary):
+
+```bash
+lua tools/kairos-dump.lua probes <Kairos.lua> [n]
+```
+
+```bash
+lua tools/kairos-dump.lua fights <Kairos.lua> [n]
+```
+
+```bash
+lua tools/kairos-dump.lua summary <Kairos.lua>
+```
+
+```bash
+lua tools/kairos-dump.lua events <Kairos.lua>
+```
+
+```bash
+lua tools/kairos-dump.lua combatlog <WoWCombatLog.txt> <Kairos.lua> [player]
+```
+
+Results worth keeping go under `docs/probe/`, named by client build and context. Probes, auto-probing and combat logging can each be turned off in the settings panel.
 
 ## Tests
 
@@ -82,8 +112,12 @@ Without busted, the bundled runner runs the same specs on any Lua 5.1+ interpret
 | `Kairos/Assisted.lua` | Blizzard's Assisted Combat (the fallback floor) |
 | `Kairos/APL.lua` | APL runtime shell and module contract |
 | `Kairos/Recorder.lua` | Flight recorder |
+| `Kairos/Trace.lua` | Fight traces: charges, glows, aura events, stacks before and after each fight |
+| `Kairos/CombatLog.lua` | Turns on advanced combat logging |
 | `Kairos/Display.lua` | The icons |
 | `Kairos/Probe.lua` | Secrecy probe and report |
 | `Kairos/Settings.lua` | Settings panel |
 | `Kairos/Commands.lua` | Slash commands and the copy-text window |
 | `tests/` | Specs, the WoW API stub, and the fallback runner |
+| `tools/kairos-dump.lua` | Reads SavedVariables and combat logs offline |
+| `docs/probe/` | Probe results per client build and context, with findings |

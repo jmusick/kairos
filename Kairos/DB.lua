@@ -3,12 +3,20 @@
 local _, Kairos = ...
 local DB = Kairos:NewModule("DB")
 
-DB.SCHEMA = 1
+DB.SCHEMA = 2
+
+-- One-time upgrades for saved data, keyed by the schema version they bring the data to.
+-- Needed when a default changes: applyDefaults never overwrites a saved value.
+DB.MIGRATIONS = {
+    [2] = function(db) db.global.autoProbe = true end, -- auto-probe became the default
+}
 
 DB.globalDefaults = {
     recorder = true,
-    autoProbe = false,
+    autoProbe = true,
+    combatLog = true,
     updateInterval = 0.1,
+    auraIDs = {}, -- [aura name] = spell ID, learned by the probe while the aura is readable
 }
 
 DB.profileDefaults = {
@@ -64,6 +72,10 @@ function DB:OnInit()
     db.profiles = type(db.profiles) == "table" and db.profiles or {}
     db.flight = type(db.flight) == "table" and db.flight or {}
     db.probes = type(db.probes) == "table" and db.probes or {}
+    for version = db.schema + 1, DB.SCHEMA do
+        if DB.MIGRATIONS[version] then DB.MIGRATIONS[version](db) end
+    end
+    db.schema = DB.SCHEMA
     Kairos.db = db
     -- Placeholder until PLAYER_LOGIN, when the character and spec are known.
     Kairos.profile = applyDefaults({}, self.profileDefaults)

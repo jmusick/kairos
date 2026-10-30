@@ -16,6 +16,8 @@ Toggles.lua
 Assisted.lua
 APL.lua
 Recorder.lua
+Trace.lua
+CombatLog.lua
 Display.lua
 Probe.lua
 Settings.lua

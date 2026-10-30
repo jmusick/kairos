@@ -63,9 +63,17 @@ function SettingsPanel:OnLogin()
         true, function() return Kairos.db.global.recorder end,
         function(value) Kairos.db.global.recorder = value end)
     self:AddCheckbox("AUTO_PROBE", "Auto-probe",
-        "Runs the secrecy probe on entering combat, encounters and keystones. Account-wide.",
-        false, function() return Kairos.db.global.autoProbe end,
+        "Runs the secrecy probe at login, early in and right after each fight, and at encounter and keystone "
+            .. "starts. Account-wide.",
+        true, function() return Kairos.db.global.autoProbe end,
         function(value) Kairos.db.global.autoProbe = value end)
+    self:AddCheckbox("COMBAT_LOG", "Combat logging",
+        "Turns on combat logging (with advanced logging) at login, writing to _retail_\\Logs. Account-wide.",
+        true, function() return Kairos.db.global.combatLog end,
+        function(value)
+            Kairos.db.global.combatLog = value
+            Kairos.CombatLog:Ensure()
+        end)
 
     Settings.RegisterAddOnCategory(self.category)
 end

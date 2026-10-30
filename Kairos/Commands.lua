@@ -13,8 +13,9 @@ local HELP = {
     "/kairos why - explain the current pick",
     "/kairos status - version, spec, profile and restrictions",
     "/kairos probe - run the secrecy probe now",
+    "/kairos probe in <seconds> [label] - run the probe after a delay (start fighting first)",
     "/kairos probe report [n] - copyable matrix of the last n runs",
-    "/kairos probe auto on|off - probe on combat, encounters and keystones",
+    "/kairos probe auto on|off - automatic probes (on by default)",
     "/kairos probe clear - delete stored probe runs",
     "/kairos recorder on|off|clear - flight recorder",
     "/kairos config - open the settings panel",
@@ -99,6 +100,14 @@ function Commands:Probe(rest)
         Kairos.Probe:RunAndReport("manual")
     elseif sub == "report" then
         Kairos:ShowText("Kairos probe report (Ctrl+C to copy)", Kairos.Probe.Report(Kairos.db.probes, tonumber(arg)))
+    elseif sub == "in" then
+        local seconds, label = arg:match("^(%d+)%s*(.-)$")
+        seconds = tonumber(seconds)
+        if not seconds or seconds < 1 or seconds > 300 then
+            Kairos:Print("Usage: /kairos probe in <1-300 seconds> [label]")
+            return
+        end
+        Kairos.Probe:Schedule(seconds, label ~= "" and label or ("in " .. seconds .. "s"))
     elseif sub == "auto" then
         if arg == "on" or arg == "off" then Kairos.db.global.autoProbe = arg == "on" end
         Kairos:Print("Auto-probe is %s.", Kairos.db.global.autoProbe and "on" or "off")

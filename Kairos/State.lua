@@ -35,11 +35,16 @@ function State:UpdateCast(channel)
     end
 end
 
---- known(true/false) when GetUnitSpeed is readable, else unknown.
+State.movingByEvent = nil -- from PLAYER_STARTED/STOPPED_MOVING; nil until one fires
+State.moveEvents = 0      -- movement events since combat start (the probe reports it)
+
+--- known(true/false) from GetUnitSpeed, which is secret in combat on 12.1.5. Falls back
+--- to the movement events, estimated until the probe shows they fire in combat.
 function State:Moving()
     local speed = Signal.Read(GetUnitSpeed, "player")
-    if speed.state ~= "known" then return speed end
-    return Signal.Known((speed.value or 0) > 0)
+    if speed.state == "known" then return Signal.Known((speed.value or 0) > 0) end
+    if self.movingByEvent ~= nil then return Signal.Estimated(self.movingByEvent) end
+    return speed
 end
 
 --- Count of hostile, in-combat enemy nameplates (D24). Unknown if any read is secret.
@@ -71,7 +76,17 @@ function State:OnInit()
         Kairos:OnUnit(event, "player", function() self:UpdateCast(true) end)
     end
 
+    Kairos:On("PLAYER_STARTED_MOVING", function()
+        self.movingByEvent = true
+        self.moveEvents = self.moveEvents + 1
+    end)
+    Kairos:On("PLAYER_STOPPED_MOVING", function()
+        self.movingByEvent = false
+        self.moveEvents = self.moveEvents + 1
+    end)
+
     Kairos:On("PLAYER_REGEN_DISABLED", function()
+        self.moveEvents = 0
         self.inCombat = true
         Kairos:Fire("KAIROS_COMBAT_CHANGED", true)
     end)

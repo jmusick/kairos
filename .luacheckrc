@@ -18,10 +18,14 @@ read_globals = {
     "issecretvalue", "securecallfunction", "InCombatLockdown",
     "GetActionBarPage", "GetActionInfo", "GetBindingKey", "GetBonusBarOffset", "GetBuildInfo", "GetCVar",
     "GetInstanceInfo", "GetMacroSpell", "GetNormalizedRealmName", "GetSpecialization",
-    "GetSpecializationInfo", "GetTime", "GetUnitSpeed", "IsInInstance",
+    "GetSpecializationInfo", "GetTime", "GetUnitSpeed", "GetHaste", "IsInInstance", "IsPlayerMoving",
+    "UnitThreatSituation", "LoggingCombat", "C_CVar",
     "UnitAffectingCombat", "UnitCanAttack", "UnitCastingInfo", "UnitChannelInfo", "UnitExists", "UnitGUID",
     "UnitHealth", "UnitHealthMax", "UnitName", "UnitPower", "UnitPowerMax", "UnitPowerType", "UnitSpellHaste",
 }
+
+-- The dump tool defines no globals but reads the one SavedVariables defines.
+files["tools/"] = { read_globals = { "KairosDB" } }
 
 -- Specs replace WoW globals through the stub, and the runner defines busted's API.
 files["tests/"] = {

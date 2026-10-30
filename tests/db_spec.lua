@@ -33,6 +33,21 @@ describe("DB profiles", function()
         assert.are.equal(62, Kairos.specID)
     end)
 
+    it("migrates schema 1 data: auto-probe turns on once", function()
+        Stub.LoadAddon({
+            beforeLoad = function() KairosDB = { schema = 1, global = { autoProbe = false } } end,
+        })
+        assert.is_true(KairosDB.global.autoProbe)
+        assert.are.equal(2, KairosDB.schema)
+    end)
+
+    it("leaves a choice made after the migration alone", function()
+        Stub.LoadAddon({
+            beforeLoad = function() KairosDB = { schema = 2, global = { autoProbe = false } } end,
+        })
+        assert.is_false(KairosDB.global.autoProbe)
+    end)
+
     it("fills new defaults into saved data without overwriting it", function()
         Stub.LoadAddon({
             beforeLoad = function()
