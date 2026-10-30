@@ -158,6 +158,56 @@ function Trace:FightEnd()
     end)
 end
 
+-- Spell watch. For the spec's `watch` spells, records what the client shows on the spell
+-- and its action button whenever any of it changes, as one signature string. Offline,
+-- `tools/kairos-dump.lua watch` lines the signatures up with hidden auras from the combat
+-- log (Overpowered Missiles) to find out whether a secret proc changes anything visible.
+Trace.watched = {}
+Trace.watchSlots = {}
+
+--- A reading as text: the value, "S" if secret, "E" on error, "-" if the API is missing.
+local function shown(fn, ...)
+    if type(fn) ~= "function" then return "-" end
+    local ok, value = pcall(fn, ...)
+    if not ok then return "E" end
+    if issecretvalue(value) then return "S" end
+    return tostring(value)
+end
+
+function Trace:WatchSlot(spellID)
+    if self.watchSlots[spellID] == nil then
+        local slots = Signal.Read(C_ActionBar and C_ActionBar.FindSpellActionButtons, spellID)
+        local slot = slots.state == "known" and type(slots.value) == "table" and slots.value[1]
+        self.watchSlots[spellID] = (type(slot) == "number" and not issecretvalue(slot)) and slot or false
+    end
+    return self.watchSlots[spellID] or nil
+end
+
+function Trace:Watch()
+    local spec = Kairos:CurrentSpec()
+    if not (spec and spec.watch) then return end
+    local spells, bar = C_Spell or {}, C_ActionBar or {}
+    local overlay = C_SpellActivationOverlay and C_SpellActivationOverlay.IsSpellOverlayed
+    for _, spellID in ipairs(spec.watch) do
+        local slot = self:WatchSlot(spellID)
+        local signature = table.concat({
+            "ov=" .. shown(spells.GetOverrideSpell, spellID),
+            "tex=" .. shown(spells.GetSpellTexture, spellID),
+            "dc=" .. shown(spells.GetSpellDisplayCount, spellID),
+            "cc=" .. shown(spells.GetSpellCastCount, spellID),
+            "glow=" .. shown(overlay, spellID),
+            "slot=" .. tostring(slot or "-"),
+            "atex=" .. (slot and shown(bar.GetActionTexture, slot) or "-"),
+            "adc=" .. (slot and shown(bar.GetActionDisplayCount, slot) or "-"),
+            "atext=" .. (slot and shown(bar.GetActionText, slot) or "-"),
+        }, " ")
+        if signature ~= self.watched[spellID] then
+            self.watched[spellID] = signature
+            Kairos.Recorder:Push({ k = "watch", spell = spellID, sig = signature })
+        end
+    end
+end
+
 function Trace:OnInit()
     Kairos:OnUnit("UNIT_AURA", "player", function(_, _, updateInfo)
         if Kairos.State.inCombat then
@@ -165,15 +215,27 @@ function Trace:OnInit()
         else
             self:Refresh()
         end
+        -- Aura events still fire in combat when a secret proc is applied: check the watch.
+        self:Watch()
     end)
     Kairos:On("KAIROS_COMBAT_CHANGED", function(_, inCombat)
         if inCombat then self:FightStart() else self:FightEnd() end
     end)
     Kairos:On("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW", function(_, spellID)
         if not issecretvalue(spellID) then Kairos.Recorder:Push({ k = "glow", spell = spellID, on = true }) end
+        self:Watch()
     end)
     Kairos:On("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE", function(_, spellID)
         if not issecretvalue(spellID) then Kairos.Recorder:Push({ k = "glow", spell = spellID, on = false }) end
+        self:Watch()
+    end)
+    for _, event in ipairs({ "KAIROS_PLAYER_CAST", "SPELL_UPDATE_ICON", "ACTIONBAR_UPDATE_STATE" }) do
+        Kairos:On(event, function() self:Watch() end)
+    end
+    Kairos:On("ACTIONBAR_SLOT_CHANGED", function() self.watchSlots = {} end)
+    Kairos:On("KAIROS_PROFILE_CHANGED", function()
+        self.watchSlots = {}
+        self.watched = {}
     end)
     Kairos:OnUnit("UNIT_POWER_UPDATE", "player", function(_, _, powerType)
         if issecretvalue(powerType) or powerType ~= "ARCANE_CHARGES" then return end

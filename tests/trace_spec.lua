@@ -98,6 +98,22 @@ describe("Trace", function()
         assert.are.equal(0, Trace.events.errors)
     end)
 
+    it("records the watched spell's visible state only when it changes", function()
+        local override = 5143
+        C_Spell.GetOverrideSpell = function() return override end
+        C_Spell.GetSpellCastCount = function() return Stub.Secret() end
+        Kairos.Trace.watched = {}
+        Stub.Fire("UNIT_SPELLCAST_SUCCEEDED", "player", "c1", 5143)
+        Stub.Fire("UNIT_AURA", "player", Stub.Secret())
+        override = 9999
+        Stub.Fire("UNIT_AURA", "player", Stub.Secret())
+        local watches = traced("watch")
+        assert.are.equal(2, #watches)
+        assert.matches("ov=5143", watches[1].sig)
+        assert.matches("cc=S", watches[1].sig)
+        assert.matches("ov=9999", watches[2].sig)
+    end)
+
     it("traces glows and Arcane Charges changes", function()
         Stub.Fire("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW", 44425)
         Stub.Fire("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE", 44425)

@@ -104,6 +104,7 @@ local function describe(entry, names)
     if k == "cast" then return "cast   " .. spellLabel(names, entry.spell) end
     if k == "ac" then return "charges " .. tostring(entry.n) end
     if k == "cp" then return ("cumpow %s %s"):format(tostring(entry.n), tostring(entry.why)) end
+    if k == "watch" then return ("watch  %s %s"):format(spellLabel(names, entry.spell), tostring(entry.sig)) end
     if k == "salvo" then
         return ("salvo  %s (%s-%s) %s"):format(tostring(entry.v), tostring(entry.lo), tostring(entry.hi),
             tostring(entry.why))

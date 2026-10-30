@@ -21,6 +21,11 @@ Kairos:NewSpec(62, {
         powers = { "Mana", "ArcaneCharges" },
     },
 
+    -- Spells whose visible state Trace records whenever it changes (override, icon, counts,
+    -- glow, and their action button). Arcane Missiles: to learn whether the secret
+    -- Overpowered Missiles proc changes anything the client shows.
+    watch = { 5143 },
+
     -- Aura spell IDs, which often differ from the spell that applies them (Arcane Surge
     -- casts 365350, its buff is 365362). IDs learned in game win over these.
     auraIDs = {
