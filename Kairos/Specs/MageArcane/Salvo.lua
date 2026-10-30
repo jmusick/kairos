@@ -28,6 +28,7 @@ Salvo.GAINS = {
 -- During Arcane Soul, Barrage adds Salvo instead of consuming it.
 Salvo.SOUL_BARRAGE = { 5, 5, 6 }
 Salvo.CHANNEL = 1.7 -- typical full Missiles channel when the client doesn't give the end time
+Salvo.CHAIN_GAP = 0.1 -- a channel opened this recently belongs to the cast event at hand
 
 -- Arcane Soul starts when Arcane Surge's buff ends, 17.3-17.5 s after the Surge cast, and
 -- lasts 4.0-4.1 s (three cycles in the 12.1.5 logs). It's timed from the cast, with a
@@ -92,8 +93,16 @@ local function add(self, gain)
     self.exact = false
 end
 
+--- Whether a Missiles channel was opened (by its CHANNEL_START) within CHAIN_GAP of t.
+function Salvo:FreshChannel(t)
+    return self.channel ~= nil and t - self.channel.start <= self.CHAIN_GAP
+end
+
 function Salvo:OnCast(spellID, t)
     self:Settle(t)
+    -- The channel this Missiles cast belongs to may already be open (CHANNEL_START can
+    -- arrive first); don't close it at zero length.
+    if spellID == self.MISSILES and self:FreshChannel(t) then return end
     self:CommitChannel(t)
     if spellID == self.BARRAGE then
         if self:InSoul(t) then
@@ -112,10 +121,16 @@ function Salvo:OnCast(spellID, t)
     end
 end
 
---- The client's channel end time, when readable, replaces the typical length.
+--- The client's channel end time, when readable, replaces the typical length. A chained
+--- Missiles (recast mid-channel) fires its CHANNEL_START before its cast event, while the
+--- old channel is still open: close the old one first, or it inherits the new end time.
 function Salvo:OnChannelStart(spellID, t, finish)
     if spellID ~= self.MISSILES then return end
-    if not self.channel then self.channel = { start = t } end
+    if self.channel and not self:FreshChannel(t) then self:CommitChannel(t) end
+    if not self.channel then
+        self.channel = { start = t }
+        self.exact = false
+    end
     self.channel.finish = finish or (self.channel.start + self.CHANNEL)
 end
 

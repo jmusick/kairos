@@ -43,6 +43,22 @@ describe("Salvo estimator", function()
         assert.are.equal(gain, (Salvo:Estimate(20)))
     end)
 
+    it("handles a chained Missiles whose CHANNEL_START arrives before its cast", function()
+        local gain = Salvo.GAINS[MISSILES][1]
+        Salvo:OnCast(BARRAGE, 0)
+        -- First channel: start, then cast event (either order is possible).
+        Salvo:OnChannelStart(MISSILES, 10, 10 + Salvo.CHANNEL)
+        Salvo:OnCast(MISSILES, 10.01)
+        -- Chained recast at the channel's end: the new CHANNEL_START comes first.
+        local chain = 10 + Salvo.CHANNEL
+        Salvo:OnChannelStart(MISSILES, chain, chain + Salvo.CHANNEL)
+        assert.are.equal(gain, (Salvo:Estimate(chain)))
+        Salvo:OnCast(MISSILES, chain + 0.01)
+        assert.are.equal(gain, (Salvo:Estimate(chain + 0.01)))
+        Salvo:OnChannelStop(chain + Salvo.CHANNEL)
+        assert.are.equal(2 * gain, (Salvo:Estimate(chain + Salvo.CHANNEL)))
+    end)
+
     it("counts only the channelled part of a clipped Missiles", function()
         Salvo:OnCast(BARRAGE, 0)
         Salvo:OnCast(MISSILES, 10)

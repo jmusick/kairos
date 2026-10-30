@@ -6,6 +6,7 @@ All notable changes to Kairos are documented here. The format follows [Keep a Ch
 
 ### Fixed
 
+- Chained Arcane Missiles (recast mid-channel) no longer halve the Salvo and Cumulative Power estimates in game. The new channel's start event arrives before its cast event and used to give the still-open channel the new end time.
 - Auto-probing stayed off for existing installs because the saved setting kept the old default. A one-time SavedVariables migration (schema 2) turns it on.
 - The end-of-fight trace marker is written immediately. Previously it was delayed and could land in the next fight when combat restarted quickly. The after-fight aura read is now a separate `after` entry.
 - The probe checks aura secrecy against each aura's own spell ID instead of the ID of the spell that applies it, and shows which ID it used.

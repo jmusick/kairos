@@ -14,6 +14,7 @@ CumulativePower.SPEC = 62
 CumulativePower.MAX = 8
 CumulativePower.DURATION = 12
 CumulativePower.CHANNEL = 1.7 -- typical full Missiles channel when the client doesn't give the end time
+CumulativePower.CHAIN_GAP = 0.1 -- a channel opened this recently belongs to the cast event at hand
 
 CumulativePower.MISSILES = 5143
 CumulativePower.CONSUMERS = { [30451] = true, [1295924] = true } -- Arcane Blast, Prismatic Bolt
@@ -59,8 +60,16 @@ function CumulativePower:CommitChannel(t)
     self.channel = nil
 end
 
+--- Whether a Missiles channel was opened (by its CHANNEL_START) within CHAIN_GAP of t.
+function CumulativePower:FreshChannel(t)
+    return self.channel ~= nil and t - self.channel.start <= self.CHAIN_GAP
+end
+
 function CumulativePower:OnCast(spellID, t)
     self:Expire(t)
+    -- The channel this Missiles cast belongs to may already be open (CHANNEL_START can
+    -- arrive first); don't close it at zero length.
+    if spellID == self.MISSILES and self:FreshChannel(t) then return end
     self:CommitChannel(t)
     if self.CONSUMERS[spellID] then
         if self.stacks >= self.MAX - 0.5 then
@@ -73,9 +82,15 @@ function CumulativePower:OnCast(spellID, t)
     end
 end
 
+--- A chained Missiles fires its CHANNEL_START before its cast event, while the old
+--- channel is still open: close the old one first (see Salvo.lua).
 function CumulativePower:OnChannelStart(spellID, t, finish)
     if spellID ~= self.MISSILES then return end
-    if not self.channel then self.channel = { start = t } end
+    if self.channel and not self:FreshChannel(t) then self:CommitChannel(t) end
+    if not self.channel then
+        self.channel = { start = t }
+        self.exact = false
+    end
     self.channel.finish = finish or (self.channel.start + self.CHANNEL)
 end
 

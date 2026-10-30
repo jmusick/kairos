@@ -29,6 +29,18 @@ describe("Cumulative Power estimator", function()
         assert.are.equal(8, Power:Estimate(6))
     end)
 
+    it("handles a chained Missiles whose CHANNEL_START arrives before its cast", function()
+        Power:OnChannelStart(MISSILES, 0, Power.CHANNEL / 2)
+        Power:OnCast(MISSILES, 0.01)
+        local chain = Power.CHANNEL / 2
+        Power:OnChannelStart(MISSILES, chain, chain + Power.CHANNEL)
+        assert.are.equal(8, Power:Estimate(chain)) -- the first channel ran its full (short) length
+        Power:OnCast(MISSILES, chain + 0.01)
+        assert.are.equal(8, Power:Estimate(chain + 0.5))
+        Power:OnCast(BLAST, chain + 3)
+        assert.are.equal(0, Power:Estimate(chain + 3))
+    end)
+
     it("is consumed at 8 by Arcane Blast or Prismatic Bolt, not below 8", function()
         Power:OnCast(MISSILES, 0)
         Power:OnChannelStop(Power.CHANNEL / 2)
