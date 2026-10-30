@@ -15,7 +15,7 @@ local Arcane = {
     spec = 62,
 }
 
-local MISSILES, BLAST, BARRAGE, ORB, PULSE = 5143, 30451, 44425, 153626, 260364
+local MISSILES, BLAST, BARRAGE, ORB, PULSE = 5143, 30451, 44425, 153626, 1241462
 local BOLT, SURGE, TOUCH = 1295924, 365350, 321507
 Arcane.SPELLS = {
     MISSILES = MISSILES, BLAST = BLAST, BARRAGE = BARRAGE, ORB = ORB, PULSE = PULSE,
@@ -54,7 +54,9 @@ function Arcane:Evaluate(s)
     local clearcasting = s.clearcasting > 0
 
     -- cooldowns
-    if has(s, SURGE) and s.ready[SURGE] and (s.lustrousGleam >= 2 or s.lustrousGleam == 0) then
+    -- User-requested alignment guard (D37), shared with metadata availability.
+    if has(s, SURGE) and s.ready[SURGE] and has(s, TOUCH) and s.ready[TOUCH]
+        and (s.lustrousGleam >= 2 or s.lustrousGleam == 0) then
         return pick(SURGE, "cooldowns:arcane_surge")
     end
 

@@ -6,6 +6,8 @@ local HELP = {
     "/kairos lock | unlock - lock or unlock the display",
     "/kairos reset - move the display back to the default spot",
     "/kairos scale <0.5-2> - set the display scale",
+    "/kairos position <x> <y> - position relative to screen center (right/up positive)",
+    "/kairos enable | disable - show or hide Kairos and resume or suspend recommendations",
     "/kairos cd [on|off] - flip or set the Cooldowns toggle",
     "/kairos bind <spell> <text> - override a spell's keybind text",
     "/kairos unbind <spell> - remove an override",
@@ -73,6 +75,7 @@ local REASONS = {
 }
 
 function Commands:Why()
+    if not Kairos.db.global.enabled then Kairos:Print("Kairos is disabled. /kairos enable to resume."); return end
     local rec = Kairos.Display.current or Kairos.APL:Recommend()
     if rec.source == "apl" then
         Kairos:Print("%s, from %s", Kairos.SpellName(rec.spellID), rec.line or "an unnamed APL line")
@@ -83,6 +86,13 @@ function Commands:Why()
     end
     if rec.reason == "error" and Kairos.APL.lastError then
         Kairos:Print("APL error: %s", Kairos.APL.lastError)
+    end
+    if rec.unknownFields then Kairos:Print("Uncertain fields: %s", rec.unknownFields) end
+    if rec.offGcdID then
+        Kairos:Print("Use now: %s (%s).", Kairos.SpellName(rec.offGcdID), rec.offGcdLabel or "off-GCD")
+    end
+    if rec.pairedID then
+        Kairos:Print("Follow immediately with %s (%s).", Kairos.SpellName(rec.pairedID), rec.pairedLabel or "paired")
     end
 end
 
@@ -137,6 +147,19 @@ function Commands:Handle(input)
     if command == "" or command == "help" then
         Kairos:Print("v%s commands:", Kairos.version)
         for _, line in ipairs(HELP) do DEFAULT_CHAT_FRAME:AddMessage("  " .. line) end
+    elseif command == "enable" or command == "on" or command == "disable" or command == "off" then
+        local enabled = command == "enable" or command == "on"
+        Kairos.Display:SetEnabled(enabled)
+        Kairos:Print("Kairos %s.", enabled and "enabled" or "disabled")
+    elseif command == "position" or command == "pos" then
+        local x, y = rest:match("^(%S+)%s+(%S+)$")
+        x, y = tonumber(x), tonumber(y)
+        if not x or not y or x ~= x or y ~= y or math.abs(x) > 10000 or math.abs(y) > 10000 then
+            Kairos:Print("Usage: /kairos position <x> <y> (screen center; right/up positive)")
+            return
+        end
+        Kairos.Display:SetPosition(x, y)
+        Kairos:Print("Position: x %.1f, y %.1f (screen center).", x, y)
     elseif command == "lock" then
         setLocked(true)
     elseif command == "unlock" then

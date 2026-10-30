@@ -162,4 +162,22 @@ describe("CombatLog", function()
         Kairos.CombatLog:Ensure()
         assert.is_false(logging)
     end)
+
+    it("re-enables logging at the next pull or encounter when another addon stopped it", function()
+        Stub.Fire("PLAYER_REGEN_DISABLED")
+        assert.is_true(logging)
+        logging = false
+        Stub.Fire("ENCOUNTER_START", 1, "Boss")
+        assert.is_true(logging)
+        logging = false
+        KairosDB.global.combatLog = false
+        Stub.Fire("ENCOUNTER_START", 1, "Boss")
+        assert.is_false(logging)
+    end)
+
+    it("does not compare secret logging or CVar reads", function()
+        LoggingCombat = function() return Stub.Secret() end
+        C_CVar.GetCVar = function() return Stub.Secret() end
+        assert.has_no_error(function() Kairos.CombatLog:Ensure() end)
+    end)
 end)

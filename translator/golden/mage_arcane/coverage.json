@@ -2133,7 +2133,7 @@
     "Kind": "binding",
     "Text": "cooldown.arcane_pulse.ready",
     "Status": "bound",
-    "Detail": "N(has(s, 260364) and s.ready[260364])"
+    "Detail": "N(has(s, 1241462) and s.ready[1241462])"
   },
   {
     "Number": 47,
@@ -2877,7 +2877,7 @@
     "Kind": "binding",
     "Text": "cooldown.arcane_pulse.charges_fractional",
     "Status": "bound",
-    "Detail": "(s.chargesFractional[260364] or 0)"
+    "Detail": "(s.chargesFractional[1241462] or 0)"
   },
   {
     "Number": 60,

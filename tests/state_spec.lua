@@ -18,6 +18,7 @@ describe("State", function()
 
     it("falls back to movement events when speed is secret", function()
         GetUnitSpeed = function() return Stub.Secret() end
+        State.movingByEvent = nil -- exercise a login where no readable speed was available
         assert.are.equal("unknown", State:Moving().state)
         Stub.Fire("PLAYER_STARTED_MOVING")
         local moving = State:Moving()

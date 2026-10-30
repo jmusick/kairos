@@ -41,8 +41,8 @@ end
 
 --- Reads tbl[key] from a returned info table whose fields may be secret.
 function Signal.ReadField(tbl, key)
-    if tbl == nil then return Signal.Unknown("missing") end
     if issecretvalue(tbl) then return Signal.Unknown("secret") end
+    if tbl == nil then return Signal.Unknown("missing") end
     local ok, value = pcall(function() return tbl[key] end)
     if not ok then return Signal.Unknown("error") end
     if issecretvalue(value) then return Signal.Unknown("secret") end

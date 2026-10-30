@@ -38,21 +38,48 @@ end
 function Recorder:Clear()
     Kairos.db.flight = {}
     self.last = nil
+    self.lastAC = nil
 end
 
 function Recorder:NoteRecommendation(rec)
+    -- Preserve the AC baseline while Kairos supplies the displayed recommendation.
+    -- observed entries never replace the displayed pick in the offline scorer.
+    if rec.source == "apl" then
+        local ac = Kairos.Assisted:NextSpell()
+        if ac ~= self.lastAC then
+            self.lastAC = ac
+            self:Push({ k = "pick", src = "ac", spell = ac, observed = true,
+                combat = Kairos.State.inCombat or nil })
+        end
+    elseif rec.source == "ac" then
+        self.lastAC = rec.spellID
+    else
+        self.lastAC = nil
+    end
     local last = self.last
     if last and last.source == rec.source and last.spellID == rec.spellID
-        and last.queuedID == rec.queuedID and last.reason == rec.reason then
+        and last.queuedID == rec.queuedID and last.reason == rec.reason and last.label == rec.label
+        and last.offGcdID == rec.offGcdID and last.offGcdLabel == rec.offGcdLabel
+        and last.unknownFields == rec.unknownFields and last.immediate == rec.immediate
+        and last.queuedLabel == rec.queuedLabel
+        and last.pairedID == rec.pairedID and last.pairedLabel == rec.pairedLabel then
         return
     end
     self.last = rec
     self:Push({
         k = "pick",
-        src = rec.source,
+        src = rec.source == "apl" and "kairos" or rec.source,
         spell = rec.spellID,
         queued = rec.queuedID,
         why = rec.reason,
+        label = rec.label,
+        offGcd = rec.offGcdID,
+        offGcdLabel = rec.offGcdLabel,
+        fields = rec.unknownFields,
+        immediate = rec.immediate,
+        queuedLabel = rec.queuedLabel,
+        paired = rec.pairedID,
+        pairedLabel = rec.pairedLabel,
         combat = Kairos.State.inCombat or nil,
     })
 end
@@ -65,5 +92,6 @@ function Recorder:OnInit()
         local _, build = GetBuildInfo()
         self:Push({ k = "session", char = charKey, spec = specID, build = build, ver = Kairos.version, at = time() })
         self.last = nil
+        self.lastAC = nil
     end)
 end

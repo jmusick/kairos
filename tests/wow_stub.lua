@@ -41,6 +41,7 @@ local function newFrame(name)
     frame.scripts = {}
     frame.events = {}
     frame.unitEvents = {}
+    frame.KairosCoordinateEdit = false
     function frame:SetScript(script, fn) self.scripts[script] = fn end
     function frame:GetScript(script) return self.scripts[script] end
     function frame:RegisterEvent(event) self.events[event] = true end
@@ -90,6 +91,16 @@ function Stub.Install()
     Stub.macros = {}        -- [macroIndex] = spellID
     Stub.spellNames = {}    -- [spellID] = name
     Stub.acSpell = nil
+    Stub.knownSpells = {}
+    Stub.overlays = {}
+    Stub.cooldowns = {}
+    Stub.charges = {}
+    Stub.auras = {}
+    Stub.overrides = {}
+    Stub.castTimes = {}
+    Stub.inventory = {}
+    Stub.itemSets = {}
+    Stub.itemMissing = {}
     Stub.specIndex = 1
     Stub.specs = { [1] = 62, [2] = 63, [3] = 64 }
     Stub.page = 1
@@ -108,12 +119,15 @@ function Stub.Install()
     _G.UIParent = newFrame("UIParent")
     _G.DEFAULT_CHAT_FRAME = { AddMessage = function(_, msg) Stub.chat[#Stub.chat + 1] = msg end }
     _G.Settings = nil
+    _G.MinimalSliderWithSteppersMixin = nil
+    _G.LoggingCombat = nil
+    _G.C_CVar = nil
     _G.C_Timer = { After = function(delay, fn) Stub.timers[#Stub.timers + 1] = { delay = delay, fn = fn } end }
 
     _G.Enum = {
         AddOnRestrictionType = { Combat = 0, Encounter = 1, ChallengeMode = 2, PvPMatch = 3, Map = 4, Chat = 5 },
         AddOnRestrictionState = { Inactive = 0, Activating = 1, Active = 2 },
-        PowerType = { Mana = 0, Rage = 1, Energy = 3, ArcaneCharges = 16 },
+        PowerType = { Mana = 0, Rage = 1, Energy = 3, SoulShards = 7, ArcaneCharges = 16 },
     }
     Stub.restrictions = {}
     _G.C_RestrictedActions = {
@@ -123,6 +137,7 @@ function Stub.Install()
         HasSecretRestrictions = function() return true end,
         ShouldCooldownsBeSecret = function() return false end,
         ShouldAurasBeSecret = function() return false end,
+        ShouldSpellAuraBeSecret = function() return false end,
         GetSpellCooldownSecrecy = function() return 2 end,
     }
     _G.C_AddOns = { GetAddOnMetadata = function() return "0.1.0-test" end }
@@ -147,6 +162,13 @@ function Stub.Install()
     _G.UnitHealth = function() return 1000 end
     _G.UnitHealthMax = function() return 1000 end
     _G.UnitExists = function() return true end
+    _G.UnitIsDeadOrGhost = function() return false end
+    _G.GetInventoryItemID = function(_, slot) return Stub.inventory[slot] end
+    _G.C_Item = { GetItemInfo = function(id)
+        if Stub.itemMissing[id] then return nil end
+        local info = { [1] = "Test item", [16] = Stub.itemSets[id] }
+        return (table.unpack or unpack)(info, 1, 16)
+    end }
     _G.UnitGUID = function() return "Creature-0" end
     _G.UnitSpellHaste = function() return 20 end
     _G.GetCVar = function() return "400" end
@@ -163,15 +185,21 @@ function Stub.Install()
 
     _G.C_Spell = {
         GetSpellName = function(id) return Stub.spellNames[id] end,
-        GetSpellTexture = function(id) return 1000 + id end,
+        GetSpellTexture = function(id) return 1000 + id, 1000 + id end,
+        GetSpellInfo = function(id)
+            if Stub.castTimes[id] then return { spellID = id, castTime = Stub.castTimes[id] } end
+        end,
+        GetOverrideSpell = function(id) return Stub.overrides[id] or id end,
         IsSpellUsable = function() return true, false end,
         GetSpellIDForSpellIdentifier = function(name)
             for id, spellName in pairs(Stub.spellNames) do
                 if spellName == name then return id end
             end
         end,
-        GetSpellCooldown = function() return { startTime = 0, duration = 0, isEnabled = true, modRate = 1 } end,
-        GetSpellCharges = function() return nil end,
+        GetSpellCooldown = function(id)
+            return Stub.cooldowns[id] or { startTime = 0, duration = 0, isEnabled = true, modRate = 1 }
+        end,
+        GetSpellCharges = function(id) return Stub.charges[id] end,
         IsSpellInRange = function() return true end,
         GetSpellQueueWindow = function() return 400 end,
     }
@@ -180,8 +208,14 @@ function Stub.Install()
         IsAvailable = function() return true, "" end,
         GetRotationSpells = function() return {} end,
     }
-    _G.C_UnitAuras = { GetAuraDataBySpellName = function() return nil end }
-    _G.C_SpellActivationOverlay = { IsSpellOverlayed = function() return false end }
+    _G.C_SpellBook = { IsSpellKnown = function(id) return Stub.knownSpells[id] or false end }
+    _G.IsPlayerSpell = nil
+    _G.IsSpellKnown = nil
+    _G.C_UnitAuras = {
+        GetAuraDataBySpellName = function(_, name) return Stub.auras[name] end,
+        GetPlayerAuraBySpellID = function(id) return Stub.auras[id] end,
+    }
+    _G.C_SpellActivationOverlay = { IsSpellOverlayed = function(id) return Stub.overlays[id] or false end }
     _G.C_ChallengeMode = { IsChallengeModeActive = function() return false end }
 end
 

@@ -5,7 +5,7 @@
 -- Each pick is { spellID, line = the SimC line, label = list:action (clause i/k) }.
 local _, Kairos = ...
 local APL = { name = "mage_arcane sunfury (generated)", simc = "515f4a3fe9", spec = 62 }
-APL.SPELLS = { MISSILES = 5143, BLAST = 30451, BARRAGE = 44425, ORB = 153626, PULSE = 260364, BOLT = 1295924, SURGE = 365350, TOUCH = 321507 }
+APL.SPELLS = { MISSILES = 5143, BLAST = 30451, BARRAGE = 44425, ORB = 153626, PULSE = 1241462, BOLT = 1295924, SURGE = 365350, TOUCH = 321507 }
 local function T(v) return v ~= nil and v ~= false and v ~= 0 end
 local function N(v) return T(v) and 1 or 0 end
 local function V(v) if type(v) == "number" then return v end return N(v) end

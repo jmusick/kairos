@@ -5,7 +5,7 @@
 -- Each pick is { spellID, line = the SimC line, label = list:action (clause i/k) }.
 local _, Kairos = ...
 local APL = { name = "mage_arcane sunfury (generated)", simc = "515f4a3fe9", spec = 62 }
-APL.SPELLS = { MISSILES = 5143, BLAST = 30451, BARRAGE = 44425, ORB = 153626, PULSE = 260364, BOLT = 1295924, SURGE = 365350, TOUCH = 321507 }
+APL.SPELLS = { MISSILES = 5143, BLAST = 30451, BARRAGE = 44425, ORB = 153626, PULSE = 1241462, BOLT = 1295924, SURGE = 365350, TOUCH = 321507 }
 local function T(v) return v ~= nil and v ~= false and v ~= 0 end
 local function N(v) return T(v) and 1 or 0 end
 local function V(v) if type(v) == "number" then return v end return N(v) end
@@ -29,7 +29,7 @@ lists["cooldowns"] = function(s, v, offGcd)
     if offGcd and has(s, 321507) and (s.ready[321507]) and T(N(T(N(T(N(T(N(s.prevGcd == 1295924)) or T(N(s.prevGcd == 44425)))) or T(N(T(N(s.surgeUp)) and T(N(s.surgeRemains < 12)))))) and T(N(T(N(s.surgeUp)) or T(N((s.remains[365350] or 0) > 30)))))) then
         return { spellID = 321507, line = "actions.cooldowns+=/touch_of_the_magi,use_off_gcd=1,if=(prev_gcd.1.prismatic_bolt|prev_gcd.1.arcane_barrage|(buff.arcane_surge.up&buff.arcane_surge.remains<12))&(buff.arcane_surge.up|cooldown.arcane_surge.remains>30)", label = "cooldowns:touch_of_the_magi" }
     end
-    if not offGcd and has(s, 365350) and (s.ready[365350]) then
+    if not offGcd and has(s, 365350) and (s.ready[365350] and has(s, 321507) and s.ready[321507]) then
         local clause = T(N(s.lustrousGleam >= 2)) and 1 or T(N(s.lustrousGleam == 0)) and 2 or nil
         if clause then
             return { spellID = 365350, line = "actions.cooldowns+=/arcane_surge,if=buff.lustrous_gleam.stack>=2|buff.lustrous_gleam.down", label = "cooldowns:arcane_surge (" .. clause .. "/2)" }
@@ -45,7 +45,7 @@ lists["sunfury"] = function(s, v, offGcd)
         return { spellID = 1295924, line = "actions.sunfury+=/prismatic_bolt,if=((!set_bonus.midnight_season_2_4pc)|buff.cumulative_power.stack=8)&buff.arcane_soul.down", label = "sunfury:prismatic_bolt#1" }
     end
     if not offGcd and has(s, 44425) and (true) then
-        local clause = T(N(T(N(s.charges == 4)) and T(N(T(N(T(N(T(N(T(N(T(N((s.chargesFractional[153626] or 0) > 0.95)) or T(N((s.chargesFractional[260364] or 0) > 0.95)))) and T(N(s.enemies >= (v["aoe_count"] or 0))))) or T(s.clearcasting))) and T(N(s.salvo >= 12)))) or T(N(T(N(T(N(s.surgeRemains > s.gcdMax)) or T(N(not s.surgeUp)))) and T(N(s.salvo == 25)))))))) and 1 or T(N(s.soul)) and 2 or T(N(T(N(s.salvo > 8)) and T(N(has(s, 321507) and s.ready[321507])))) and 3 or nil
+        local clause = T(N(T(N(s.charges == 4)) and T(N(T(N(T(N(T(N(T(N(T(N((s.chargesFractional[153626] or 0) > 0.95)) or T(N((s.chargesFractional[1241462] or 0) > 0.95)))) and T(N(s.enemies >= (v["aoe_count"] or 0))))) or T(s.clearcasting))) and T(N(s.salvo >= 12)))) or T(N(T(N(T(N(s.surgeRemains > s.gcdMax)) or T(N(not s.surgeUp)))) and T(N(s.salvo == 25)))))))) and 1 or T(N(s.soul)) and 2 or T(N(T(N(s.salvo > 8)) and T(N(has(s, 321507) and s.ready[321507])))) and 3 or nil
         if clause then
             return { spellID = 44425, line = "actions.sunfury+=/arcane_barrage,if=(buff.arcane_charge.stack=4&(((((cooldown.arcane_orb.charges_fractional>0.95|cooldown.arcane_pulse.charges_fractional>0.95)&active_enemies>=variable.aoe_count)|buff.clearcasting.react)&buff.arcane_salvo.react>=12)|((buff.arcane_surge.remains>gcd.max|buff.arcane_surge.down)&buff.arcane_salvo.react=25)))|buff.arcane_soul.up|(buff.arcane_salvo.react>8&cooldown.touch_of_the_magi.ready)", label = "sunfury:arcane_barrage (" .. clause .. "/3)" }
         end
@@ -56,10 +56,10 @@ lists["sunfury"] = function(s, v, offGcd)
     if not offGcd and has(s, 153626) and ((s.chargesFractional[153626] or 0) >= 1) and T(N(s.charges < 3)) then
         return { spellID = 153626, line = "actions.sunfury+=/arcane_orb,if=buff.arcane_charge.stack<3", label = "sunfury:arcane_orb" }
     end
-    if not offGcd and has(s, 260364) and ((s.chargesFractional[260364] or 0) >= 1) then
+    if not offGcd and has(s, 1241462) and ((s.chargesFractional[1241462] or 0) >= 1) then
         local clause = T(N(s.enemies >= ((v["aoe_count"] or 0) - 1))) and 1 or T(N(s.charges < 1)) and 2 or nil
         if clause then
-            return { spellID = 260364, line = "actions.sunfury+=/arcane_pulse,if=active_enemies>=(variable.aoe_count-1)|buff.arcane_charge.stack<1", label = "sunfury:arcane_pulse (" .. clause .. "/2)" }
+            return { spellID = 1241462, line = "actions.sunfury+=/arcane_pulse,if=active_enemies>=(variable.aoe_count-1)|buff.arcane_charge.stack<1", label = "sunfury:arcane_pulse (" .. clause .. "/2)" }
         end
     end
     if not offGcd and has(s, 30451) and (true) then

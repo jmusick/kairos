@@ -39,12 +39,15 @@ var goldenLua = new Dictionary<string, string>
 {
     ["mage_arcane"] = "Kairos/Specs/MageArcane/APL.lua",
     ["control"] = "translator/golden/control/APL.lua",
+    ["warlock_demonology"] = "Kairos/Specs/WarlockDemonology/APL.lua",
 };
-foreach (var fixture in new[] { "mage_arcane", "control" })
+foreach (var fixture in new[] { "mage_arcane", "control", "warlock_demonology" })
 {
     Test($"golden Lua and coverage: {fixture}", () =>
     {
-        var result = translator.Translate(File.ReadAllText($"translator/fixtures/{fixture}.simc"));
+        var fixtureTranslator = fixture == "warlock_demonology"
+            ? new Translator(Metadata.Load("translator/metadata/warlock_demonology.json")) : translator;
+        var result = fixtureTranslator.Translate(File.ReadAllText($"translator/fixtures/{fixture}.simc"));
         Equal(Normalize(File.ReadAllText(goldenLua[fixture])), result.Lua);
         Equal(Normalize(File.ReadAllText($"translator/golden/{fixture}/coverage.json")), result.Report);
         File.WriteAllText(Path.Combine(scratch, fixture + ".lua"), result.Lua);
@@ -135,6 +138,25 @@ Test("fixture action coverage is exhaustive", () =>
     Equal(7, result.Coverage.Count(c => c.Kind == "action" && c.List == "sunfury" && c.Status == "bound"));
     Equal(2, result.Coverage.Count(c => c.Kind == "action" && c.List == "cooldowns" && c.Status == "bound"));
     Equal(true, result.Coverage.Any(c => c.Kind == "option" && c.Text == "chain=1" && c.Status == "approximated"));
+});
+Test("Demonology coverage includes both hero lists and reports every omission", () =>
+{
+    var demo = new Translator(Metadata.Load("translator/metadata/warlock_demonology.json"));
+    var source = File.ReadAllText("translator/fixtures/warlock_demonology.simc");
+    var result = demo.Translate(source);
+    Equal(SimcParser.Parse(source).Count, result.Coverage.Count(c => c.Kind == "action"));
+    Equal(true, result.Coverage.Any(c => c.List == "diabolist" && c.Kind == "action" && c.Status == "bound"));
+    Equal(true, result.Coverage.Any(c => c.List == "soulharvest" && c.Kind == "action" && c.Status == "bound"));
+    Equal(true, result.Coverage.Any(c => c.Kind == "option" && c.Text.StartsWith("target_if=") && c.Status == "unsupported"));
+    Equal(true, result.Lua.Contains("function APL:Leveling(s)"));
+});
+Test("additional entry points reject missing, excluded and reserved names", () =>
+{
+    var metadata = Metadata.Load("translator/metadata/warlock_demonology.json");
+    foreach (var entry in new[] { ("Leveling", "missing"), ("Leveling", "items"), ("Evaluate", "soulharvest"),
+        ("Leveling", "precombat"), ("bad name", "diabolist") })
+        Throws<NotSupportedException>(() => new Translator(metadata with
+            { EntryPoints = new() { [entry.Item1] = entry.Item2 } }).Translate(File.ReadAllText("translator/fixtures/warlock_demonology.simc")));
 });
 
 // Execute the compiled expressions in a real Lua runtime, including short-circuit tests.

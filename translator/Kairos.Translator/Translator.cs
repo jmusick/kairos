@@ -19,6 +19,10 @@ public sealed class Translator(Metadata metadata)
         var clauses = new Dictionary<int, List<string>>();
         var supported = new HashSet<int>();
         var lists = actions.Select(a => a.List).ToHashSet();
+        foreach (var (method, list) in metadata.EntryPoints ?? [])
+            if (!Regex.IsMatch(method, @"^[A-Za-z_][A-Za-z_0-9]*$") || method is "Evaluate" or "OffGcd"
+                || !lists.Contains(list) || list == "precombat" || metadata.ExcludedLists.Contains(list))
+                throw new NotSupportedException($"Invalid entry point {method}: {list}");
         string? Bind(string name)
         {
             if (metadata.Bindings.TryGetValue(name, out var binding)) return binding;
@@ -68,7 +72,8 @@ public sealed class Translator(Metadata metadata)
             var value = Compile(a, "value", ref valid);
             _ = Compile(a, "interrupt_if", ref valid);
             string? reason = null;
-            if (metadata.ExcludedLists.Contains(a.List)) reason = "List outside initial Sunfury scope";
+            if (metadata.ExcludedLists.Contains(a.List)) reason = metadata.Spec == 62
+                ? "List outside initial Sunfury scope" : "List excluded by spec metadata";
             else if (a.Action == "variable")
             {
                 if (!a.Options.ContainsKey("name") || value is null || a.Options.GetValueOrDefault("op", "set") != "set")
@@ -78,7 +83,8 @@ public sealed class Translator(Metadata metadata)
             else if (a.Action == "call_action_list")
             {
                 if (!a.Options.TryGetValue("name", out var target) || !lists.Contains(target)) reason = "Missing action list";
-                else if (metadata.ExcludedLists.Contains(target)) reason = "Target list outside initial Sunfury scope";
+                else if (metadata.ExcludedLists.Contains(target)) reason = metadata.Spec == 62
+                    ? "Target list outside initial Sunfury scope" : "Target list excluded by spec metadata";
             }
             else if (!metadata.Spells.ContainsKey(a.Action)) reason = "Action has no supported spell metadata";
 
@@ -192,14 +198,18 @@ public sealed class Translator(Metadata metadata)
                 }
             }
         }
-        Line("local function evaluate(s, offGcd)");
+        var entryPoints = metadata.EntryPoints is { Count: > 0 };
+        Line(entryPoints ? "local function evaluate(s, offGcd, entry)" : "local function evaluate(s, offGcd)");
         Line("    local v = {}");
         foreach (var a in actions.Where(a => a.List == "precombat" && supported.Contains(a.Number))) Emit(a, "    ");
-        if (lists.Contains("default")) Line("    return lists.default(s, v, offGcd)");
+        if (entryPoints) Line("    return lists[entry or \"default\"](s, v, offGcd)");
+        else if (lists.Contains("default")) Line("    return lists.default(s, v, offGcd)");
         else Line("    return nil");
         Line("end");
         Line("function APL:Evaluate(s) return evaluate(s, false) end");
         Line("function APL:OffGcd(s) return evaluate(s, true) end");
+        foreach (var (method, list) in metadata.EntryPoints ?? [])
+            Line($"function APL:{method}(s) return evaluate(s, false, {Q(list)}) end");
         Line($"Kairos.{metadata.Module} = APL");
         Line("return APL");
         return new(b.ToString(), coverage);

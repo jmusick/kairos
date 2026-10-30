@@ -1,5 +1,5 @@
--- State model (SPEC §7.2), 0.1.0 slice: own casts, the cast in progress, combat,
--- movement and enemy count. Cooldown, aura and resource models arrive with the APL runtime.
+-- Generic state (SPEC §7.2): own casts, the cast in progress, combat, movement and
+-- nameplates. Each spec's adapter supplies its APL's cooldown, aura and resource fields.
 local _, Kairos = ...
 local State = Kairos:NewModule("State")
 local Signal = Kairos.Signal
@@ -14,7 +14,11 @@ State.nameplates = {}   -- [unitToken] = true
 function State:RecordCast(spellID, t)
     table.insert(self.casts, 1, { spellID = spellID, t = t })
     self.casts[self.MAX_CASTS + 1] = nil
+    local spec = Kairos:CurrentSpec()
+    if spec and spec.onGcd and spec.onGcd[spellID] then self.lastGcd = spellID end
 end
+
+function State:PrevGcd() return self.lastGcd end
 
 --- The nth most recent successful cast (1 = last), or nil.
 function State:PrevCast(n)
@@ -33,6 +37,7 @@ function State:UpdateCast(channel)
     else
         self.cast = nil
     end
+    self.castUnknown = spellID.state == "unknown" or endMS.state == "unknown"
 end
 
 State.movingByEvent = nil -- from PLAYER_STARTED/STOPPED_MOVING; nil until one fires
@@ -42,7 +47,10 @@ State.moveEvents = 0      -- movement events since combat start (the probe repor
 --- to the movement events, estimated until the probe shows they fire in combat.
 function State:Moving()
     local speed = Signal.Read(GetUnitSpeed, "player")
-    if speed.state == "known" then return Signal.Known((speed.value or 0) > 0) end
+    if speed.state == "known" then
+        self.movingByEvent = (speed.value or 0) > 0
+        return Signal.Known(self.movingByEvent)
+    end
     if self.movingByEvent ~= nil then return Signal.Estimated(self.movingByEvent) end
     return speed
 end
@@ -62,6 +70,7 @@ function State:EnemyCount()
 end
 
 function State:OnInit()
+    Kairos:On("KAIROS_PROFILE_CHANGED", function() self.lastGcd = nil end)
     Kairos:OnUnit("UNIT_SPELLCAST_SUCCEEDED", "player", function(_, _, _, spellID)
         if Signal.IsSecret(spellID) then return end
         self:RecordCast(spellID, GetTime())
@@ -106,4 +115,5 @@ end
 function State:OnLogin()
     local combat = Signal.Read(UnitAffectingCombat, "player")
     self.inCombat = combat.state == "known" and combat.value == true
+    self:Moving() -- seed the event estimate before speed turns secret, even after a stationary /reload
 end

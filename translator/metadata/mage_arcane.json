@@ -9,9 +9,9 @@
     "arcane_blast": { "id": 30451, "key": "BLAST", "availability": "true" },
     "arcane_barrage": { "id": 44425, "key": "BARRAGE", "availability": "true" },
     "arcane_orb": { "id": 153626, "key": "ORB", "availability": "(s.chargesFractional[{id}] or 0) >= 1" },
-    "arcane_pulse": { "id": 260364, "key": "PULSE", "availability": "(s.chargesFractional[{id}] or 0) >= 1" },
+    "arcane_pulse": { "id": 1241462, "key": "PULSE", "availability": "(s.chargesFractional[{id}] or 0) >= 1" },
     "prismatic_bolt": { "id": 1295924, "key": "BOLT", "availability": "s.boltReady" },
-    "arcane_surge": { "id": 365350, "key": "SURGE", "availability": "s.ready[{id}]", "toggle": "cooldowns" },
+    "arcane_surge": { "id": 365350, "key": "SURGE", "availability": "s.ready[{id}] and has(s, 321507) and s.ready[321507]", "toggle": "cooldowns" },
     "touch_of_the_magi": { "id": 321507, "key": "TOUCH", "availability": "s.ready[{id}]", "toggle": "cooldowns" }
   },
   "bindings": {

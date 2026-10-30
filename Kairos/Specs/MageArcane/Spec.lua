@@ -1,12 +1,16 @@
 -- Arcane Mage (spec 62): metadata. Everything that applies to Arcane alone lives in this
--- folder: this file (IDs and what to probe and trace), Salvo.lua (the Arcane Salvo state
--- model) and APL.lua (the rotation). Generic modules read this through
+-- folder: metadata, the stack estimators, the generated APL and its live State adapter.
+-- Generic modules read this through
 -- Kairos:CurrentSpec() and never name Arcane spells themselves.
 local _, Kairos = ...
 
 Kairos:NewSpec(62, {
     key = "MageArcane",
     name = "Arcane Mage",
+    resource = { power = "ArcaneCharges", token = "ARCANE_CHARGES", key = "ac" },
+    -- Successful rotation casts on the GCD; Touch/interrupts never replace prevGcd.
+    onGcd = { [5143] = true, [30451] = true, [44425] = true, [153626] = true,
+        [1241462] = true, [1295924] = true, [365350] = true, [12051] = true, [1449] = true, [1459] = true },
 
     -- What the probe checks and Trace tracks, on top of Assisted Combat's rotation
     -- spells. Names, not IDs: several Midnight spells are new, and the client resolves
@@ -37,6 +41,7 @@ Kairos:NewSpec(62, {
         ["Arcane Intellect"] = 1459,
         ["Overpowered Missiles"] = 1277009,
         ["Cumulative Power"] = 1296930,
+        ["Lustrous Gleam"] = 1295147,
         -- From the 12.1.5 combat logs: both make Arcane Barrage glow, as does Salvo at 25.
         ["Arcane Soul"] = 451038,
         ["Intuition"] = 1223797,

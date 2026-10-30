@@ -1,0 +1,2354 @@
+[
+  {
+    "Number": 9,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat=summon_pet",
+    "Status": "unsupported",
+    "Detail": "Precombat recommendations not implemented (variables only)"
+  },
+  {
+    "Number": 10,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/snapshot_stats",
+    "Status": "unsupported",
+    "Detail": "Precombat recommendations not implemented (variables only)"
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "1",
+    "Status": "bound",
+    "Detail": "value"
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "name=in_opener",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "op=set",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value=1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/variable,name=in_opener,op=set,value=1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "trinket.1.has_use_buff",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "trinket.1.has_use_buff",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: trinket.1.has_use_buff"
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "name=trinket_1_buffs",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value=trinket.1.has_use_buff",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/variable,name=trinket_1_buffs,value=trinket.1.has_use_buff",
+    "Status": "unsupported",
+    "Detail": "Only variable op=set with a bound value is supported"
+  },
+  {
+    "Number": 13,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "trinket.2.has_use_buff",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 13,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "trinket.2.has_use_buff",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: trinket.2.has_use_buff"
+  },
+  {
+    "Number": 13,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "name=trinket_2_buffs",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 13,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value=trinket.2.has_use_buff",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 13,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/variable,name=trinket_2_buffs,value=trinket.2.has_use_buff",
+    "Status": "unsupported",
+    "Detail": "Only variable op=set with a bound value is supported"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "trinket.1.proc.any_dps.duration",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "trinket.1.proc.any_dps.duration",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: trinket.1.proc.any_dps.duration"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "name=trinket_1_buff_duration",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value=trinket.1.proc.any_dps.duration",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/variable,name=trinket_1_buff_duration,value=trinket.1.proc.any_dps.duration",
+    "Status": "unsupported",
+    "Detail": "Only variable op=set with a bound value is supported"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "trinket.2.proc.any_dps.duration",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "trinket.2.proc.any_dps.duration",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: trinket.2.proc.any_dps.duration"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "name=trinket_2_buff_duration",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value=trinket.2.proc.any_dps.duration",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/variable,name=trinket_2_buff_duration,value=trinket.2.proc.any_dps.duration",
+    "Status": "unsupported",
+    "Detail": "Only variable op=set with a bound value is supported"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "1",
+    "Status": "bound",
+    "Detail": "value"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "name=trinket_1_sync",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "op=setif",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value=1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value_else=0.5",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "condition=variable.trinket_1_buffs\u0026(trinket.1.cooldown.duration%%cooldown.summon_demonic_tyrant.duration=0|cooldown.summon_demonic_tyrant.duration%%trinket.1.cooldown.duration=0)",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/variable,name=trinket_1_sync,op=setif,value=1,value_else=0.5,condition=variable.trinket_1_buffs\u0026(trinket.1.cooldown.duration%%cooldown.summon_demonic_tyrant.duration=0|cooldown.summon_demonic_tyrant.duration%%trinket.1.cooldown.duration=0)",
+    "Status": "unsupported",
+    "Detail": "Only variable op=set with a bound value is supported"
+  },
+  {
+    "Number": 17,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "1",
+    "Status": "bound",
+    "Detail": "value"
+  },
+  {
+    "Number": 17,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "name=trinket_2_sync",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 17,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "op=setif",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 17,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value=1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 17,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value_else=0.5",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 17,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "condition=variable.trinket_2_buffs\u0026(trinket.2.cooldown.duration%%cooldown.summon_demonic_tyrant.duration=0|cooldown.summon_demonic_tyrant.duration%%trinket.2.cooldown.duration=0)",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 17,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/variable,name=trinket_2_sync,op=setif,value=1,value_else=0.5,condition=variable.trinket_2_buffs\u0026(trinket.2.cooldown.duration%%cooldown.summon_demonic_tyrant.duration=0|cooldown.summon_demonic_tyrant.duration%%trinket.2.cooldown.duration=0)",
+    "Status": "unsupported",
+    "Detail": "Only variable op=set with a bound value is supported"
+  },
+  {
+    "Number": 18,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "2",
+    "Status": "bound",
+    "Detail": "value"
+  },
+  {
+    "Number": 18,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "name=damage_trinket_priority",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 18,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "op=setif",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 18,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value=2",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 18,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value_else=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 18,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "condition=!variable.trinket_1_buffs\u0026!variable.trinket_2_buffs\u0026trinket.2.ilvl\u003Etrinket.1.ilvl",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 18,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/variable,name=damage_trinket_priority,op=setif,value=2,value_else=1,condition=!variable.trinket_1_buffs\u0026!variable.trinket_2_buffs\u0026trinket.2.ilvl\u003Etrinket.1.ilvl",
+    "Status": "unsupported",
+    "Detail": "Only variable op=set with a bound value is supported"
+  },
+  {
+    "Number": 19,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "2",
+    "Status": "bound",
+    "Detail": "value"
+  },
+  {
+    "Number": 19,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "name=trinket_priority",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 19,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "op=setif",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 19,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value=2",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 19,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value_else=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 19,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "condition=!variable.trinket_1_buffs\u0026variable.trinket_2_buffs|variable.trinket_2_buffs\u0026((trinket.2.cooldown.duration%variable.trinket_2_buff_duration)*(1.5\u002Btrinket.2.has_buff.intellect)*(variable.trinket_2_sync))\u003E(((trinket.1.cooldown.duration%variable.trinket_1_buff_duration)*(1.5\u002Btrinket.1.has_buff.intellect)*(variable.trinket_1_sync))*(1\u002B((trinket.1.ilvl-trinket.2.ilvl)%100)))",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 19,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/variable,name=trinket_priority,op=setif,value=2,value_else=1,condition=!variable.trinket_1_buffs\u0026variable.trinket_2_buffs|variable.trinket_2_buffs\u0026((trinket.2.cooldown.duration%variable.trinket_2_buff_duration)*(1.5\u002Btrinket.2.has_buff.intellect)*(variable.trinket_2_sync))\u003E(((trinket.1.cooldown.duration%variable.trinket_1_buff_duration)*(1.5\u002Btrinket.1.has_buff.intellect)*(variable.trinket_1_sync))*(1\u002B((trinket.1.ilvl-trinket.2.ilvl)%100)))",
+    "Status": "unsupported",
+    "Detail": "Only variable op=set with a bound value is supported"
+  },
+  {
+    "Number": 20,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/power_siphon",
+    "Status": "unsupported",
+    "Detail": "Precombat recommendations not implemented (variables only)"
+  },
+  {
+    "Number": 21,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "buff.power_siphon.up",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 21,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "talent.ruination",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022ruination\u0022])"
+  },
+  {
+    "Number": 21,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "talent.grimoire_imp_lord",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022grimoire_imp_lord\u0022])"
+  },
+  {
+    "Number": 21,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "talent.ruination",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022ruination\u0022])"
+  },
+  {
+    "Number": 21,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "talent.summon_doomguard",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022summon_doomguard\u0022])"
+  },
+  {
+    "Number": 21,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "!buff.power_siphon.up\u0026(talent.ruination\u0026!talent.grimoire_imp_lord|talent.ruination\u0026!talent.summon_doomguard)",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: buff.power_siphon.up"
+  },
+  {
+    "Number": 21,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "if=!buff.power_siphon.up\u0026(talent.ruination\u0026!talent.grimoire_imp_lord|talent.ruination\u0026!talent.summon_doomguard)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 21,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/demonbolt,if=!buff.power_siphon.up\u0026(talent.ruination\u0026!talent.grimoire_imp_lord|talent.ruination\u0026!talent.summon_doomguard)",
+    "Status": "unsupported",
+    "Detail": "Precombat recommendations not implemented (variables only)"
+  },
+  {
+    "Number": 22,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/shadow_bolt",
+    "Status": "unsupported",
+    "Detail": "Precombat recommendations not implemented (variables only)"
+  },
+  {
+    "Number": 25,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "pet.demonic_tyrant.active",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 25,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 25,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "pet.demonic_tyrant.active|fight_remains\u003C=30",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: pet.demonic_tyrant.active"
+  },
+  {
+    "Number": 25,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=pet.demonic_tyrant.active|fight_remains\u003C=30",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 25,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions=potion,if=pet.demonic_tyrant.active|fight_remains\u003C=30",
+    "Status": "unsupported",
+    "Detail": "Action has no supported spell metadata"
+  },
+  {
+    "Number": 26,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "pet.demonic_tyrant.active",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 26,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "pet.demonic_tyrant.active",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: pet.demonic_tyrant.active"
+  },
+  {
+    "Number": 26,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=power_infusion",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 26,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=pet.demonic_tyrant.active",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 26,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/invoke_external_buff,name=power_infusion,if=pet.demonic_tyrant.active",
+    "Status": "unsupported",
+    "Detail": "Action has no supported spell metadata"
+  },
+  {
+    "Number": 27,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "pet.demonic_tyrant.active",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 27,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 27,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "pet.demonic_tyrant.active|fight_remains\u003C22",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: pet.demonic_tyrant.active"
+  },
+  {
+    "Number": 27,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=racials",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 27,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=pet.demonic_tyrant.active|fight_remains\u003C22",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 27,
+    "List": "default",
+    "Kind": "option",
+    "Text": "use_off_gcd=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 27,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/call_action_list,name=racials,if=pet.demonic_tyrant.active|fight_remains\u003C22,use_off_gcd=1",
+    "Status": "unsupported",
+    "Detail": "Target list excluded by spec metadata"
+  },
+  {
+    "Number": 28,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=items",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 28,
+    "List": "default",
+    "Kind": "option",
+    "Text": "use_off_gcd=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 28,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/call_action_list,name=items,use_off_gcd=1",
+    "Status": "unsupported",
+    "Detail": "Target list excluded by spec metadata"
+  },
+  {
+    "Number": 29,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "talent.diabolic_ritual",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022diabolic_ritual\u0022])"
+  },
+  {
+    "Number": 29,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "talent.diabolic_ritual",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 29,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=diabolist",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 29,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=talent.diabolic_ritual",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 29,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/call_action_list,name=diabolist,if=talent.diabolic_ritual",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 30,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "talent.demonic_soul",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022demonic_soul\u0022])"
+  },
+  {
+    "Number": 30,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "talent.demonic_soul",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 30,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=soulharvest",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 30,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=talent.demonic_soul",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 30,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/call_action_list,name=soulharvest,if=talent.demonic_soul",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 32,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "buff.demonic_core.stack",
+    "Status": "bound",
+    "Detail": "s.coreStacks"
+  },
+  {
+    "Number": 32,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 32,
+    "List": "diabolist",
+    "Kind": "expression",
+    "Text": "buff.demonic_core.stack\u003C=1|fight_remains\u003C10",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 32,
+    "List": "diabolist",
+    "Kind": "option",
+    "Text": "if=buff.demonic_core.stack\u003C=1|fight_remains\u003C10",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 32,
+    "List": "diabolist",
+    "Kind": "action",
+    "Text": "actions.diabolist=power_siphon,if=buff.demonic_core.stack\u003C=1|fight_remains\u003C10",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 33,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "buff.dominion_of_argus.up",
+    "Status": "bound",
+    "Detail": "N(s.argusUp)"
+  },
+  {
+    "Number": 33,
+    "List": "diabolist",
+    "Kind": "expression",
+    "Text": "buff.dominion_of_argus.up",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 33,
+    "List": "diabolist",
+    "Kind": "option",
+    "Text": "if=buff.dominion_of_argus.up",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 33,
+    "List": "diabolist",
+    "Kind": "action",
+    "Text": "actions.diabolist\u002B=/hand_of_guldan,if=buff.dominion_of_argus.up",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 34,
+    "List": "diabolist",
+    "Kind": "action",
+    "Text": "actions.diabolist\u002B=/grimoire_imp_lord",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 35,
+    "List": "diabolist",
+    "Kind": "action",
+    "Text": "actions.diabolist\u002B=/grimoire_fel_ravager",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 36,
+    "List": "diabolist",
+    "Kind": "action",
+    "Text": "actions.diabolist\u002B=/summon_doomguard",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 37,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "talent.reign_of_tyranny",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022reign_of_tyranny\u0022])"
+  },
+  {
+    "Number": 37,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "cooldown.summon_demonic_tyrant.remains",
+    "Status": "bound",
+    "Detail": "(s.remains[265187] or 0)"
+  },
+  {
+    "Number": 37,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "gcd.max",
+    "Status": "bound",
+    "Detail": "s.gcdMax"
+  },
+  {
+    "Number": 37,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "cooldown.summon_demonic_tyrant.remains",
+    "Status": "bound",
+    "Detail": "(s.remains[265187] or 0)"
+  },
+  {
+    "Number": 37,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "gcd.max",
+    "Status": "bound",
+    "Detail": "s.gcdMax"
+  },
+  {
+    "Number": 37,
+    "List": "diabolist",
+    "Kind": "expression",
+    "Text": "talent.reign_of_tyranny\u0026(cooldown.summon_demonic_tyrant.remains\u003E=20\u002Bgcd.max|cooldown.summon_demonic_tyrant.remains\u003C=12-gcd.max)",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 37,
+    "List": "diabolist",
+    "Kind": "option",
+    "Text": "if=talent.reign_of_tyranny\u0026(cooldown.summon_demonic_tyrant.remains\u003E=20\u002Bgcd.max|cooldown.summon_demonic_tyrant.remains\u003C=12-gcd.max)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 37,
+    "List": "diabolist",
+    "Kind": "action",
+    "Text": "actions.diabolist\u002B=/call_dreadstalkers,if=talent.reign_of_tyranny\u0026(cooldown.summon_demonic_tyrant.remains\u003E=20\u002Bgcd.max|cooldown.summon_demonic_tyrant.remains\u003C=12-gcd.max)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 38,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "talent.reign_of_tyranny",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022reign_of_tyranny\u0022])"
+  },
+  {
+    "Number": 38,
+    "List": "diabolist",
+    "Kind": "expression",
+    "Text": "!talent.reign_of_tyranny",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 38,
+    "List": "diabolist",
+    "Kind": "option",
+    "Text": "if=!talent.reign_of_tyranny",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 38,
+    "List": "diabolist",
+    "Kind": "action",
+    "Text": "actions.diabolist\u002B=/call_dreadstalkers,if=!talent.reign_of_tyranny",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 39,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "soul_shard",
+    "Status": "bound",
+    "Detail": "s.shards"
+  },
+  {
+    "Number": 39,
+    "List": "diabolist",
+    "Kind": "expression",
+    "Text": "soul_shard=5",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 39,
+    "List": "diabolist",
+    "Kind": "option",
+    "Text": "if=soul_shard=5",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 39,
+    "List": "diabolist",
+    "Kind": "action",
+    "Text": "actions.diabolist\u002B=/summon_demonic_tyrant,if=soul_shard=5",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 40,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "buff.wild_imps.stack",
+    "Status": "bound",
+    "Detail": "s.imps"
+  },
+  {
+    "Number": 40,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 40,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "talent.to_hell_and_back.enabled",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022to_hell_and_back\u0022])"
+  },
+  {
+    "Number": 40,
+    "List": "diabolist",
+    "Kind": "expression",
+    "Text": "buff.wild_imps.stack\u003E=6\u0026(active_enemies\u003E2|talent.to_hell_and_back.enabled)",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 40,
+    "List": "diabolist",
+    "Kind": "option",
+    "Text": "if=buff.wild_imps.stack\u003E=6\u0026(active_enemies\u003E2|talent.to_hell_and_back.enabled)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 40,
+    "List": "diabolist",
+    "Kind": "action",
+    "Text": "actions.diabolist\u002B=/implosion,if=buff.wild_imps.stack\u003E=6\u0026(active_enemies\u003E2|talent.to_hell_and_back.enabled)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 41,
+    "List": "diabolist",
+    "Kind": "action",
+    "Text": "actions.diabolist\u002B=/ruination",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 42,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "soul_shard",
+    "Status": "bound",
+    "Detail": "s.shards"
+  },
+  {
+    "Number": 42,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "cooldown.summon_demonic_tyrant.remains",
+    "Status": "bound",
+    "Detail": "(s.remains[265187] or 0)"
+  },
+  {
+    "Number": 42,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "soul_shard",
+    "Status": "bound",
+    "Detail": "s.shards"
+  },
+  {
+    "Number": 42,
+    "List": "diabolist",
+    "Kind": "expression",
+    "Text": "soul_shard\u003E=3\u0026cooldown.summon_demonic_tyrant.remains\u003E5|soul_shard=5",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 42,
+    "List": "diabolist",
+    "Kind": "option",
+    "Text": "if=soul_shard\u003E=3\u0026cooldown.summon_demonic_tyrant.remains\u003E5|soul_shard=5",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 42,
+    "List": "diabolist",
+    "Kind": "action",
+    "Text": "actions.diabolist\u002B=/hand_of_guldan,if=soul_shard\u003E=3\u0026cooldown.summon_demonic_tyrant.remains\u003E5|soul_shard=5",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 43,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "soul_shard",
+    "Status": "bound",
+    "Detail": "s.shards"
+  },
+  {
+    "Number": 43,
+    "List": "diabolist",
+    "Kind": "expression",
+    "Text": "soul_shard\u003C3",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 43,
+    "List": "diabolist",
+    "Kind": "option",
+    "Text": "if=soul_shard\u003C3",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 43,
+    "List": "diabolist",
+    "Kind": "action",
+    "Text": "actions.diabolist\u002B=/infernal_bolt,if=soul_shard\u003C3",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 44,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "soul_shard",
+    "Status": "bound",
+    "Detail": "s.shards"
+  },
+  {
+    "Number": 44,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "buff.demonic_core.react",
+    "Status": "bound",
+    "Detail": "N(s.coreUp)"
+  },
+  {
+    "Number": 44,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "talent.doom",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022doom\u0022])"
+  },
+  {
+    "Number": 44,
+    "List": "diabolist",
+    "Kind": "expression",
+    "Text": "soul_shard\u003C4\u0026buff.demonic_core.react\u0026talent.doom",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 44,
+    "List": "diabolist",
+    "Kind": "option",
+    "Text": "target_if=(!debuff.doom.up)",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 44,
+    "List": "diabolist",
+    "Kind": "option",
+    "Text": "if=soul_shard\u003C4\u0026buff.demonic_core.react\u0026talent.doom",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 44,
+    "List": "diabolist",
+    "Kind": "action",
+    "Text": "actions.diabolist\u002B=/demonbolt,target_if=(!debuff.doom.up),if=soul_shard\u003C4\u0026buff.demonic_core.react\u0026talent.doom",
+    "Status": "unsupported",
+    "Detail": "Unsupported expression or option; entire action omitted"
+  },
+  {
+    "Number": 45,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "soul_shard",
+    "Status": "bound",
+    "Detail": "s.shards"
+  },
+  {
+    "Number": 45,
+    "List": "diabolist",
+    "Kind": "binding",
+    "Text": "buff.demonic_core.react",
+    "Status": "bound",
+    "Detail": "N(s.coreUp)"
+  },
+  {
+    "Number": 45,
+    "List": "diabolist",
+    "Kind": "expression",
+    "Text": "soul_shard\u003C4\u0026buff.demonic_core.react",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 45,
+    "List": "diabolist",
+    "Kind": "option",
+    "Text": "if=soul_shard\u003C4\u0026buff.demonic_core.react",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 45,
+    "List": "diabolist",
+    "Kind": "action",
+    "Text": "actions.diabolist\u002B=/demonbolt,if=soul_shard\u003C4\u0026buff.demonic_core.react",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 46,
+    "List": "diabolist",
+    "Kind": "action",
+    "Text": "actions.diabolist\u002B=/shadow_bolt",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 47,
+    "List": "diabolist",
+    "Kind": "action",
+    "Text": "actions.diabolist\u002B=/infernal_bolt",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "variable.trinket_1_buffs",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "pet.demonic_tyrant.active",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.1.cast_time",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.1.cast_time",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "pet.demonic_tyrant.active",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.1.cast_time",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "cooldown.summon_demonic_tyrant.remains",
+    "Status": "bound",
+    "Detail": "(s.remains[265187] or 0)"
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "talent.summon_demonic_tyrant",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022summon_demonic_tyrant\u0022])"
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "variable.trinket_priority",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "cooldown.summon_demonic_tyrant.remains",
+    "Status": "bound",
+    "Detail": "(s.remains[265187] or 0)"
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "pet.demonic_tyrant.active",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.2.cooldown.remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "cooldown.summon_demonic_tyrant.remains",
+    "Status": "bound",
+    "Detail": "(s.remains[265187] or 0)"
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.2.has_cooldown",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.2.cooldown.remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "variable.trinket_priority",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "variable.trinket_1_buff_duration",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "expression",
+    "Text": "variable.trinket_1_buffs\u0026(!pet.demonic_tyrant.active\u0026trinket.1.cast_time\u003E0|!trinket.1.cast_time\u003E0)\u0026(pet.demonic_tyrant.active|trinket.1.cast_time\u003E0\u0026cooldown.summon_demonic_tyrant.remains\u003C=4|!talent.summon_demonic_tyrant|variable.trinket_priority=2\u0026cooldown.summon_demonic_tyrant.remains\u003E20\u0026!pet.demonic_tyrant.active\u0026trinket.2.cooldown.remains\u003Ccooldown.summon_demonic_tyrant.remains\u002B5)\u0026(!trinket.2.has_cooldown|trinket.2.cooldown.remains|variable.trinket_priority=1)|variable.trinket_1_buff_duration\u003E=fight_remains",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: variable.trinket_1_buffs"
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "option",
+    "Text": "use_off_gcd=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "option",
+    "Text": "slot=trinket1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "option",
+    "Text": "if=variable.trinket_1_buffs\u0026(!pet.demonic_tyrant.active\u0026trinket.1.cast_time\u003E0|!trinket.1.cast_time\u003E0)\u0026(pet.demonic_tyrant.active|trinket.1.cast_time\u003E0\u0026cooldown.summon_demonic_tyrant.remains\u003C=4|!talent.summon_demonic_tyrant|variable.trinket_priority=2\u0026cooldown.summon_demonic_tyrant.remains\u003E20\u0026!pet.demonic_tyrant.active\u0026trinket.2.cooldown.remains\u003Ccooldown.summon_demonic_tyrant.remains\u002B5)\u0026(!trinket.2.has_cooldown|trinket.2.cooldown.remains|variable.trinket_priority=1)|variable.trinket_1_buff_duration\u003E=fight_remains",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 49,
+    "List": "items",
+    "Kind": "action",
+    "Text": "actions.items=use_item,use_off_gcd=1,slot=trinket1,if=variable.trinket_1_buffs\u0026(!pet.demonic_tyrant.active\u0026trinket.1.cast_time\u003E0|!trinket.1.cast_time\u003E0)\u0026(pet.demonic_tyrant.active|trinket.1.cast_time\u003E0\u0026cooldown.summon_demonic_tyrant.remains\u003C=4|!talent.summon_demonic_tyrant|variable.trinket_priority=2\u0026cooldown.summon_demonic_tyrant.remains\u003E20\u0026!pet.demonic_tyrant.active\u0026trinket.2.cooldown.remains\u003Ccooldown.summon_demonic_tyrant.remains\u002B5)\u0026(!trinket.2.has_cooldown|trinket.2.cooldown.remains|variable.trinket_priority=1)|variable.trinket_1_buff_duration\u003E=fight_remains",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "variable.trinket_2_buffs",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "pet.demonic_tyrant.active",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.2.cast_time",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.2.cast_time",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "pet.demonic_tyrant.active",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.2.cast_time",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "cooldown.summon_demonic_tyrant.remains",
+    "Status": "bound",
+    "Detail": "(s.remains[265187] or 0)"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "talent.summon_demonic_tyrant",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022summon_demonic_tyrant\u0022])"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "variable.trinket_priority",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "cooldown.summon_demonic_tyrant.remains",
+    "Status": "bound",
+    "Detail": "(s.remains[265187] or 0)"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "pet.demonic_tyrant.active",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.1.cooldown.remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "cooldown.summon_demonic_tyrant.remains",
+    "Status": "bound",
+    "Detail": "(s.remains[265187] or 0)"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.1.has_cooldown",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.1.cooldown.remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "variable.trinket_priority",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "variable.trinket_2_buff_duration",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "expression",
+    "Text": "variable.trinket_2_buffs\u0026(!pet.demonic_tyrant.active\u0026trinket.2.cast_time\u003E0|!trinket.2.cast_time\u003E0)\u0026(pet.demonic_tyrant.active|trinket.2.cast_time\u003E0\u0026cooldown.summon_demonic_tyrant.remains\u003C=4|!talent.summon_demonic_tyrant|variable.trinket_priority=1\u0026cooldown.summon_demonic_tyrant.remains\u003E20\u0026!pet.demonic_tyrant.active\u0026trinket.1.cooldown.remains\u003Ccooldown.summon_demonic_tyrant.remains\u002B5)\u0026(!trinket.1.has_cooldown|trinket.1.cooldown.remains|variable.trinket_priority=2)|variable.trinket_2_buff_duration\u003E=fight_remains",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: variable.trinket_2_buffs"
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "option",
+    "Text": "use_off_gcd=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "option",
+    "Text": "slot=trinket2",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "option",
+    "Text": "if=variable.trinket_2_buffs\u0026(!pet.demonic_tyrant.active\u0026trinket.2.cast_time\u003E0|!trinket.2.cast_time\u003E0)\u0026(pet.demonic_tyrant.active|trinket.2.cast_time\u003E0\u0026cooldown.summon_demonic_tyrant.remains\u003C=4|!talent.summon_demonic_tyrant|variable.trinket_priority=1\u0026cooldown.summon_demonic_tyrant.remains\u003E20\u0026!pet.demonic_tyrant.active\u0026trinket.1.cooldown.remains\u003Ccooldown.summon_demonic_tyrant.remains\u002B5)\u0026(!trinket.1.has_cooldown|trinket.1.cooldown.remains|variable.trinket_priority=2)|variable.trinket_2_buff_duration\u003E=fight_remains",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 50,
+    "List": "items",
+    "Kind": "action",
+    "Text": "actions.items\u002B=/use_item,use_off_gcd=1,slot=trinket2,if=variable.trinket_2_buffs\u0026(!pet.demonic_tyrant.active\u0026trinket.2.cast_time\u003E0|!trinket.2.cast_time\u003E0)\u0026(pet.demonic_tyrant.active|trinket.2.cast_time\u003E0\u0026cooldown.summon_demonic_tyrant.remains\u003C=4|!talent.summon_demonic_tyrant|variable.trinket_priority=1\u0026cooldown.summon_demonic_tyrant.remains\u003E20\u0026!pet.demonic_tyrant.active\u0026trinket.1.cooldown.remains\u003Ccooldown.summon_demonic_tyrant.remains\u002B5)\u0026(!trinket.1.has_cooldown|trinket.1.cooldown.remains|variable.trinket_priority=2)|variable.trinket_2_buff_duration\u003E=fight_remains",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 51,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "variable.trinket_1_buffs",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 51,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "variable.damage_trinket_priority",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 51,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.2.cooldown.remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 51,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.1.cast_time",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 51,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "pet.demonic_tyrant.active",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 51,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.1.cast_time",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 51,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "time",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 51,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "variable.trinket_2_buffs",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 51,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "cooldown.summon_demonic_tyrant.remains_expected",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 51,
+    "List": "items",
+    "Kind": "expression",
+    "Text": "!variable.trinket_1_buffs\u0026((variable.damage_trinket_priority=1|trinket.2.cooldown.remains)\u0026(trinket.1.cast_time\u003E0\u0026!pet.demonic_tyrant.active|!trinket.1.cast_time\u003E0)|(time\u003C20\u0026variable.trinket_2_buffs)|cooldown.summon_demonic_tyrant.remains_expected\u003E20)",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: variable.trinket_1_buffs"
+  },
+  {
+    "Number": 51,
+    "List": "items",
+    "Kind": "option",
+    "Text": "use_off_gcd=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 51,
+    "List": "items",
+    "Kind": "option",
+    "Text": "slot=trinket1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 51,
+    "List": "items",
+    "Kind": "option",
+    "Text": "if=!variable.trinket_1_buffs\u0026((variable.damage_trinket_priority=1|trinket.2.cooldown.remains)\u0026(trinket.1.cast_time\u003E0\u0026!pet.demonic_tyrant.active|!trinket.1.cast_time\u003E0)|(time\u003C20\u0026variable.trinket_2_buffs)|cooldown.summon_demonic_tyrant.remains_expected\u003E20)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 51,
+    "List": "items",
+    "Kind": "action",
+    "Text": "actions.items\u002B=/use_item,use_off_gcd=1,slot=trinket1,if=!variable.trinket_1_buffs\u0026((variable.damage_trinket_priority=1|trinket.2.cooldown.remains)\u0026(trinket.1.cast_time\u003E0\u0026!pet.demonic_tyrant.active|!trinket.1.cast_time\u003E0)|(time\u003C20\u0026variable.trinket_2_buffs)|cooldown.summon_demonic_tyrant.remains_expected\u003E20)",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 52,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "variable.trinket_2_buffs",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 52,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "variable.damage_trinket_priority",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 52,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.1.cooldown.remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 52,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.2.cast_time",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 52,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "pet.demonic_tyrant.active",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 52,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.2.cast_time",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 52,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "time",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 52,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "variable.trinket_1_buffs",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 52,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "cooldown.summon_demonic_tyrant.remains_expected",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 52,
+    "List": "items",
+    "Kind": "expression",
+    "Text": "!variable.trinket_2_buffs\u0026((variable.damage_trinket_priority=2|trinket.1.cooldown.remains)\u0026(trinket.2.cast_time\u003E0\u0026!pet.demonic_tyrant.active|!trinket.2.cast_time\u003E0)|(time\u003C20\u0026variable.trinket_1_buffs)|cooldown.summon_demonic_tyrant.remains_expected\u003E20)",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: variable.trinket_2_buffs"
+  },
+  {
+    "Number": 52,
+    "List": "items",
+    "Kind": "option",
+    "Text": "use_off_gcd=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 52,
+    "List": "items",
+    "Kind": "option",
+    "Text": "slot=trinket2",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 52,
+    "List": "items",
+    "Kind": "option",
+    "Text": "if=!variable.trinket_2_buffs\u0026((variable.damage_trinket_priority=2|trinket.1.cooldown.remains)\u0026(trinket.2.cast_time\u003E0\u0026!pet.demonic_tyrant.active|!trinket.2.cast_time\u003E0)|(time\u003C20\u0026variable.trinket_1_buffs)|cooldown.summon_demonic_tyrant.remains_expected\u003E20)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 52,
+    "List": "items",
+    "Kind": "action",
+    "Text": "actions.items\u002B=/use_item,use_off_gcd=1,slot=trinket2,if=!variable.trinket_2_buffs\u0026((variable.damage_trinket_priority=2|trinket.1.cooldown.remains)\u0026(trinket.2.cast_time\u003E0\u0026!pet.demonic_tyrant.active|!trinket.2.cast_time\u003E0)|(time\u003C20\u0026variable.trinket_1_buffs)|cooldown.summon_demonic_tyrant.remains_expected\u003E20)",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 53,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "variable.trinket_1_buffs",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 53,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "variable.damage_trinket_priority",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 53,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.2.cooldown.remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 53,
+    "List": "items",
+    "Kind": "expression",
+    "Text": "!variable.trinket_1_buffs\u0026(variable.damage_trinket_priority=1|trinket.2.cooldown.remains)",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: variable.trinket_1_buffs"
+  },
+  {
+    "Number": 53,
+    "List": "items",
+    "Kind": "option",
+    "Text": "slot=trinket1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 53,
+    "List": "items",
+    "Kind": "option",
+    "Text": "if=!variable.trinket_1_buffs\u0026(variable.damage_trinket_priority=1|trinket.2.cooldown.remains)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 53,
+    "List": "items",
+    "Kind": "action",
+    "Text": "actions.items\u002B=/use_item,slot=trinket1,if=!variable.trinket_1_buffs\u0026(variable.damage_trinket_priority=1|trinket.2.cooldown.remains)",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 54,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "variable.trinket_2_buffs",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 54,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "variable.damage_trinket_priority",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 54,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "trinket.1.cooldown.remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 54,
+    "List": "items",
+    "Kind": "expression",
+    "Text": "!variable.trinket_2_buffs\u0026(variable.damage_trinket_priority=2|trinket.1.cooldown.remains)",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: variable.trinket_2_buffs"
+  },
+  {
+    "Number": 54,
+    "List": "items",
+    "Kind": "option",
+    "Text": "slot=trinket2",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 54,
+    "List": "items",
+    "Kind": "option",
+    "Text": "if=!variable.trinket_2_buffs\u0026(variable.damage_trinket_priority=2|trinket.1.cooldown.remains)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 54,
+    "List": "items",
+    "Kind": "action",
+    "Text": "actions.items\u002B=/use_item,slot=trinket2,if=!variable.trinket_2_buffs\u0026(variable.damage_trinket_priority=2|trinket.1.cooldown.remains)",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 55,
+    "List": "items",
+    "Kind": "option",
+    "Text": "use_off_gcd=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 55,
+    "List": "items",
+    "Kind": "option",
+    "Text": "slot=main_hand",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 55,
+    "List": "items",
+    "Kind": "action",
+    "Text": "actions.items\u002B=/use_item,use_off_gcd=1,slot=main_hand",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 57,
+    "List": "racials",
+    "Kind": "option",
+    "Text": "use_off_gcd=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 57,
+    "List": "racials",
+    "Kind": "action",
+    "Text": "actions.racials=berserking,use_off_gcd=1",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 58,
+    "List": "racials",
+    "Kind": "action",
+    "Text": "actions.racials\u002B=/blood_fury",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 59,
+    "List": "racials",
+    "Kind": "action",
+    "Text": "actions.racials\u002B=/fireblood",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 60,
+    "List": "racials",
+    "Kind": "action",
+    "Text": "actions.racials\u002B=/ancestral_call",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 62,
+    "List": "soulharvest",
+    "Kind": "binding",
+    "Text": "buff.demonic_core.stack",
+    "Status": "bound",
+    "Detail": "s.coreStacks"
+  },
+  {
+    "Number": 62,
+    "List": "soulharvest",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 62,
+    "List": "soulharvest",
+    "Kind": "expression",
+    "Text": "buff.demonic_core.stack\u003C=1|fight_remains\u003C10",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 62,
+    "List": "soulharvest",
+    "Kind": "option",
+    "Text": "if=buff.demonic_core.stack\u003C=1|fight_remains\u003C10",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 62,
+    "List": "soulharvest",
+    "Kind": "action",
+    "Text": "actions.soulharvest=power_siphon,if=buff.demonic_core.stack\u003C=1|fight_remains\u003C10",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 63,
+    "List": "soulharvest",
+    "Kind": "binding",
+    "Text": "buff.dominion_of_argus.up",
+    "Status": "bound",
+    "Detail": "N(s.argusUp)"
+  },
+  {
+    "Number": 63,
+    "List": "soulharvest",
+    "Kind": "expression",
+    "Text": "buff.dominion_of_argus.up",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 63,
+    "List": "soulharvest",
+    "Kind": "option",
+    "Text": "if=buff.dominion_of_argus.up",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 63,
+    "List": "soulharvest",
+    "Kind": "action",
+    "Text": "actions.soulharvest\u002B=/hand_of_guldan,if=buff.dominion_of_argus.up",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 64,
+    "List": "soulharvest",
+    "Kind": "action",
+    "Text": "actions.soulharvest\u002B=/grimoire_imp_lord",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 65,
+    "List": "soulharvest",
+    "Kind": "action",
+    "Text": "actions.soulharvest\u002B=/grimoire_fel_ravager",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 66,
+    "List": "soulharvest",
+    "Kind": "action",
+    "Text": "actions.soulharvest\u002B=/summon_doomguard",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 67,
+    "List": "soulharvest",
+    "Kind": "action",
+    "Text": "actions.soulharvest\u002B=/call_dreadstalkers",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 68,
+    "List": "soulharvest",
+    "Kind": "action",
+    "Text": "actions.soulharvest\u002B=/summon_demonic_tyrant",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 69,
+    "List": "soulharvest",
+    "Kind": "binding",
+    "Text": "buff.wild_imps.stack",
+    "Status": "bound",
+    "Detail": "s.imps"
+  },
+  {
+    "Number": 69,
+    "List": "soulharvest",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 69,
+    "List": "soulharvest",
+    "Kind": "binding",
+    "Text": "talent.to_hell_and_back.enabled",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022to_hell_and_back\u0022])"
+  },
+  {
+    "Number": 69,
+    "List": "soulharvest",
+    "Kind": "expression",
+    "Text": "buff.wild_imps.stack\u003E=6\u0026(active_enemies\u003E2|talent.to_hell_and_back.enabled)",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 69,
+    "List": "soulharvest",
+    "Kind": "option",
+    "Text": "if=buff.wild_imps.stack\u003E=6\u0026(active_enemies\u003E2|talent.to_hell_and_back.enabled)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 69,
+    "List": "soulharvest",
+    "Kind": "action",
+    "Text": "actions.soulharvest\u002B=/implosion,if=buff.wild_imps.stack\u003E=6\u0026(active_enemies\u003E2|talent.to_hell_and_back.enabled)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 70,
+    "List": "soulharvest",
+    "Kind": "action",
+    "Text": "actions.soulharvest\u002B=/hand_of_guldan",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 71,
+    "List": "soulharvest",
+    "Kind": "binding",
+    "Text": "soul_shard",
+    "Status": "bound",
+    "Detail": "s.shards"
+  },
+  {
+    "Number": 71,
+    "List": "soulharvest",
+    "Kind": "expression",
+    "Text": "soul_shard\u003C3",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 71,
+    "List": "soulharvest",
+    "Kind": "option",
+    "Text": "if=soul_shard\u003C3",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 71,
+    "List": "soulharvest",
+    "Kind": "action",
+    "Text": "actions.soulharvest\u002B=/infernal_bolt,if=soul_shard\u003C3",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 72,
+    "List": "soulharvest",
+    "Kind": "binding",
+    "Text": "soul_shard",
+    "Status": "bound",
+    "Detail": "s.shards"
+  },
+  {
+    "Number": 72,
+    "List": "soulharvest",
+    "Kind": "binding",
+    "Text": "buff.demonic_core.stack",
+    "Status": "bound",
+    "Detail": "s.coreStacks"
+  },
+  {
+    "Number": 72,
+    "List": "soulharvest",
+    "Kind": "binding",
+    "Text": "talent.doom",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022doom\u0022])"
+  },
+  {
+    "Number": 72,
+    "List": "soulharvest",
+    "Kind": "expression",
+    "Text": "soul_shard\u003C4\u0026buff.demonic_core.stack\u003E=1\u0026talent.doom",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 72,
+    "List": "soulharvest",
+    "Kind": "option",
+    "Text": "target_if=(!debuff.doom.up)",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 72,
+    "List": "soulharvest",
+    "Kind": "option",
+    "Text": "if=soul_shard\u003C4\u0026buff.demonic_core.stack\u003E=1\u0026talent.doom",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 72,
+    "List": "soulharvest",
+    "Kind": "action",
+    "Text": "actions.soulharvest\u002B=/demonbolt,target_if=(!debuff.doom.up),if=soul_shard\u003C4\u0026buff.demonic_core.stack\u003E=1\u0026talent.doom",
+    "Status": "unsupported",
+    "Detail": "Unsupported expression or option; entire action omitted"
+  },
+  {
+    "Number": 73,
+    "List": "soulharvest",
+    "Kind": "binding",
+    "Text": "soul_shard",
+    "Status": "bound",
+    "Detail": "s.shards"
+  },
+  {
+    "Number": 73,
+    "List": "soulharvest",
+    "Kind": "binding",
+    "Text": "buff.demonic_core.stack",
+    "Status": "bound",
+    "Detail": "s.coreStacks"
+  },
+  {
+    "Number": 73,
+    "List": "soulharvest",
+    "Kind": "binding",
+    "Text": "talent.doom",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022doom\u0022])"
+  },
+  {
+    "Number": 73,
+    "List": "soulharvest",
+    "Kind": "expression",
+    "Text": "soul_shard\u003C4\u0026buff.demonic_core.stack\u003E=2\u0026!talent.doom",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 73,
+    "List": "soulharvest",
+    "Kind": "option",
+    "Text": "if=soul_shard\u003C4\u0026buff.demonic_core.stack\u003E=2\u0026!talent.doom",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 73,
+    "List": "soulharvest",
+    "Kind": "action",
+    "Text": "actions.soulharvest\u002B=/demonbolt,if=soul_shard\u003C4\u0026buff.demonic_core.stack\u003E=2\u0026!talent.doom",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 74,
+    "List": "soulharvest",
+    "Kind": "binding",
+    "Text": "soul_shard",
+    "Status": "bound",
+    "Detail": "s.shards"
+  },
+  {
+    "Number": 74,
+    "List": "soulharvest",
+    "Kind": "binding",
+    "Text": "buff.demonic_core.react",
+    "Status": "bound",
+    "Detail": "N(s.coreUp)"
+  },
+  {
+    "Number": 74,
+    "List": "soulharvest",
+    "Kind": "expression",
+    "Text": "soul_shard\u003C4\u0026buff.demonic_core.react",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 74,
+    "List": "soulharvest",
+    "Kind": "option",
+    "Text": "if=soul_shard\u003C4\u0026buff.demonic_core.react",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 74,
+    "List": "soulharvest",
+    "Kind": "action",
+    "Text": "actions.soulharvest\u002B=/demonbolt,if=soul_shard\u003C4\u0026buff.demonic_core.react",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 75,
+    "List": "soulharvest",
+    "Kind": "action",
+    "Text": "actions.soulharvest\u002B=/shadow_bolt",
+    "Status": "bound",
+    "Detail": ""
+  }
+]

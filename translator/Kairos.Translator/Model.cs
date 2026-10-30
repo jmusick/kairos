@@ -7,7 +7,7 @@ namespace Kairos.Translator;
 public sealed record Spell(int Id, string Availability, string? Toggle = null, string? Key = null);
 // Module is the namespace field the generated table is exposed as (Kairos.<Module>).
 public sealed record Metadata(string Name, int Spec, string Simc, string Module, Dictionary<string, Spell> Spells,
-    Dictionary<string, string> Bindings, string[] ExcludedLists)
+    Dictionary<string, string> Bindings, string[] ExcludedLists, Dictionary<string, string>? EntryPoints = null)
 {
     public static Metadata Load(string path) => JsonSerializer.Deserialize<Metadata>(File.ReadAllText(path),
         new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? throw new FormatException("Empty metadata");

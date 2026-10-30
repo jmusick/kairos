@@ -9,7 +9,7 @@
 --   lua tools/kairos-dump.lua salvo <WoWCombatLog.txt> <player> [from HH:MM:SS [to HH:MM:SS]] [verbose]
 --       replays the log through Kairos/Specs/MageArcane/Salvo.lua and scores the estimate against true stacks
 --   lua tools/kairos-dump.lua apl <WoWCombatLog.txt> <SavedVariables\Kairos.lua> <player> [from [to]] [verbose]
---       the Arcane APL on true state vs Kairos's estimates, Assisted Combat and the player's casts
+--       the APL on true state vs Kairos's estimates/live picks, AC and the player's casts
 --   lua tools/kairos-dump.lua watch <WoWCombatLog.txt> <SavedVariables\Kairos.lua> <player> [auraID ...]
 --           [from [to]] [verbose]
 --       lines the recorder's watch signatures up with auras from the log (default: Overpowered
@@ -109,6 +109,8 @@ local function describe(entry, names)
     local k = entry.k
     if k == "cast" then return "cast   " .. spellLabel(names, entry.spell) end
     if k == "ac" then return "charges " .. tostring(entry.n) end
+    if k == "shards" then return "shards " .. tostring(entry.n) end
+    if k == "demo" then return ("demo   imps~%s after %s"):format(tostring(entry.imps), spellLabel(names, entry.spell)) end
     if k == "cp" then return ("cumpow %s %s"):format(tostring(entry.n), tostring(entry.why)) end
     if k == "watch" then return ("watch  %s %s"):format(spellLabel(names, entry.spell), tostring(entry.sig)) end
     if k == "salvo" then
@@ -117,8 +119,12 @@ local function describe(entry, names)
     end
     if k == "glow" then return ("glow   %s %s"):format(spellLabel(names, entry.spell), entry.on and "on" or "off") end
     if k == "pick" then
-        return ("pick   %s %s%s"):format(entry.src or "?", spellLabel(names, entry.spell),
-            entry.why and (" (" .. entry.why .. ")") or "")
+        return ("pick   %s %s%s%s%s%s%s%s"):format(entry.src or "?", spellLabel(names, entry.spell),
+            entry.why and (" (" .. entry.why .. ")") or "", entry.label and (" " .. entry.label) or "",
+            entry.observed and " (observation only)" or "",
+            entry.offGcd and (" NOW " .. spellLabel(names, entry.offGcd)) or "",
+            entry.fields and (" unknown: " .. entry.fields) or "",
+            entry.paired and (" + " .. spellLabel(names, entry.paired)) or "")
     end
     if k == "aura" then
         if entry.op == "add" then
@@ -348,6 +354,7 @@ local function replayArcane(logPath, player)
     local seen = { casts = {}, auras = {} }
     local lit, truthKnown, lastEvent, lastTick, channelStart, anchors = false, false, nil, nil, nil, 0
     local started, successes = {}, {}
+    local boltProcAt, boltPreviouslyUp
 
     local function advanceOrb(t)
         while orb.since and orb.n < A.ORB_CHARGES and t >= orb.since + A.ORB_RECHARGE do
@@ -392,7 +399,7 @@ local function replayArcane(logPath, player)
     end
 
     --- A decision point: the state just before the player committed to spellID.
-    local function record(t, spellID)
+    local function record(t, spellID, atSuccess)
         if not truthKnown then return end
         local estimate, low, high = Salvo:Estimate(t)
         local power, salvo, powerTruth = Power:Estimate(t), stacks[A.SALVO], stacks[A.CUMULATIVE]
@@ -403,7 +410,20 @@ local function replayArcane(logPath, player)
             estState = state(t, estimate, power),        -- Kairos: both estimates
             salvoOnlyState = state(t, estimate, powerTruth),
             powerOnlyState = state(t, salvo, power),
+            atSuccess = atSuccess,
         }
+        local result = records[#records]
+        -- Barrage generates Bolt before its CAST_SUCCESS is printed (2-5 ms in
+        -- build 70575). The proc is an effect of this press, not an available
+        -- alternative before the press. Keep it in global state for later casts.
+        if spellID == S.BARRAGE and boltProcAt and not boltPreviouslyUp
+            and t >= boltProcAt and t - boltProcAt <= 0.01 then
+            for _, key in ipairs({ "trueState", "estState", "salvoOnlyState", "powerOnlyState" }) do
+                result[key].boltReady = false
+            end
+            result.barrageProc = true
+        end
+        return result
     end
 
     local function each(fn) eachPlayerEvent(logPath, player, fn) end
@@ -427,6 +447,9 @@ local function replayArcane(logPath, player)
 
         local onMe = f[7] and f[7]:sub(1, #player) == player
         if event:find("^SPELL_AURA") and onMe and id then
+            if id == A.BOLT_PROC and event == "SPELL_AURA_APPLIED" then
+                boltProcAt, boltPreviouslyUp = t, up[id] == true
+            end
             if stacks[id] then
                 if event == "SPELL_AURA_APPLIED" then stacks[id] = 1
                 elseif event == "SPELL_AURA_REMOVED" then stacks[id] = 0
@@ -447,8 +470,7 @@ local function replayArcane(logPath, player)
             if f[6] and f[6]:find("^Creature") then enemies[f[6]] = t end
             if id == A.MISSILE_TICK then lastTick = t end
         elseif event == "SPELL_CAST_START" and id and onGcd[id] then
-            record(t, id)
-            started[id] = true
+            started[id] = record(t, id, false) or true
         elseif event == "SPELL_CAST_FAILED" and id then
             started[id] = nil
         elseif event == "SPELL_CAST_SUCCESS" and id then
@@ -460,7 +482,9 @@ local function replayArcane(logPath, player)
             channelStart = (id == S.MISSILES) and t or nil
             -- A cast-time spell was decided when its cast started (recorded there); its
             -- success only lands the effects. Instants and channels decide on success.
-            if onGcd[id] and not started[id] then record(t, id) end
+            local decision = started[id]
+            if onGcd[id] and not decision then decision = record(t, id, true) end
+            if type(decision) == "table" then decision.successIndex = #successes end
             started[id] = nil
             Salvo:OnCast(id, t)
             Power:OnCast(id, t)
@@ -562,22 +586,45 @@ local function alignRecorder(entries, records)
         end
         return hits
     end
-    local best, bestHits = nil, -1
-    local probe = recCasts[#recCasts]
-    if not probe then return nil, 0, 0 end
-    for _, r in ipairs(records) do
-        if r.spell == probe.spell then
-            local hits = matches(r.t - probe.t)
-            if hits > bestHits then best, bestHits = r.t - probe.t, hits end
+    local best, bestHits, tried = nil, 0, {}
+    -- The last recorded cast may have happened after logging stopped (buffs, food,
+    -- or another character). Seed several recent successes rather than fail outright.
+    for i = #recCasts, math.max(1, #recCasts - 31), -1 do
+        local probe = recCasts[i]
+        for _, r in ipairs(records) do
+            if r.spell == probe.spell then
+                local offset = r.t - probe.t
+                local key = math.floor(offset * 1000)
+                if not tried[key] then
+                    tried[key] = true
+                    local hits = matches(offset)
+                    if hits > bestHits then best, bestHits = offset, hits end
+                end
+            end
         end
     end
     return best, bestHits, #recCasts
 end
 
--- Compares, at every cast: Assisted Combat's pick (from the flight recorder), the APL on
--- true state, the APL with Kairos's Salvo estimate in place of the true stacks, and what
--- the player cast. Everything except Salvo comes from the log's true state, so the
--- Kairos-vs-APL gap measures the estimator alone.
+local function recorderForPlayer(recorded, player, spec)
+    local hasSessions = false
+    for _, e in ipairs(recorded) do
+        if e.k == "session" and e.char then hasSessions = true; break end
+    end
+    if not hasSessions then return recorded end -- legacy fixtures/recordings
+    local out, active = {}, false
+    for _, e in ipairs(recorded) do
+        if e.k == "session" then
+            active = e.char and e.char:sub(1, #player) == player and e.spec == spec
+        end
+        if active then out[#out + 1] = e end
+    end
+    return out
+end
+
+-- Compare true-state APL picks, the two-estimator replay, recorded live/AC picks and
+-- player casts. Only the live column measures the complete in-game adapter; the
+-- estimator-only columns hold every other field at the log's reconstructed truth.
 function commands.apl(logPath, svPath, player, ...)
     player = player or fail("Usage: apl <WoWCombatLog.txt> <Kairos.lua> <player> [from [to]] [verbose]")
     local from, to, verbose = parseOptions(...)
@@ -588,20 +635,47 @@ function commands.apl(logPath, svPath, player, ...)
     local names = spellNames(db, loadProbe())
     names[S.BOLT] = names[S.BOLT] or "Prismatic Bolt"
 
-    local recorded = entries(db)
+    local recorded = recorderForPlayer(entries(db), player, 62)
     local offset, hits, recCasts = alignRecorder(recorded, successes)
-    local picks = {}
-    for _, e in ipairs(recorded) do
-        if e.k == "pick" and e.t and offset then
-            picks[#picks + 1] = { t = e.t + offset, spell = e.spell, src = e.src }
+    -- GetTime can coalesce consecutive successes into one frame. Match each log
+    -- success to its ordered recorder cast so a post-cast pick cannot be scored
+    -- as the recommendation for that cast, even if its aligned clock is a few ms early.
+    local boundaries, lastCastIndex = {}, 0
+    if offset then
+        for successIndex, success in ipairs(successes) do
+            local best, distance
+            for index = lastCastIndex + 1, #recorded do
+                local entry = recorded[index]
+                if entry.t and entry.t + offset > success.t + 0.15 then break end
+                if entry.k == "cast" and entry.spell == success.spell and entry.t then
+                    local delta = math.abs(entry.t + offset - success.t)
+                    if delta <= 0.15 and (not distance or delta < distance) then best, distance = index, delta end
+                end
+            end
+            if best then boundaries[successIndex], lastCastIndex = best, best end
         end
     end
-    local function acAt(t)
-        local found
-        for _, p in ipairs(picks) do
-            if p.t < t - 0.001 then found = p else break end
+    local picks, hasKairos = {}, false
+    for index, e in ipairs(recorded) do
+        if e.k == "pick" and e.t and offset then
+            picks[#picks + 1] = { t = e.t + offset, spell = e.spell, src = e.src,
+                label = e.label, observed = e.observed, index = index }
+            if e.src == "kairos" then hasKairos = true end
         end
-        return found and found.src == "ac" and found.spell or nil
+    end
+    local function pickAt(record)
+        local found, ac
+        local boundary = record.successIndex and boundaries[record.successIndex]
+        for _, p in ipairs(picks) do
+            if boundary and p.index >= boundary then break end
+            -- Instants/channels decide on success: recorder order is the boundary.
+            -- Cast-time spells still decide at START, before their success boundary.
+            if not (boundary and record.atSuccess) and p.t >= record.t - 0.001 then break end
+            if not p.observed then found = p end
+            if p.src == "ac" then ac = p.spell end
+            if p.src == "none" then ac = nil end
+        end
+        return found, ac
     end
     -- Prismatic Bolt replaces Arcane Blast on the bar while its proc is up: same button.
     local function button(spell, s)
@@ -614,13 +688,20 @@ function commands.apl(logPath, svPath, player, ...)
         r.aplEst = APL:Evaluate(r.estState)
         r.aplSalvoOnly = APL:Evaluate(r.salvoOnlyState)
         r.aplPowerOnly = APL:Evaluate(r.powerOnlyState)
-        local ac = acAt(r.t)
+        local live, ac = pickAt(r)
         r.ac = ac and button(ac, r.trueState) or nil
+        r.live = live and live.src == "kairos" and button(live.spell, r.trueState) or nil
+        r.display = live and button(live.spell, r.trueState) or nil
+        r.fallback = live and live.src == "ac" or false
+        r.liveLabel = live and live.src == "kairos" and live.label or nil
         r.cast = button(r.spell, r.trueState)
     end
 
     print(("APL replay: %s (SimC %s), %d decisions"):format(APL.name, APL.simc, #records))
     print(("  recorder aligned: %d/%d casts (offset %s)"):format(hits, recCasts, tostring(offset)))
+    local barrageProcs = 0
+    for _, r in ipairs(records) do if r.barrageProc then barrageProcs = barrageProcs + 1 end end
+    if barrageProcs > 0 then print(("  Barrage-generated Bolt procs excluded from pre-press state: %d"):format(barrageProcs)) end
     print("  Kairos (both estimates)  = APL on true state: " .. rate(records, function(r)
         return r.aplEst.spellID == r.aplTrue.spellID end))
     print("    Salvo estimated only:                       " .. rate(records, function(r)
@@ -631,6 +712,14 @@ function commands.apl(logPath, svPath, player, ...)
         return (r.power == 8) == (r.powerTruth == 8) end))
     print("  Assisted Combat          = APL on true state: " .. rate(records, function(r)
         return r.ac == r.aplTrue.spellID end, function(r) return r.ac ~= nil end))
+    if hasKairos then
+        print("  Kairos in game           = APL on true state: " .. rate(records, function(r)
+            return r.live == r.aplTrue.spellID end, function(r) return r.live ~= nil end))
+        print("    Display including AC fallback:              " .. rate(records, function(r)
+            return r.display == r.aplTrue.spellID end, function(r) return r.display ~= nil end))
+        print("    AC fallback share of recorded decisions:    " .. rate(records, function(r)
+            return r.fallback end, function(r) return r.display ~= nil end))
+    end
     print("  Player cast              = APL on true state: " .. rate(records, function(r)
         return r.cast == r.aplTrue.spellID end))
 
@@ -640,13 +729,18 @@ function commands.apl(logPath, svPath, player, ...)
         local key = r.aplTrue.label or r.aplTrue.line
         local row = lines[key]
         if not row then
-            row = { n = 0, kairos = 0, acN = 0, ac = 0, player = 0, acInstead = {}, source = r.aplTrue.line }
+            row = { n = 0, kairos = 0, liveN = 0, live = 0, acN = 0, ac = 0,
+                player = 0, acInstead = {}, source = r.aplTrue.line }
             lines[key] = row
             order[#order + 1] = key
         end
         row.n = row.n + 1
         if r.aplEst.spellID == r.aplTrue.spellID then row.kairos = row.kairos + 1 end
         if r.cast == r.aplTrue.spellID then row.player = row.player + 1 end
+        if r.live then
+            row.liveN = row.liveN + 1
+            if r.live == r.aplTrue.spellID then row.live = row.live + 1 end
+        end
         if r.ac then
             row.acN = row.acN + 1
             if r.ac == r.aplTrue.spellID then
@@ -659,8 +753,9 @@ function commands.apl(logPath, svPath, player, ...)
     end
     table.sort(order, function(a, b) return lines[a].n > lines[b].n end)
     print("")
-    print("| APL line (true state) | Decisions | Kairos agrees | AC agrees | Player agrees | AC picked instead |")
-    print("|---|---|---|---|---|---|")
+    print("| APL line (true state) | Decisions | Kairos estimates agree |"
+        .. (hasKairos and " In game agrees |" or "") .. " AC agrees | Player agrees | AC picked instead |")
+    print("|---|---|---|" .. (hasKairos and "---|" or "") .. "---|---|---|")
     for _, key in ipairs(order) do
         local row = lines[key]
         local instead = {}
@@ -668,8 +763,9 @@ function commands.apl(logPath, svPath, player, ...)
         table.sort(instead, function(a, b) return a[2] > b[2] end)
         local parts = {}
         for i = 1, math.min(3, #instead) do parts[i] = ("%s %d"):format(instead[i][1], instead[i][2]) end
-        print(("| %s | %d | %d | %d/%d | %d | %s |"):format(key, row.n, row.kairos, row.ac, row.acN, row.player,
-            table.concat(parts, ", ")))
+        local live = hasKairos and (" %d/%d |"):format(row.live, row.liveN) or ""
+        print(("| %s | %d | %d |%s %d/%d | %d | %s |"):format(key, row.n, row.kairos, live,
+            row.ac, row.acN, row.player, table.concat(parts, ", ")))
     end
     -- What each label stands for: "(i/k)" is the i-th top-level `|` clause of its line.
     local legend, seen = {}, {}
@@ -692,6 +788,10 @@ function commands.apl(logPath, svPath, player, ...)
                 r.truth, r.est, names[r.aplTrue.spellID] or r.aplTrue.spellID,
                 names[r.aplEst.spellID] or r.aplEst.spellID, r.ac and (names[r.ac] or r.ac) or "-",
                 names[r.cast] or r.cast, r.aplTrue.label or r.aplTrue.line))
+            if hasKairos then
+                print(("    in game: %s  %s"):format(r.live and (names[r.live] or r.live) or "AC/unrecorded",
+                    r.liveLabel or ""))
+            end
         end
     end
 end

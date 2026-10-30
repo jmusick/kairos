@@ -12,6 +12,7 @@ DB.MIGRATIONS = {
 }
 
 DB.globalDefaults = {
+    enabled = true,
     recorder = true,
     autoProbe = true,
     combatLog = true,
@@ -22,12 +23,14 @@ DB.globalDefaults = {
 DB.profileDefaults = {
     display = {
         scale = 1,
+        mainSize = 52,
         locked = false,
         showQueued = true,
         showKeybinds = true,
         showInterrupt = true,
+        showOffGcd = true,
         showToggles = true,
-        -- point = { point, relativePoint, x, y } once the player drags the display
+        point = { "CENTER", "CENTER", 0, -180 },
     },
     toggles = {
         cooldowns = true,

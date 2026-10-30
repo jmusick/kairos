@@ -4,7 +4,7 @@ dofile(scratch .. "/expressions.lua")
 local reference = assert(loadfile("translator/Kairos.Translator.Tests/reference/mage_arcane_sunfury.lua"))("Kairos", {})
 local generated = assert(loadfile(scratch .. "/mage_arcane.lua"))("Kairos", {})
 local control = assert(loadfile(scratch .. "/control.lua"))("Kairos", {})
-local SURGE, TOUCH, ORB, PULSE = 365350, 321507, 153626, 260364
+local SURGE, TOUCH, ORB, PULSE = 365350, 321507, 153626, 1241462
 local MISSILES, BLAST, BARRAGE, BOLT = 5143, 30451, 44425, 1295924
 local count = 0
 local function state(overrides)
@@ -32,8 +32,11 @@ end
 
 -- The reference spec's boundary cases, including ordering between competing picks.
 compare(state(), BLAST, "fallback")
-compare(state({ ready = { [SURGE] = true }, clearcasting = 1 }), SURGE, "Surge first")
-compare(state({ ready = { [SURGE] = true }, clearcasting = 1, lustrousGleam = 1 }), MISSILES, "hold Surge at one Gleam")
+compare(state({ ready = { [SURGE] = true, [TOUCH] = true }, clearcasting = 1 }), SURGE, "Surge and Touch ready")
+compare(state({ ready = { [SURGE] = true, [TOUCH] = true }, clearcasting = 1, lustrousGleam = 1 }), MISSILES, "hold Surge at one Gleam")
+compare(state({ ready = { [SURGE] = true, [TOUCH] = false }, clearcasting = 1 }), MISSILES, "hold Surge for Touch")
+compare(state({ ready = { [SURGE] = true, [TOUCH] = true }, clearcasting = 1,
+    known = { [TOUCH] = false } }), MISSILES, "hold Surge without learned Touch")
 compare(state({ clearcasting = 1, salvo = 11 }), MISSILES, "Missiles below 12")
 compare(state({ clearcasting = 1, salvo = 12, charges = 3 }), BLAST, "Missiles boundary")
 compare(state({ clearcasting = 1, salvo = 12, charges = 4 }), BARRAGE, "Barrage at 12")
@@ -113,3 +116,4 @@ s.prevGcd, s.ready[TOUCH] = BARRAGE, true
 assert(control:OffGcd(s).spellID == TOUCH)
 assert(control:Evaluate(s).spellID == ORB, "off-GCD action must not displace main pick")
 print("Lua: expression semantics, " .. count .. " reference comparisons, and control-flow checks passed")
+assert(loadfile("translator/Kairos.Translator.Tests/verify_demonology.lua"))(scratch)

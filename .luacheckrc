@@ -22,6 +22,9 @@ read_globals = {
     "UnitThreatSituation", "LoggingCombat", "C_CVar",
     "UnitAffectingCombat", "UnitCanAttack", "UnitCastingInfo", "UnitChannelInfo", "UnitExists", "UnitGUID",
     "UnitHealth", "UnitHealthMax", "UnitName", "UnitPower", "UnitPowerMax", "UnitPowerType", "UnitSpellHaste",
+    "C_SpellBook", "IsPlayerSpell", "IsSpellKnown",
+    "UnitIsDeadOrGhost",
+    "C_Item", "GetInventoryItemID",
 }
 
 -- The dump tool defines no globals but reads the one SavedVariables defines.

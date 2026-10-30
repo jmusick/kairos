@@ -5,11 +5,12 @@ local _, Kairos = ...
 local Display = Kairos:NewModule("Display")
 local Signal = Kairos.Signal
 
-Display.MAIN_SIZE = 52
+Display.MAIN_SIZE = Kairos.DB.profileDefaults.display.mainSize
 Display.QUEUED_SIZE = 36
 Display.INTERRUPT_SIZE = 28
+Display.PAIRED_SIZE = 26
 Display.UNKNOWN_ICON = "Interface\\Icons\\INV_Misc_QuestionMark"
-Display.DEFAULT_POINT = { "CENTER", "CENTER", 0, -180 }
+Display.DEFAULT_POINT = Kairos.DB.profileDefaults.display.point
 
 local function createIcon(parent, size, fontObject)
     local button = CreateFrame("Frame", nil, parent, "BackdropTemplate")
@@ -31,15 +32,17 @@ end
 function Display:Create()
     if self.frame then return end
     local frame = CreateFrame("Frame", "KairosDisplay", UIParent, "BackdropTemplate")
-    frame:SetSize(self.MAIN_SIZE + 4 + self.QUEUED_SIZE, self.MAIN_SIZE)
+    -- The main icon is the drag handle. Optional icons extend outside this frame,
+    -- as the interrupt already does; don't reserve a blue strip for a hidden queue.
+    frame:SetSize(self.MAIN_SIZE, self.MAIN_SIZE)
     frame:SetClampedToScreen(true)
     frame:SetMovable(true)
     frame:RegisterForDrag("LeftButton")
     frame:SetScript("OnDragStart", function(f) f:StartMoving() end)
     frame:SetScript("OnDragStop", function(f)
         f:StopMovingOrSizing()
-        local point, _, relativePoint, x, y = f:GetPoint()
-        Kairos.profile.display.point = { point, relativePoint, x, y }
+        local x, y = self:GetPosition(true)
+        self:SetPosition(x, y)
     end)
 
     frame.unlockedLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -54,6 +57,14 @@ function Display:Create()
     main.badge:SetText("AC")
     main.badge:SetTextColor(1, 0.82, 0)
 
+    -- A child of main draws above it, without growing the drag/position frame.
+    local paired = createIcon(main, self.PAIRED_SIZE, "NumberFontNormalSmall")
+    paired:SetPoint("TOPRIGHT", main, "TOPRIGHT", 8, 8)
+    paired:SetBackdropBorderColor(0.2, 0.65, 1, 1)
+    paired.caption = paired:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
+    paired.caption:SetPoint("BOTTOMLEFT", 2, 2)
+    paired.caption:SetText("+")
+
     local queued = createIcon(frame, self.QUEUED_SIZE, "NumberFontNormalSmall")
     queued:SetPoint("BOTTOMLEFT", main, "BOTTOMRIGHT", 4, 0)
 
@@ -61,11 +72,20 @@ function Display:Create()
     interrupt:SetPoint("BOTTOMLEFT", main, "TOPLEFT", 0, 4)
     interrupt:SetBackdropBorderColor(0.9, 0.2, 0.2, 1)
 
+    local offGcd = createIcon(frame, self.QUEUED_SIZE, "NumberFontNormalSmall")
+    offGcd:SetPoint("BOTTOMLEFT", main, "TOPRIGHT", 4, 4)
+    offGcd:SetBackdropBorderColor(0.2, 0.65, 1, 1)
+    offGcd.caption = offGcd:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
+    offGcd.caption:SetPoint("BOTTOMLEFT", 2, 2)
+    offGcd.caption:SetText("NOW")
+
     local pip = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    pip:SetPoint("TOPLEFT", main, "BOTTOMLEFT", 1, -3)
+    pip:SetPoint("BOTTOMRIGHT", main, "BOTTOMLEFT", -6, 0)
     pip:SetText("CD")
 
     frame.main, frame.queued, frame.interrupt, frame.pip = main, queued, interrupt, pip
+    frame.offGcd = offGcd
+    frame.paired = paired
     self.frame = frame
 
     local elapsed = 0
@@ -78,7 +98,41 @@ function Display:Create()
     end)
 
     self:ApplyLayout()
-    frame:Show()
+end
+
+function Display:SetEnabled(enabled)
+    Kairos.db.global.enabled = enabled
+    if self.frame then self.frame:SetShown(enabled) end
+    if enabled then self:Refresh() end
+end
+
+function Display:SetPosition(x, y)
+    Kairos.profile.display.point = { "CENTER", "CENTER", x, y }
+    self:ApplyLayout()
+end
+
+function Display:GetPosition(fromFrame)
+    local point = Kairos.profile.display.point or self.DEFAULT_POINT
+    if not fromFrame and point[1] == "CENTER" and point[2] == "CENTER" then return point[3], point[4] end
+    -- Dragging can leave a TOPLEFT/BOTTOMLEFT anchor. Convert the actual main-frame
+    -- center into the same CENTER offsets the command and both controls write.
+    local function read(fn)
+        local r = Signal.Read(fn)
+        return r.state == "known" and type(r.value) == "number" and r.value or nil
+    end
+    local frame = self.frame
+    if frame then
+        local x = read(function() return (frame:GetCenter()) end)
+        local y = read(function() return (select(2, frame:GetCenter())) end)
+        local px = read(function() return (UIParent:GetCenter()) end)
+        local py = read(function() return (select(2, UIParent:GetCenter())) end)
+        local scale = read(function() return frame:GetEffectiveScale() end)
+        local parentScale = read(function() return UIParent:GetEffectiveScale() end)
+        if x and y and px and py and scale and parentScale and scale > 0 then
+            return x - px * parentScale / scale, y - py * parentScale / scale
+        end
+    end
+    return point[3], point[4]
 end
 
 function Display:ApplyLayout()
@@ -86,9 +140,14 @@ function Display:ApplyLayout()
     if not frame then return end
     local settings = Kairos.profile.display
     local point = settings.point or self.DEFAULT_POINT
+    local size = settings.mainSize or self.MAIN_SIZE
+    frame:SetSize(size, size)
+    frame.main:SetSize(size, size)
+    frame.paired:SetSize(size / 2, size / 2)
     frame:ClearAllPoints()
     frame:SetPoint(point[1], UIParent, point[2], point[3], point[4])
     frame:SetScale(settings.scale or 1)
+    frame:SetShown(Kairos.db.global.enabled)
 
     local unlocked = not settings.locked
     frame:EnableMouse(unlocked)
@@ -114,13 +173,19 @@ local function setUsableTint(texture, spellID)
     end
 end
 
-local function showSpell(button, spellID, showKeybind)
+local function showSpell(button, spellID, showKeybind, exact)
     if not spellID then
         button:Hide()
         return
     end
-    local texture = C_Spell.GetSpellTexture(spellID)
-    button.icon:SetTexture(texture or Display.UNKNOWN_ICON)
+    local texture = Signal.Read(function()
+        local icon, original = C_Spell.GetSpellTexture(spellID)
+        -- icon can still show an active override after lookahead consumed its proc.
+        -- originalIconID (second return) belongs to the exact recommended spell.
+        if exact and (Signal.IsSecret(original) or original ~= nil) then return original end
+        return icon
+    end)
+    button.icon:SetTexture(texture.state == "known" and texture.value or Display.UNKNOWN_ICON)
     setUsableTint(button.icon, spellID)
     button.keybind:SetText(showKeybind and Kairos.Keybinds:Lookup(spellID) or "")
     button:Show()
@@ -129,6 +194,7 @@ end
 function Display:Refresh()
     local frame = self.frame
     if not frame then return end
+    if not Kairos.db.global.enabled then frame:Hide(); return end
     local settings = Kairos.profile.display
     local rec = Kairos.APL:Recommend()
     self.current = rec
@@ -136,7 +202,7 @@ function Display:Refresh()
 
     local main = frame.main
     if rec.spellID then
-        showSpell(main, rec.spellID, settings.showKeybinds)
+        showSpell(main, rec.spellID, settings.showKeybinds, rec.source == "apl")
     else
         -- Never blank (D17): no pick from Kairos or Blizzard shows a question mark.
         main.icon:SetTexture(self.UNKNOWN_ICON)
@@ -144,10 +210,16 @@ function Display:Refresh()
         main.keybind:SetText("")
         main:Show()
     end
-    main.badge:SetShown(rec.source ~= "apl")
+    main.badge:SetText(rec.immediate and "NOW" or "AC")
+    main.badge:SetShown(rec.source ~= "apl" or rec.immediate == true)
+    -- Keep the main binding clear of the overlapping follow-up icon.
+    main.keybind:ClearAllPoints()
+    main.keybind:SetPoint(rec.pairedID and "BOTTOMRIGHT" or "TOPRIGHT", -2, rec.pairedID and 3 or -3)
 
-    showSpell(frame.queued, settings.showQueued and rec.queuedID or nil, settings.showKeybinds)
-    showSpell(frame.interrupt, settings.showInterrupt and rec.interruptID or nil, settings.showKeybinds)
+    showSpell(frame.queued, settings.showQueued and rec.queuedID or nil, settings.showKeybinds, true)
+    showSpell(frame.interrupt, settings.showInterrupt and rec.interruptID or nil, settings.showKeybinds, true)
+    showSpell(frame.offGcd, settings.showOffGcd and rec.offGcdID or nil, settings.showKeybinds, true)
+    showSpell(frame.paired, rec.pairedID, settings.showKeybinds, true)
 
     local pip = frame.pip
     pip:SetShown(settings.showToggles)
@@ -165,4 +237,11 @@ function Display:OnLogin()
     Kairos:On("KAIROS_TOGGLE_CHANGED", refresh)
     Kairos:On("KAIROS_PLAYER_CAST", refresh)
     Kairos:On("PLAYER_TARGET_CHANGED", refresh)
+    -- These run after the state/estimator handlers registered during OnInit.
+    -- Advance lookahead as soon as a cast starts, and restore it on interruption.
+    for _, event in ipairs({ "UNIT_SPELLCAST_START", "UNIT_SPELLCAST_DELAYED", "UNIT_SPELLCAST_STOP",
+        "UNIT_SPELLCAST_FAILED", "UNIT_SPELLCAST_INTERRUPTED", "UNIT_SPELLCAST_CHANNEL_START",
+        "UNIT_SPELLCAST_CHANNEL_UPDATE", "UNIT_SPELLCAST_CHANNEL_STOP" }) do
+        Kairos:OnUnit(event, "player", refresh)
+    end
 end

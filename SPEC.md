@@ -1,8 +1,8 @@
 # Kairos: Specification
 
-> **Status:** Draft 0.4. Addon 0.1.0 exists: the foundation and the secrecy probe (§8.1), with Assisted Combat as the only pick source. No translator or APLs yet.
+> **Status:** Draft 0.5. Addon 0.2.0 includes Arcane Sunfury and experimental Demonology modules: generated APLs, live state adapters and secrecy probes. Live agreement is still being validated.
 > **Target:** World of Warcraft Retail, Midnight (12.x)
-> **Last updated:** 2026-10-29
+> **Last updated:** 2026-10-30
 
 *Kairos* (καιρός) is Greek for "the right moment," the instant when acting matters most. The addon's job is to point at that moment: what to press next.
 
@@ -35,7 +35,7 @@ Kairos **recommends** and never **acts**. It shows the player what to press next
 | D9 | 2026-10-29 | **Validate offline with `WoWCombatLog.txt` replays.** The combat log is never read live. |
 | D10 | 2026-10-29 | **Target content: Mythic+ and raid.** These have the tightest restrictions, so they're the design case. Open world is the test bed. |
 | D11 | 2026-10-29 | **Success = "feels like Hekili"** (metric in §9). |
-| D12 | 2026-10-29 | **Private for now.** Tuono is **reference only**: we start fresh and credit its research. |
+| D12 | 2026-10-29 | **Private for now** (visibility superseded by D38). Tuono is **reference only**: we start fresh and credit its research. |
 | D13 | 2026-10-29 | **Primary UI is Blizzard's default** action bars and frames, for keybind detection now and for C2 later if needed. |
 | D14 | 2026-10-29 | **Fallback-tier app (if built): C#/.NET, Windows-only.** The offline translator is C# too. |
 | D15 | 2026-10-29 | **Cooldown toggle off = "just used"**: `ready=false`, and `remains` reads as the full cooldown. |
@@ -57,6 +57,11 @@ Kairos **recommends** and never **acts**. It shows the player what to press next
 | D31 | 2026-10-29 | **Movement-aware:** while moving, prefer instants unless a cast-while-moving effect is active. |
 | D32 | 2026-10-29 | **No channel-clip cue in v1.** Arcane Missiles' `interrupt_if` is parsed but not displayed. |
 | D33 | 2026-10-29 | **Specs with no Kairos APL** show Assisted Combat's pick with the "AC" badge, consistent with D17. *(Default adopted. Change it if you disagree.)* |
+| D34 | 2026-10-30 | **Build an experimental Demonology leveling/Diabolist module alongside unfinished Arcane**, at the user's request for their level 80 Warlock. This does not decide or move the global fallback gate (D6). |
+| D35 | 2026-10-30 | **Touch uses the main icon when ready now.** When the selected Barrage should be immediately followed by Touch, show a smaller overlapping Touch icon on Barrage to represent the user's macro. This refines D7/D29 for off-GCD timing without changing the pinned priority list. |
+| D36 | 2026-10-30 | **Allow manual enable/disable**, at the user's request. Disabled hides the display and suspends recommendation evaluations; passive state tracking and recording settings remain active. D28 continues to mean visibility is independent of combat while enabled. |
+| D37 | 2026-10-30 | **Hold Arcane Surge until Touch is ready at the evaluation boundary**, at the user's explicit request after a delayed mini-burst left Touch 11 s behind Surge. This is a Kairos availability constraint on the pinned list (D4), declared in translator metadata; it does not falsify either spell's physical cooldown. Unknown Touch readiness forces AC when this gate is needed. |
+| D38 | 2026-10-30 | **Host publicly at `github.com/jmusick/kairos`, with `main` as the default branch**, at the user's explicit approval. This supersedes D12's private visibility and resolves Q10. Release commits and tags go to GitHub; CurseForge publishing is deferred. Tuono remains reference only. |
 
 ---
 
@@ -200,6 +205,7 @@ This reconstructs what SimC expressions need.
 - **Resources:**
   - Secondary resources are read directly.
   - Primary resources come from a spend-and-regen model, bounded by usability booleans.
+  - Arcane Orb's own successful cast starts an estimated 1.5 s pending-flight guard: withhold a repeat Orb while its Charge gains arrive, clearing on Barrage or timeout. This uses current time rather than projected GCD end so the icon advances immediately. Readable Arcane Charges and physical cooldown/charge state remain intact; no impact or distance reads are needed.
 - **Enemies (D24):** `active_enemies` is the count of hostile, in-combat nameplates, with hysteresis. Filtering by range depends on whether range checks on nameplate units are secret in instances (probe item, Q9).
 - **Fight length:** `fight_remains` is the hardest one, since target health is secret. Default heuristics: assume a long fight on bosses, and for M+ trash assume a short fight based on pull size. Confidence is low.
 - **Static context:** talents, hero tree, gear, set bonuses, and on-use trinkets, snapshotted out of combat.
@@ -218,6 +224,7 @@ This reconstructs what SimC expressions need.
 ### 7.4 Display (v1, D7)
 
 - **Two icons:** the current spell (large) and the next spell (smaller), Hekili-style.
+- Own-APL icons show the exact predicted spell's original artwork, including after consuming a temporary override in lookahead. AC retains live override artwork. Cast/channel start, updates and interruption refresh the display after state handlers, in addition to the throttled update.
 - **Keybind text (D26)** on each icon. The lookup order is:
   1. A manual override list, editable in settings.
   2. Default action bar slots: `GetActionInfo` maps a slot to a spell, and `GetBindingKey("ACTIONBUTTONn")`, `MULTIACTIONBAR*`, and so on give the key.
@@ -225,9 +232,10 @@ This reconstructs what SimC expressions need.
   
   The lookup rebuilds on `ACTIONBAR_SLOT_CHANGED`, `UPDATE_BINDINGS`, and macro updates, and is cached. *Verify that these are readable in combat. If not, snapshot them out of combat.*
 - **Interrupt icon (D19):** a small separate icon beside the main pair. It appears when the APL's interrupt line (e.g., `counterspell`) would fire and the interrupt is off cooldown. Enemy cast info is restricted, so Kairos can't know whether the target is casting something interruptible. The icon only means "interrupt available". Whether it should show only while the target is casting depends on the probe (Q8).
-- Toggle state indicator: a "CD" pip, lit or dimmed.
-- Movable, scalable, and lockable. **Always visible (D28)**. Out of combat, it shows the precombat list and the opener (D30).
-- **Settings (D27):** a native Blizzard Settings API panel and `/kairos` slash commands. Kairos uses its own SavedVariables (`KairosDB`) with per-character and per-spec profiles. It has no library dependencies.
+- **Off-GCD timing (D35):** Touch ready now takes the main icon with a NOW badge, evaluated on current state. If the next Barrage should be immediately followed by Touch, a smaller Touch icon with a + marker overlaps its upper-right corner. The adapter verifies the generated Touch rule after that Barrage; unknown follow-up state hides the overlay. Other optional off-GCD cues and interrupts remain separate.
+- Toggle state indicator: a "CD" pip to the left of the main icon, aligned with its bottom edge, lit or dimmed.
+- Movable, scalable, and lockable. X/Y coordinates position the main icon relative to screen center, using sliders and numeric edit boxes. **Visible regardless of combat (D28)** unless manually disabled (D36). Out of combat, it shows the precombat list and the opener (D30).
+- **Settings (D27):** a native Blizzard Settings API panel and `/kairos` slash commands. Main icon size has a slider and numeric edit box (32–128, default 52), independent of overall display scale. The paired overlay stays half the main icon size; auxiliary icons retain their sizes. Kairos uses its own SavedVariables (`KairosDB`) with per-character and per-spec profiles. It has no library dependencies.
 - *Later:* confidence styling, audio cues, a separate cooldown or defensive lane, and a longer queue.
 
 ### 7.5 Toggles (Hekili-style)
@@ -383,7 +391,7 @@ Resolved: D15–D33, including Evocation (D25), keybinds (D26), settings (D27), 
 1. **Q6: Which tank spec comes after Arcane?** Deferred until after the gate.
 2. **Q8: Interrupt icon timing.** Show it whenever the interrupt is ready, or only while the target is casting? This depends on whether `UnitCastingInfo("target")` presence, not details, is readable in instances. Probe item.
 3. **Q9: Nameplate range filtering.** Count every hostile in-combat nameplate, or only those in range of a reference spell? This depends on whether range checks on `nameplateN` units are secret in instances. Probe item.
-4. **Q10: Repo hosting.** Plain files, local git, or a private GitHub repo? Deferred.
+4. **Q10: Repo hosting.** Resolved by D38: public GitHub repository `jmusick/kairos`, default branch `main`. CurseForge publishing is deferred.
 5. **Q12: Spell queue window.** Should the main icon update early enough to queue the next spell (about 400 ms before the GCD ends, by default)? Is `SpellQueueWindow` readable, so it can be matched exactly?
 
 ---

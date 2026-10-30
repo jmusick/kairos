@@ -2,7 +2,7 @@
 ## Title: Kairos
 ## Notes: Rotation helper for Midnight. Shows what to press next. Recommends, never acts.
 ## Author: JD
-## Version: 0.1.0
+## Version: 0.2.0
 ## Category: Combat
 ## IconTexture: Interface\Icons\Spell_Nature_TimeStop
 ## SavedVariables: KairosDB
@@ -24,6 +24,13 @@ Data\CombatLog.lua
 Specs\MageArcane\Spec.lua
 Specs\MageArcane\Salvo.lua
 Specs\MageArcane\CumulativePower.lua
+Specs\MageArcane\APL.lua
+Specs\MageArcane\State.lua
+
+Specs\WarlockDemonology\Spec.lua
+Specs\WarlockDemonology\Demons.lua
+Specs\WarlockDemonology\APL.lua
+Specs\WarlockDemonology\State.lua
 
 UI\Display.lua
 Data\Probe.lua

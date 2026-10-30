@@ -83,7 +83,7 @@ describe("Probe", function()
         assert.are.equal("365362 table", find(run, "aura Arcane Surge on player auraID").value)
         assert.are.equal("2", find(run, "aura Arcane Surge on player auraSecrecy").value)
         assert.are.equal("1242974 table", find(run, "aura Arcane Salvo on player auraID").value)
-        assert.are.equal("unresolved", find(run, "aura Lustrous Gleam on player auraID").status)
+        assert.are.equal("1295147 table", find(run, "aura Lustrous Gleam on player auraID").value)
     end)
 
     it("prefers aura IDs learned in game", function()

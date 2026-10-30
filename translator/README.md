@@ -2,8 +2,8 @@
 
 C#/.NET 10, with no NuGet dependencies. Nothing in this directory reads the game or
 sends input; its only output into the addon is the generated APL module. The
-fixture `fixtures/mage_arcane.simc` is upstream's file byte for byte: SimC `midnight`,
-commit `515f4a3fe9`, `ActionPriorityLists/default/mage_arcane.simc`. The pin is manual; there is no
+fixtures `fixtures/mage_arcane.simc` and `fixtures/warlock_demonology.simc` are upstream's files byte for byte: SimC `midnight`,
+commit `515f4a3fe9`, `ActionPriorityLists/default/<spec>.simc`. The pin is manual; there is no
 upstream fetch or automatic update. Generated headers include the pin and translator version.
 
 ## Run tests
@@ -32,12 +32,15 @@ dotnet run --no-restore --project translator/Kairos.Translator.Tests
 
 Tests include exact Lua and coverage goldens for the full Arcane fixture and a
 small control-flow fixture; expression compilation/rejection and actual Lua
-numeric/boolean semantics; labels and clauses; coverage completeness; and 20,028
+numeric/boolean semantics; labels and clauses; coverage completeness; and 20,030
 deterministic main/off-GCD state comparisons against an independent hand-written
 translation (`Kairos.Translator.Tests/reference/mage_arcane_sunfury.lua`, the APL the
 addon shipped before this one), including the boundary cases in
 `tests/arcane_apl_spec.lua`. The Arcane golden Lua is the addon's own
 `Kairos/Specs/MageArcane/APL.lua`, so the shipped file can't drift from the generator.
+The same golden check covers `Kairos/Specs/WarlockDemonology/APL.lua`; an independent
+Lua reference makes 10,000 additional Demonology spell-choice comparisons across
+the hero routes and shared leveling entry. These compare translations, not live accuracy.
 Test output goes under the test project's ignored `obj/`. This validates the
 translation against the reference, not against a SimC simulation or a combat-log replay.
 
@@ -46,6 +49,7 @@ translation against the reference, not against a SimC simulation or a combat-log
 ```sh
 dotnet run --project translator/Kairos.Translator -- translator/fixtures/mage_arcane.simc translator/metadata/mage_arcane.json translator/golden/mage_arcane Kairos/Specs/MageArcane/APL.lua
 dotnet run --project translator/Kairos.Translator -- translator/fixtures/control.simc translator/metadata/mage_arcane.json translator/golden/control
+dotnet run --project translator/Kairos.Translator -- translator/fixtures/warlock_demonology.simc translator/metadata/warlock_demonology.json translator/golden/warlock_demonology Kairos/Specs/WarlockDemonology/APL.lua
 ```
 
 Writes `coverage.json` to the output directory, and the Lua module to the fourth
@@ -70,8 +74,9 @@ methods, called with Lua colon syntax. Each returns `{ spellID, line, label }` o
 
 `SPELLS` maps each metadata spell's `key` (default: the action name upper-cased) to
 its ID. The module is exposed as `Kairos.<module>` from the metadata (`ArcaneAPL`).
-It has no runtime registration or TOC entry yet: the current `Kairos.State` does
-not supply this state.
+It is loaded in the TOC before `Specs/MageArcane/State.lua` (`ArcaneState`), which
+builds this state and registers the Sunfury wrapper for spec 62 with `Engine/APL.lua`.
+The generated file itself remains independent of the live adapter and offline replay.
 
 The caller must provide a complete, plain, **non-secret** state table:
 
@@ -88,16 +93,23 @@ The caller must provide a complete, plain, **non-secret** state table:
 | `talent[name]` | Boolean or numeric talent rank; missing entry means zero |
 
 `ready`, `remains`, `chargesFractional`, and `talent` tables are required even when
-empty. Future runtime integration must resolve Signal uncertainty before calling
-this module, apply the cooldown toggle in the state adapter (D15), and fall back
-to Assisted Combat for unknown state or unsupported paths. Missing entries above
+empty. The live adapter tracks unknown Signal fields through read proxies, applies
+the cooldown toggle (D15), and falls back to Assisted Combat for unknown state or
+unsupported paths. Any unknown read before returning the pick, including a rejected
+higher-priority rule, makes that pick uncertain; estimated values count as known.
+Missing entries above
 are replay conventions, **not** a policy for secret or unknown live reads.
 
 `metadata/mage_arcane.json` owns the module name, spell IDs and their `SPELLS` keys,
 availability predicates, toggle tags, and exact expression-to-state bindings. Availability is checked independently of
 the rule's `if`: for example, Bolt needs its proc, Orb/Pulse need a full charge,
-and Surge/Touch must be ready. IDs and availability come from the supplied
-hand-written reference; this scaffold has no new spell-ID discovery or cooldown
+and Surge/Touch must be ready. Surge additionally requires learned, ready Touch
+at the evaluation boundary (D37). This is an explicit user-requested Kairos
+availability constraint, absent from the pinned source's Surge condition. Physical
+cooldown state remains unchanged, and the independent reference includes the same
+constraint. The Mage Pulse ID is corrected to `1241462` against
+the pinned Mage source/database (the old `260364` was the Nightborne racial); the
+independent reference uses the same corrected ID. This scaffold has no runtime spell-ID discovery or cooldown
 model. Cooldown durations, base charges, aura durations, and proc models remain
 state-model work. Metadata Lua snippets are trusted developer input.
 
@@ -146,9 +158,64 @@ Unsupported and visible in the checked-in Arcane coverage report:
 - Expression operators outside the subset above, including SimC division/modulo
   syntax, functions, and target selectors.
 
-This is a **partial offline Sunfury translator**, not a complete SimC APL or a
-live-ready addon module. In particular, selecting the Spellslinger hero tree is
-outside the contract, even if other emitted rules could return a pick. Coverage
-omissions must be resolved before production integration. One-step lookahead,
-the replay harness, state prediction, unknown-field tracking, movement/precombat
-integration, and the upstream bump script are not implemented here.
+This is a **partial Sunfury translator**, not a complete SimC APL. The experimental
+live adapter supplies cast-boundary prediction, cooldown/stack models and
+unknown-field tracking outside the generator. It rejects Spellslinger even when a
+cooldown rule could return a pick. The live movement filter prefers instants and
+permits Missiles with Slipstream. The queue is withheld because future proc changes
+are not modeled. The adapter withholds repeat Orb suggestions for an estimated
+1.5 s flight window after a manual Orb, cleared by Barrage or timeout, without
+altering the generated Orb rule or its real cooldown/charges. Off-GCD Touch ready now takes the main icon using current state,
+independent of cast/GCD projection. For a recommended Barrage, the adapter also asks
+the generated Touch rule whether it should immediately follow that Barrage; a known
+result becomes an overlapping paired icon. No generated priorities change. Precombat buff upkeep and the
+other omissions above remain unsupported. Full one-step lookahead, the C# replay
+harness and the upstream bump script are still planned. See the root README for
+the live approximations and the first-session scoring procedure.
+
+## Demonology contract and leveling entry
+
+`metadata/warlock_demonology.json` generates `Kairos.DemonologyAPL` for spec 266
+from the same pin as Arcane. `Evaluate(state)` follows the source's hero routing;
+`Leveling(state)` enters the shared `soulharvest` list before hero talents unlock,
+with the caller gating every unlearned spell. This is an explicit source-list entry,
+not a fabricated talent selection or a separately hand-written rotation. Diabolist
+is the initial play-test target for the user's level 80 build (D34).
+
+Metadata's optional `entryPoints` maps a Lua method name to a source list. All named
+entries share the same supported precombat variable initializers as `Evaluate`.
+Missing/excluded/precombat lists, reserved methods and invalid names are rejected.
+Specs without this option generate the same Lua as before; Arcane's output is unchanged.
+
+The complete plain, non-secret Demo input is:
+
+| Field | Meaning |
+| --- | --- |
+| `shards`, `coreStacks`, `imps` | Whole Soul Shards, Demonic Core stacks, Wild Imps |
+| `coreUp`, `argusUp`, `infernalReady`, `ruinationReady` | Core presence, Dominion of Argus, active spell replacements |
+| `enemies`, `gcdMax`, `fightRemains` | Hostile nameplate count, GCD seconds, estimated fight seconds |
+| `known[id]`, `castable[id]`, `ready[id]`, `remains[id]` | Learned spell, movement permission, cooldown availability and seconds |
+| `talent[name]` | Hero tree and supported talent booleans/ranks |
+
+The live `DemonologyState` caches spell/talent knowledge, predicts deterministic
+effects to cast/GCD end and applies the metadata's cooldown tags. A hidden Core count
+is never passed off as an exact count: when the glow proves presence, the wrapper
+evaluates all four possible positive counts and accepts only the same spell across
+all of them. Otherwise AC is used. Other unknown priority-path reads force AC.
+The imp count, timers, cached haste and 300 s fight length are estimates, documented
+in the root README. There is no Demo combat-log replay/accuracy score yet.
+
+Coverage: 15 Diabolist and 13 Soul Harvester action lines, plus both hero routing
+calls and the `in_opener` variable. The two `target_if` Demonbolt rules are omitted
+whole, while their generic Demonbolt fallbacks remain. Items, racials, potion/external
+buff recommendations and precombat actions remain unsupported in generated code.
+The live wrapper separately maps the source's `summon_pet` upkeep to a learned
+Felguard/Imp outside combat. No queued recommendations are emitted.
+
+Spell IDs, costs and base timers were checked against the pinned
+[Warlock initialization](https://github.com/simulationcraft/simc/blob/515f4a3fe9/engine/class_modules/warlock/sc_warlock_init.cpp),
+[actions](https://github.com/simulationcraft/simc/blob/515f4a3fe9/engine/class_modules/warlock/sc_warlock_actions.cpp),
+[pets](https://github.com/simulationcraft/simc/blob/515f4a3fe9/engine/class_modules/warlock/sc_warlock_pets.cpp)
+and `sc_spell_data.inc` (build 12.1.0.69587). In particular, Ruination is free and
+summons three imps; Infernal Bolt grants three shards. These are source-derived
+models awaiting the 12.1.5 in-game probe, not new confirmed probe findings.

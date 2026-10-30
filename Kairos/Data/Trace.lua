@@ -82,11 +82,19 @@ local function copy(tbl)
     return out
 end
 
-function Trace:ArcaneCharges()
-    local powerType = Enum and Enum.PowerType and Enum.PowerType.ArcaneCharges
+function Trace:Resource()
+    local spec = Kairos:CurrentSpec()
+    local resource = spec and spec.resource
+    local powerType = resource and Enum and Enum.PowerType and Enum.PowerType[resource.power]
     if not powerType then return nil end
     local reading = Signal.Read(UnitPower, "player", powerType)
-    return reading.state == "known" and reading.value or nil
+    return reading.state == "known" and reading.value or nil, resource.key
+end
+
+function Trace:WithResource(entry)
+    local value, key = self:Resource()
+    if key then entry[key] = value end
+    return entry
 end
 
 local function countInstances(self, ids, op)
@@ -137,8 +145,7 @@ end
 function Trace:FightStart()
     self:ResetEvents()
     self.fightStart = GetTime()
-    Kairos.Recorder:Push({ k = "fight", phase = "start", at = time(), auras = copy(self.known),
-        ac = self:ArcaneCharges() })
+    Kairos.Recorder:Push(self:WithResource({ k = "fight", phase = "start", at = time(), auras = copy(self.known) }))
 end
 
 --- Marks the end right away, then reads the auras once they turn readable. Open-world
@@ -154,7 +161,7 @@ function Trace:FightEnd()
     C_Timer.After(self.END_DELAY, function()
         if Kairos.State.inCombat then return end
         self:Refresh()
-        Kairos.Recorder:Push({ k = "fight", phase = "after", auras = copy(self.known), ac = self:ArcaneCharges() })
+        Kairos.Recorder:Push(self:WithResource({ k = "fight", phase = "after", auras = copy(self.known) }))
     end)
 end
 
@@ -236,18 +243,21 @@ function Trace:OnInit()
     Kairos:On("KAIROS_PROFILE_CHANGED", function()
         self.watchSlots = {}
         self.watched = {}
+        self.lastResource = nil
     end)
     Kairos:OnUnit("UNIT_POWER_UPDATE", "player", function(_, _, powerType)
-        if issecretvalue(powerType) or powerType ~= "ARCANE_CHARGES" then return end
-        local charges = self:ArcaneCharges()
-        if charges and charges ~= self.lastCharges then
-            self.lastCharges = charges
-            Kairos.Recorder:Push({ k = "ac", n = charges })
+        if issecretvalue(powerType) then return end
+        local spec = Kairos:CurrentSpec()
+        if not spec or not spec.resource or powerType ~= spec.resource.token then return end
+        local value, key = self:Resource()
+        if value ~= nil and value ~= self.lastResource then
+            self.lastResource = value
+            Kairos.Recorder:Push({ k = key, n = value })
         end
     end)
 end
 
 function Trace:OnLogin()
     self:Refresh()
-    self.lastCharges = self:ArcaneCharges()
+    self.lastResource = self:Resource()
 end

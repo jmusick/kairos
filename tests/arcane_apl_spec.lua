@@ -14,7 +14,7 @@ describe("Arcane Sunfury APL", function()
             soul = false, surgeUp = false, surgeRemains = 0, boltReady = false,
             enemies = 1, gcdMax = 1.2, prevGcd = nil,
             ready = {}, remains = { [365350] = 60 }, chargesFractional = { [153626] = 0.5 },
-            known = { [260364] = false }, talent = { spellfire_spheres = true }, setS2_4pc = true,
+            known = { [1241462] = false }, talent = { spellfire_spheres = true }, setS2_4pc = true,
         }
         for k, v in pairs(overrides or {}) do s[k] = v end
         return s
@@ -33,9 +33,13 @@ describe("Arcane Sunfury APL", function()
         assert.are.equal("actions.sunfury+=/arcane_blast", APL:Evaluate(state()).line)
     end)
 
-    it("casts Arcane Surge first when it's ready", function()
-        assert.are.equal("cooldowns:arcane_surge (2/2)", label({ ready = { [S.SURGE] = true }, clearcasting = 1 }))
-        assert.are.equal(S.MISSILES, spell({ ready = { [S.SURGE] = true }, clearcasting = 1, lustrousGleam = 1 }))
+    it("casts Arcane Surge first when both Surge and Touch are ready", function()
+        local ready = { [S.SURGE] = true, [S.TOUCH] = true }
+        assert.are.equal("cooldowns:arcane_surge (2/2)", label({ ready = ready, clearcasting = 1 }))
+        assert.are.equal(S.MISSILES, spell({ ready = ready, clearcasting = 1, lustrousGleam = 1 }))
+        assert.are.equal(S.MISSILES, spell({ ready = { [S.SURGE] = true, [S.TOUCH] = false }, clearcasting = 1 }))
+        assert.are.equal(S.MISSILES, spell({ ready = ready, clearcasting = 1,
+            known = { [S.TOUCH] = false } }))
     end)
 
     it("channels Missiles on Clearcasting below 12 Salvo", function()

@@ -1,0 +1,33 @@
+{
+  "name": "warlock_demonology leveling and hero trees",
+  "spec": 266,
+  "simc": "515f4a3fe9",
+  "module": "DemonologyAPL",
+  "excludedLists": ["items", "racials"],
+  "entryPoints": { "Leveling": "soulharvest" },
+  "spells": {
+    "power_siphon": { "id": 264130, "key": "SIPHON", "availability": "s.castable[{id}] and s.ready[{id}] and s.imps > 0" },
+    "hand_of_guldan": { "id": 105174, "key": "HAND", "availability": "s.castable[{id}] and s.shards >= 3 and not s.ruinationReady" },
+    "grimoire_imp_lord": { "id": 1276452, "key": "IMP_LORD", "availability": "s.castable[{id}] and s.ready[{id}] and s.shards >= 1", "toggle": "cooldowns" },
+    "grimoire_fel_ravager": { "id": 1276467, "key": "RAVAGER", "availability": "s.castable[{id}] and s.ready[{id}] and s.shards >= 1", "toggle": "cooldowns" },
+    "summon_doomguard": { "id": 1276672, "key": "DOOMGUARD", "availability": "s.castable[{id}] and s.ready[{id}] and s.shards >= 1", "toggle": "cooldowns" },
+    "call_dreadstalkers": { "id": 104316, "key": "DOGS", "availability": "s.castable[{id}] and s.ready[{id}] and s.shards >= 2" },
+    "summon_demonic_tyrant": { "id": 265187, "key": "TYRANT", "availability": "s.castable[{id}] and s.ready[{id}]", "toggle": "cooldowns" },
+    "implosion": { "id": 196277, "key": "IMPLOSION", "availability": "s.castable[{id}] and s.ready[{id}] and s.imps > 0" },
+    "ruination": { "id": 434635, "key": "RUINATION", "availability": "s.castable[{id}] and s.ruinationReady" },
+    "infernal_bolt": { "id": 434506, "key": "INFERNAL", "availability": "s.castable[{id}] and s.infernalReady" },
+    "demonbolt": { "id": 264178, "key": "DEMONBOLT", "availability": "s.castable[{id}] and s.coreUp" },
+    "shadow_bolt": { "id": 686, "key": "SHADOW", "availability": "s.castable[{id}] and not s.infernalReady" }
+  },
+  "bindings": {
+    "soul_shard": "s.shards",
+    "active_enemies": "s.enemies",
+    "gcd.max": "s.gcdMax",
+    "fight_remains": "s.fightRemains",
+    "buff.demonic_core.stack": "s.coreStacks",
+    "buff.demonic_core.react": "N(s.coreUp)",
+    "buff.dominion_of_argus.up": "N(s.argusUp)",
+    "buff.wild_imps.stack": "s.imps",
+    "talent.to_hell_and_back.enabled": "V(s.talent[\"to_hell_and_back\"])"
+  }
+}
