@@ -1,0 +1,17 @@
+{
+    "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+    "runtime.version": "Lua 5.1",
+    "workspace.ignoreDir": [".release"],
+    "diagnostics.globals": [
+        "Kairos",
+        "KairosDB",
+        "BINDING_HEADER_KAIROS",
+        "BINDING_NAME_KAIROS_TOGGLE_COOLDOWNS",
+        "SLASH_KAIROS1",
+        "SLASH_KAIROS2",
+        "describe",
+        "it",
+        "before_each"
+    ],
+    "diagnostics.disable": ["inject-field"]
+}

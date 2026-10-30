@@ -1,0 +1,5 @@
+<Bindings>
+    <Binding name="KAIROS_TOGGLE_COOLDOWNS" header="KAIROS" category="ADDONS">
+        Kairos.ToggleCooldowns()
+    </Binding>
+</Bindings>

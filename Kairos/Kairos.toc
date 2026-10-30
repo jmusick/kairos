@@ -1,0 +1,22 @@
+## Interface: 120105
+## Title: Kairos
+## Notes: Rotation helper for Midnight. Shows what to press next. Recommends, never acts.
+## Author: JD
+## Version: 0.1.0
+## Category: Combat
+## IconTexture: Interface\Icons\Spell_Nature_TimeStop
+## SavedVariables: KairosDB
+
+Core.lua
+Signal.lua
+DB.lua
+State.lua
+Keybinds.lua
+Toggles.lua
+Assisted.lua
+APL.lua
+Recorder.lua
+Display.lua
+Probe.lua
+Settings.lua
+Commands.lua

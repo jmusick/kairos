@@ -1,0 +1,17 @@
+package-as: Kairos
+
+enable-nolib-creation: false
+
+move-folders:
+  Kairos/Kairos: Kairos
+
+ignore:
+  - tests
+  - tools
+  - SPEC.md
+  - AGENTS.md
+  - CLAUDE.md
+  - .busted
+  - .luacheckrc
+  - .luarc.json
+  - .gitignore
