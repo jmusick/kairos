@@ -62,6 +62,7 @@ function Trace:Refresh()
             Kairos.Recorder:Push({ k = "aura", name = name, n = stacks })
         end
         self.known[name] = stacks
+        Kairos:Fire("KAIROS_AURA_KNOWN", name, stacks)
     end
     for _, name in ipairs(debuffs) do
         if not Kairos.db.global.auraIDs[name] then

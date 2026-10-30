@@ -17,6 +17,7 @@ Assisted.lua
 APL.lua
 Recorder.lua
 Trace.lua
+Salvo.lua
 CombatLog.lua
 Display.lua
 Probe.lua

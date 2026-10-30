@@ -38,7 +38,7 @@ Hard lines from the spec, which no change may cross:
 - In-game data, read offline (the user doesn't need to run commands or paste reports):
   - SavedVariables: `C:\Games\World of Warcraft\_retail_\WTF\Account\ANGELUS35C\SavedVariables\Kairos.lua`, written on `/reload`, logout or exit. Check its timestamp; data from the current play session isn't there until one of those happens.
   - Combat logs: `C:\Games\World of Warcraft\_retail_\Logs\WoWCombatLog-*.txt`. Kairos turns logging on at login.
-  - `tools/kairos-dump.lua` (`probes`, `fights`, `summary`, `events`, `combatlog`) reads both. To compare a trace with a combat log, align them by matching casts (recorder `t` is `GetTime()`; `at` has only one-second resolution).
+  - `tools/kairos-dump.lua` (`probes`, `fights`, `summary`, `events`, `combatlog`, `salvo`) reads both. `salvo` replays a log through `Kairos/Salvo.lua` and scores it; rerun it on every new log before and after changing `Salvo.GAINS`, and don't tune on the log you report as validation. To compare a trace with a combat log, align them by matching casts (recorder `t` is `GetTime()`; `at` has only one-second resolution).
   - Open-world training dummies drop combat within seconds of a pause, even mid-channel, so one dummy session shows up as many short fights. Run it with the LuaLS binary if there's no `lua` on PATH.
 - Packaging: BigWigs packager with `.pkgmeta` (`Kairos/Kairos` moves to the package root). No CI yet (D23).
 

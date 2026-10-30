@@ -83,7 +83,7 @@ describe("Flight recorder", function()
         Stub.Fire("UNIT_SPELLCAST_SUCCEEDED", "target", "Cast-2", 999)
         local kinds, sources = {}, {}
         for _, entry in ipairs(Kairos.Recorder:Entries()) do
-            kinds[#kinds + 1] = entry.k
+            if entry.k == "session" or entry.k == "pick" or entry.k == "cast" then kinds[#kinds + 1] = entry.k end
             if entry.k == "pick" then sources[#sources + 1] = entry.src end
         end
         assert.are.same({ "session", "pick", "pick", "cast" }, kinds)

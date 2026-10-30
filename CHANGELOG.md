@@ -14,6 +14,9 @@ All notable changes to Kairos are documented here. The format follows [Keep a Ch
 
 ### Added
 
+- Arcane Salvo estimator (`Kairos/Salvo.lua`) for Arcane. It rebuilds Salvo stacks in combat from casts, Missiles channels, the Arcane Barrage glow (Salvo at 25) and Arcane Soul timing, re-anchoring on Barrage, the glow and out-of-combat reads. It records its estimate to the flight recorder.
+- `tools/kairos-dump.lua salvo` replays a combat log through the estimator and scores it against true stacks, optionally between two times. v1 and v2 (Soul timed from the Surge cast, Missiles +11) each put 90% of decisions on the right side of 12 on a session they hadn't seen. The rest is the random Missiles gain.
+- `tools/kairos-dump.lua` prints the estimator's recorded `salvo` entries.
 - Automatic probes at login, 3 s into each fight, right after each fight, and at encounter and keystone starts. They're silent, on by default, and stored compactly.
 - Fight traces in the flight recorder: Arcane Charges, proc glows, in-combat aura events for known aura instances, and readable stacks of tracked auras before and after each fight.
 - Kairos turns on combat logging with advanced logging at login (setting: Combat logging).

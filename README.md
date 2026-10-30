@@ -81,6 +81,10 @@ lua tools/kairos-dump.lua events <Kairos.lua>
 lua tools/kairos-dump.lua combatlog <WoWCombatLog.txt> <Kairos.lua> [player]
 ```
 
+```bash
+lua tools/kairos-dump.lua salvo <WoWCombatLog.txt> <player> [from HH:MM:SS [to HH:MM:SS]] [verbose]
+```
+
 Results worth keeping go under `docs/probe/`, named by client build and context. Probes, auto-probing and combat logging can each be turned off in the settings panel.
 
 ## Tests
@@ -113,6 +117,7 @@ Without busted, the bundled runner runs the same specs on any Lua 5.1+ interpret
 | `Kairos/APL.lua` | APL runtime shell and module contract |
 | `Kairos/Recorder.lua` | Flight recorder |
 | `Kairos/Trace.lua` | Fight traces: charges, glows, aura events, stacks before and after each fight |
+| `Kairos/Salvo.lua` | Arcane Salvo estimator: stacks in combat from casts and the Barrage glow |
 | `Kairos/CombatLog.lua` | Turns on advanced combat logging |
 | `Kairos/Display.lua` | The icons |
 | `Kairos/Probe.lua` | Secrecy probe and report |

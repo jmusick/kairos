@@ -6,6 +6,8 @@
 --   lua tools/kairos-dump.lua events   <SavedVariables\Kairos.lua>       every recorder entry, raw GetTime()
 --   lua tools/kairos-dump.lua combatlog <WoWCombatLog.txt> <SavedVariables\Kairos.lua> [player]
 --       the player's casts and tracked aura stack changes from a combat log
+--   lua tools/kairos-dump.lua salvo <WoWCombatLog.txt> <player> [from HH:MM:SS [to HH:MM:SS]] [verbose]
+--       replays the log through Kairos/Salvo.lua and scores the estimate against true stacks
 --
 -- SavedVariables live in _retail_\WTF\Account\<ACCOUNT>\SavedVariables\Kairos.lua and
 -- are written on /reload, logout or exit. Combat logs live in _retail_\Logs.
@@ -101,6 +103,10 @@ local function describe(entry, names)
     local k = entry.k
     if k == "cast" then return "cast   " .. spellLabel(names, entry.spell) end
     if k == "ac" then return "charges " .. tostring(entry.n) end
+    if k == "salvo" then
+        return ("salvo  %s (%s-%s) %s"):format(tostring(entry.v), tostring(entry.lo), tostring(entry.hi),
+            tostring(entry.why))
+    end
     if k == "glow" then return ("glow   %s %s"):format(spellLabel(names, entry.spell), entry.on and "on" or "off") end
     if k == "pick" then
         return ("pick   %s %s%s"):format(entry.src or "?", spellLabel(names, entry.spell),
@@ -243,8 +249,139 @@ function commands.combatlog(logPath, svPath, player)
     file:close()
 end
 
+-- Replays a combat log through Kairos/Salvo.lua and scores the estimate against the
+-- log's true Arcane Salvo stacks at every cast (each cast is a decision point).
+-- The Barrage glow is synthesized from the log: lit while true Salvo is 25 or Arcane Soul
+-- is up, which the 12.1.5 trace confirmed (13 of 13 glow changes). True stacks are fed
+-- only at the start and after gaps (standing in for the out-of-combat reads in game).
+function commands.salvo(logPath, player, ...)
+    -- Optional: start and end times (HH:MM:SS, log-local) to score one session, and "verbose".
+    local from, to, verbose
+    for _, option in ipairs({ ... }) do
+        if option == "verbose" then
+            verbose = true
+        else
+            local h, m, s = option:match("^(%d+):(%d+):(%d+)$")
+            if not h then fail("Unknown option " .. option .. ": expected HH:MM:SS or verbose") end
+            local t = tonumber(h) * 3600 + tonumber(m) * 60 + tonumber(s)
+            if from then to = t else from = t end
+        end
+    end
+    local ns = {}
+    function ns:NewModule(name)
+        local module = {}
+        self[name] = module
+        return module
+    end
+    assert(loadfile(root .. "/Kairos/Signal.lua"))("Kairos", ns)
+    assert(loadfile(root .. "/Kairos/Salvo.lua"))("Kairos", ns)
+    local Salvo = ns.Salvo
+    player = player or fail("Pass the player name (the start of the combat log name)")
+
+    local SALVO, SOUL, MISSILE_TICK, GAP = "1242974", "451038", "7268", 6
+    local truth, soul, lit, truthKnown = 0, false, false, false
+    local lastEvent, lastTick, channelStart = nil, nil, nil
+    local decisions, anchors = {}, 0
+
+    local function clock(stamp)
+        local h, m, s = stamp:match(" (%d+):(%d+):([%d.]+)")
+        return tonumber(h) * 3600 + tonumber(m) * 60 + tonumber(s)
+    end
+    local function setGlow(t)
+        local on = truth >= 25 or soul
+        if on ~= lit then
+            lit = on
+            Salvo:OnGlow(Salvo.BARRAGE, on, t)
+        end
+    end
+
+    local file = io.open(logPath, "r") or fail("Can't open " .. logPath)
+    for line in file:lines() do
+        local stamp, payload = line:match("^(%S+ %S+)%s%s(.*)$")
+        local fields = payload and splitCSV(payload)
+        local mine = fields and fields[3] and fields[3]:sub(1, #player) == player
+        if mine and ((from and clock(stamp) < from) or (to and clock(stamp) > to)) then mine = false end
+        if mine then
+            local t, event, spellID = clock(stamp), fields[1], fields[10]
+            if truthKnown and lastEvent and t - lastEvent >= GAP then
+                Salvo:OnTruth(truth)
+                anchors = anchors + 1
+            end
+            lastEvent = t
+            if spellID == SALVO and event:find("^SPELL_AURA") then
+                if event == "SPELL_AURA_APPLIED" then truth = 1
+                elseif event == "SPELL_AURA_REMOVED" then truth = 0
+                elseif event:find("DOSE$") then truth = tonumber(fields[14]) or truth end
+                if not truthKnown then
+                    truthKnown = true
+                    Salvo:OnTruth(truth)
+                end
+                setGlow(t)
+            elseif spellID == SOUL and (event == "SPELL_AURA_APPLIED" or event == "SPELL_AURA_REMOVED") then
+                soul = event == "SPELL_AURA_APPLIED"
+                setGlow(t)
+            elseif event == "SPELL_DAMAGE" and spellID == MISSILE_TICK then
+                lastTick = t
+            elseif event == "SPELL_CAST_SUCCESS" then
+                local id = tonumber(spellID)
+                if channelStart and lastTick and lastTick > channelStart then
+                    Salvo:OnChannelStop(math.min(t, lastTick + 0.05))
+                end
+                channelStart = (id == Salvo.MISSILES) and t or nil
+                if truthKnown then
+                    local value, low, high = Salvo:Estimate(t)
+                    decisions[#decisions + 1] = {
+                        t = t, spell = id, est = value, low = low, high = high, truth = truth,
+                    }
+                end
+                Salvo:OnCast(id, t)
+                -- The log removes Salvo a few ms after the Barrage that consumed it.
+                if id == Salvo.BARRAGE and not soul then truth = 0 end
+            end
+        end
+    end
+    file:close()
+
+    local function rate(test, filter)
+        local agree, total = 0, 0
+        for _, d in ipairs(decisions) do
+            if not filter or filter(d) then
+                total = total + 1
+                if test(d) then agree = agree + 1 end
+            end
+        end
+        return total > 0 and ("%d/%d (%.0f%%)"):format(agree, total, 100 * agree / total) or "n/a"
+    end
+    local err, maxErr = 0, 0
+    for _, d in ipairs(decisions) do
+        local e = math.abs(d.est - d.truth)
+        err, maxErr = err + e, math.max(maxErr, e)
+    end
+    local function same(n) return function(d) return (d.est >= n) == (d.truth >= n) end end
+    local nearTwelve = function(d) return d.truth >= 6 and d.truth <= 18 end
+    local missilesOrBarrage = function(d) return d.spell == Salvo.MISSILES or d.spell == Salvo.BARRAGE end
+
+    print(("Salvo replay: %d decisions (casts), %d gap re-anchors"):format(#decisions, anchors))
+    print(("  mean abs error %.2f, max %d"):format(#decisions > 0 and err / #decisions or 0, maxErr))
+    print("  same side of 12:          " .. rate(same(12)))
+    print("    true stacks 6 to 18:    " .. rate(same(12), nearTwelve))
+    print("    at Missiles or Barrage: " .. rate(same(12), missilesOrBarrage))
+    print("  same side of 9 (>8):      " .. rate(same(9)))
+    print("  same answer for =25:      " .. rate(same(25)))
+    print("  truth inside low..high:   " .. rate(function(d) return d.truth >= d.low and d.truth <= d.high end))
+    for _, d in ipairs(decisions) do
+        local wrong = (d.est >= 12) ~= (d.truth >= 12) or (d.est >= 25) ~= (d.truth >= 25)
+        if verbose or wrong then
+            local h = math.floor(d.t / 3600)
+            local m = math.floor(d.t % 3600 / 60)
+            print(("  %02d:%02d:%06.3f  %-8s est %2d (%2d-%2d)  true %2d%s"):format(h, m, d.t % 60, tostring(d.spell),
+                d.est, d.low, d.high, d.truth, wrong and "  <- wrong side" or ""))
+        end
+    end
+end
+
 local command = arg and arg[1]
 if not command or not commands[command] then
-    fail("Usage: lua tools/kairos-dump.lua probes|fights|summary|events|combatlog <file> [...]")
+    fail("Usage: lua tools/kairos-dump.lua probes|fights|summary|events|combatlog|salvo <file> [...]")
 end
 commands[command](select(2, (table.unpack or unpack)(arg)))
