@@ -4,6 +4,12 @@ All notable changes to Kairos are documented here. The format follows [Keep a Ch
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-30
+
+### Changed
+
+- Rewrote the README to explain how Kairos reconstructs combat state from non-secret signals and evaluates its own priorities, with Blizzard Assisted Combat as the fallback. Added the meaning of the name and a status table covering every class and specialization, including prototype limits and validation progress.
+
 ## [0.2.0] - 2026-10-30
 
 Generated Arcane Sunfury recommendations and experimental Demonology support. Both still need live validation.
