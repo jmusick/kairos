@@ -103,6 +103,7 @@ local function describe(entry, names)
     local k = entry.k
     if k == "cast" then return "cast   " .. spellLabel(names, entry.spell) end
     if k == "ac" then return "charges " .. tostring(entry.n) end
+    if k == "cp" then return ("cumpow %s %s"):format(tostring(entry.n), tostring(entry.why)) end
     if k == "salvo" then
         return ("salvo  %s (%s-%s) %s"):format(tostring(entry.v), tostring(entry.lo), tostring(entry.hi),
             tostring(entry.why))
@@ -304,16 +305,17 @@ local A = {
 }
 
 --- Replays every event of the player in a combat log, keeping the true Arcane state and
---- running the Salvo estimator alongside. Returns one record per cast on the GCD, taken
---- just before the cast: the true state, the estimate, and the cast itself.
+--- running the Salvo and Cumulative Power estimators alongside. Returns one record per
+--- cast on the GCD, taken just before the cast: the true state, the estimates, and the cast.
 ---
---- The estimator sees only what it would in game: casts, Missiles channels (ended at the
+--- The estimators see only what they would in game: casts, Missiles channels (ended at the
 --- last missile tick), the Barrage glow (synthesized: lit while true Salvo is 25 or Arcane
 --- Soul is up, as the 12.1.5 trace confirmed), and the true stacks after 6 s gaps
 --- (standing in for the out-of-combat reads).
 local function replayArcane(logPath, player)
-    local ns = loadAddonFiles({ "Core/Signal.lua", "Specs/MageArcane/Salvo.lua", "Specs/MageArcane/APL.lua" })
-    local Salvo, APL = ns.ArcaneSalvo, ns.ArcaneAPL
+    local ns = loadAddonFiles({ "Core/Signal.lua", "Specs/MageArcane/Salvo.lua",
+        "Specs/MageArcane/CumulativePower.lua", "Specs/MageArcane/APL.lua" })
+    local Salvo, Power, APL = ns.ArcaneSalvo, ns.ArcaneCumulativePower, ns.ArcaneAPL
     local S = APL.SPELLS
     local onGcd = {
         [S.MISSILES] = true, [S.BLAST] = true, [S.BARRAGE] = true, [S.ORB] = true, [S.PULSE] = true,
@@ -353,13 +355,13 @@ local function replayArcane(logPath, player)
         end
         return math.max(n, 1)
     end
-    local function state(t, salvo)
+    local function state(t, salvo, cumulativePower)
         local touchReady = not lastCast[S.TOUCH] or t - lastCast[S.TOUCH] >= A.TOUCH_CD
         local surgeRemains = lastCast[S.SURGE] and math.max(0, lastCast[S.SURGE] + A.SURGE_CD - t) or 0
         local buffRemains = up[A.SURGE_BUFF] and surgeAt and math.max(0, surgeAt + A.SURGE_BUFF_LENGTH - t) or 0
         return {
             salvo = salvo, clearcasting = stacks[A.CLEARCASTING], charges = charges,
-            cumulativePower = stacks[A.CUMULATIVE], lustrousGleam = 0,
+            cumulativePower = cumulativePower, lustrousGleam = 0,
             soul = up[A.SOUL] == true, surgeUp = up[A.SURGE_BUFF] == true, surgeRemains = buffRemains,
             boltReady = up[A.BOLT_PROC] == true, enemies = enemyCount(t), gcdMax = A.GCD, prevGcd = prevGcd,
             ready = { [S.TOUCH] = touchReady, [S.SURGE] = surgeRemains == 0 },
@@ -375,9 +377,14 @@ local function replayArcane(logPath, player)
     local function record(t, spellID)
         if not truthKnown then return end
         local estimate, low, high = Salvo:Estimate(t)
+        local power, salvo, powerTruth = Power:Estimate(t), stacks[A.SALVO], stacks[A.CUMULATIVE]
         records[#records + 1] = {
-            t = t, spell = spellID, est = estimate, low = low, high = high, truth = stacks[A.SALVO],
-            trueState = state(t, stacks[A.SALVO]), estState = state(t, estimate),
+            t = t, spell = spellID, est = estimate, low = low, high = high, truth = salvo,
+            power = power, powerTruth = powerTruth,
+            trueState = state(t, salvo, powerTruth),
+            estState = state(t, estimate, power),        -- Kairos: both estimates
+            salvoOnlyState = state(t, estimate, powerTruth),
+            powerOnlyState = state(t, salvo, power),
         }
     end
 
@@ -403,6 +410,7 @@ local function replayArcane(logPath, player)
         local event, id = f[1], tonumber(f[10])
         if truthKnown and lastEvent and t - lastEvent >= A.GAP then
             Salvo:OnTruth(stacks[A.SALVO])
+            Power:OnTruth(stacks[A.CUMULATIVE], t)
             anchors = anchors + 1
         end
         lastEvent = t
@@ -420,6 +428,7 @@ local function replayArcane(logPath, player)
             if id == A.SALVO and not truthKnown then
                 truthKnown = true
                 Salvo:OnTruth(stacks[A.SALVO])
+                Power:OnTruth(stacks[A.CUMULATIVE], t)
             end
             if id == A.SALVO or id == A.SOUL then setGlow(t) end
         elseif event == "SPELL_ENERGIZE" and f[#f - 1] == "16" then
@@ -436,6 +445,7 @@ local function replayArcane(logPath, player)
             successes[#successes + 1] = { t = t, spell = id }
             if channelStart and lastTick and lastTick > channelStart then
                 Salvo:OnChannelStop(math.min(t, lastTick + 0.05))
+                Power:OnChannelStop(math.min(t, lastTick + 0.05))
             end
             channelStart = (id == S.MISSILES) and t or nil
             -- A cast-time spell was decided when its cast started (recorded there); its
@@ -443,6 +453,7 @@ local function replayArcane(logPath, player)
             if onGcd[id] and not started[id] then record(t, id) end
             started[id] = nil
             Salvo:OnCast(id, t)
+            Power:OnCast(id, t)
             lastCast[id] = t
             if id == S.ORB then
                 advanceOrb(t)
@@ -453,6 +464,10 @@ local function replayArcane(logPath, player)
                 charges = 0
                 -- The log removes Salvo a few ms after the Barrage that consumed it.
                 if not up[A.SOUL] then stacks[A.SALVO] = 0 end
+            end
+            -- Likewise Cumulative Power at 8, consumed by the Blast or Bolt that lands now.
+            if (id == S.BLAST or id == S.BOLT) and stacks[A.CUMULATIVE] == 8 then
+                stacks[A.CUMULATIVE] = 0
             end
             if onGcd[id] then prevGcd = id end
         end
@@ -587,6 +602,8 @@ function commands.apl(logPath, svPath, player, ...)
     for _, r in ipairs(records) do
         r.aplTrue = APL:Evaluate(r.trueState)
         r.aplEst = APL:Evaluate(r.estState)
+        r.aplSalvoOnly = APL:Evaluate(r.salvoOnlyState)
+        r.aplPowerOnly = APL:Evaluate(r.powerOnlyState)
         local ac = acAt(r.t)
         r.ac = ac and button(ac, r.trueState) or nil
         r.cast = button(r.spell, r.trueState)
@@ -594,8 +611,14 @@ function commands.apl(logPath, svPath, player, ...)
 
     print(("APL replay: %s (SimC %s), %d decisions"):format(APL.name, APL.simc, #records))
     print(("  recorder aligned: %d/%d casts (offset %s)"):format(hits, recCasts, tostring(offset)))
-    print("  Kairos (estimated Salvo) = APL on true state: " .. rate(records, function(r)
+    print("  Kairos (both estimates)  = APL on true state: " .. rate(records, function(r)
         return r.aplEst.spellID == r.aplTrue.spellID end))
+    print("    Salvo estimated only:                       " .. rate(records, function(r)
+        return r.aplSalvoOnly.spellID == r.aplTrue.spellID end))
+    print("    Cumulative Power estimated only:            " .. rate(records, function(r)
+        return r.aplPowerOnly.spellID == r.aplTrue.spellID end))
+    print("    Cumulative Power estimate, same answer for =8: " .. rate(records, function(r)
+        return (r.power == 8) == (r.powerTruth == 8) end))
     print("  Assisted Combat          = APL on true state: " .. rate(records, function(r)
         return r.ac == r.aplTrue.spellID end, function(r) return r.ac ~= nil end))
     print("  Player cast              = APL on true state: " .. rate(records, function(r)

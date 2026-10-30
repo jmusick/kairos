@@ -89,7 +89,7 @@ lua tools/kairos-dump.lua salvo <WoWCombatLog.txt> <player> [from HH:MM:SS [to H
 lua tools/kairos-dump.lua apl <WoWCombatLog.txt> <Kairos.lua> <player> [from HH:MM:SS [to HH:MM:SS]] [verbose]
 ```
 
-`salvo` scores the Arcane Salvo estimator against the log's true stacks. `apl` compares, at every decision, the Arcane APL on true state, the APL with Kairos's Salvo estimate, Assisted Combat's pick and the player's cast, grouped by APL line.
+`salvo` scores the Arcane Salvo estimator against the log's true stacks. `apl` compares, at every decision, the Arcane APL on true state, the APL with Kairos's Salvo and Cumulative Power estimates, Assisted Combat's pick and the player's cast, grouped by APL line.
 
 Results worth keeping go under `docs/probe/` (probe and estimator findings) and `docs/replay/` (APL replays), named by client build and context. Probes, auto-probing and combat logging can each be turned off in the settings panel.
 
@@ -137,6 +137,7 @@ The addon is split by what code is for. Anything that applies to one specializat
 | **`Kairos/Specs/MageArcane/`** | **Arcane Mage only** |
 | `Specs/MageArcane/Spec.lua` | Metadata: aura IDs, and the spells, auras and powers to probe and trace |
 | `Specs/MageArcane/Salvo.lua` | Arcane Salvo estimator: stacks in combat from casts and the Barrage glow |
+| `Specs/MageArcane/CumulativePower.lua` | Cumulative Power (Season 2 4-piece) estimator: built by Missiles, consumed at 8 by Blast or Bolt |
 | `Specs/MageArcane/APL.lua` | Hand-written Sunfury APL (stopgap until the translator; not in the TOC yet) |
 | `tests/` | Specs, the WoW API stub, and the fallback runner |
 | `tools/kairos-dump.lua` | Reads SavedVariables and combat logs offline, and replays logs through the Arcane modules |

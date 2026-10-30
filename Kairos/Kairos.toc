@@ -23,6 +23,7 @@ Data\CombatLog.lua
 
 Specs\MageArcane\Spec.lua
 Specs\MageArcane\Salvo.lua
+Specs\MageArcane\CumulativePower.lua
 
 UI\Display.lua
 Data\Probe.lua

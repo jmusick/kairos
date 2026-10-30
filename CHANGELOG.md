@@ -8,7 +8,6 @@ All notable changes to Kairos are documented here. The format follows [Keep a Ch
 
 - Auto-probing stayed off for existing installs because the saved setting kept the old default. A one-time SavedVariables migration (schema 2) turns it on.
 - The end-of-fight trace marker is written immediately. Previously it was delayed and could land in the next fight when combat restarted quickly. The after-fight aura read is now a separate `after` entry.
-
 - The probe checks aura secrecy against each aura's own spell ID instead of the ID of the spell that applies it, and shows which ID it used.
 - The probe no longer reports spec spells as missing when they're already probed from the Assisted Combat rotation list (Evocation).
 
@@ -19,8 +18,9 @@ All notable changes to Kairos are documented here. The format follows [Keep a Ch
 
 ### Added
 
+- Cumulative Power estimator (`Specs/MageArcane/CumulativePower.lua`) for the Season 2 Arcane 4-piece, which is secret in combat. It's built by Missiles channels, consumed at 8 by Arcane Blast or Prismatic Bolt, and expires after 12 s. It records to the flight recorder and drives the replay; it got `= 8` right on 98% of 372 decisions (`docs/probe/12.1.5-70575-cumulative-power.md`).
 - A hand-written Arcane Sunfury APL (`Specs/MageArcane/APL.lua`, from SimC `515f4a3fe9`) with line-by-line tests. It's a stopgap until the translator generates it, and isn't loaded in game yet.
-- `tools/kairos-dump.lua apl` replays a combat log and compares, per decision and per APL line, the APL on true state with Kairos (the APL on the Salvo estimate), Assisted Combat and the player. On the three test sessions Kairos agreed 93%, Assisted Combat 49% (`docs/replay/12.1.5-arcane-sunfury.md`).
+- `tools/kairos-dump.lua apl` replays a combat log and compares, per decision and per APL line, the APL on true state with Kairos (the APL on the Salvo and Cumulative Power estimates), Assisted Combat and the player. On the three test sessions Kairos agreed 93%, Assisted Combat 49% (`docs/replay/12.1.5-arcane-sunfury.md`).
 - Arcane Salvo estimator (now `Specs/MageArcane/Salvo.lua`) for Arcane. It rebuilds Salvo stacks in combat from casts, Missiles channels, the Arcane Barrage glow (Salvo at 25) and Arcane Soul timing, re-anchoring on Barrage, the glow and out-of-combat reads. It records its estimate to the flight recorder.
 - `tools/kairos-dump.lua salvo` replays a combat log through the estimator and scores it against true stacks, optionally between two times. v1 and v2 (Soul timed from the Surge cast, Missiles +11) each put 90% of decisions on the right side of 12 on a session they hadn't seen. The rest is the random Missiles gain.
 - `tools/kairos-dump.lua` prints the estimator's recorded `salvo` entries.
