@@ -14,7 +14,8 @@ Kairos:NewSpec(266, {
         buffs = { "Demonic Core", "Power Siphon", "Infernal Bolt", "Ruination", "Dominion of Argus" },
         debuffs = { "Doom" }, powers = { "SoulShards", "Mana" },
     },
-    watch = { 264178, 686, 105174 },
+    -- Implosion: does any count/state field track the Wild Imps the estimate can't see?
+    watch = { 264178, 686, 105174, 196277 },
     auraIDs = { ["Demonic Core"] = 264173, ["Power Siphon"] = 334581,
         ["Infernal Bolt"] = 433891, ["Ruination"] = 433885, ["Dominion of Argus"] = 1276166,
         ["Doom"] = 460553 },

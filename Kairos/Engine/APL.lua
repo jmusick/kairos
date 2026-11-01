@@ -45,6 +45,7 @@ local function fallback(reason, rec)
             interruptID = type(rec) == "table" and rec.interruptID or nil,
             reason = reason,
             unknownFields = type(rec) == "table" and rec.unknownFields or nil,
+            diagnostic = type(rec) == "table" and rec.diagnostic or nil,
             offGcdID = type(rec) == "table" and not rec.offGcdUncertain and rec.offGcdID or nil,
             offGcdLabel = type(rec) == "table" and rec.offGcdLabel or nil,
         }
@@ -56,6 +57,7 @@ local function fallback(reason, rec)
         offGcdID = type(rec) == "table" and not rec.offGcdUncertain and rec.offGcdID or nil,
         offGcdLabel = type(rec) == "table" and rec.offGcdLabel or nil,
         unknownFields = type(rec) == "table" and rec.unknownFields or nil,
+        diagnostic = type(rec) == "table" and rec.diagnostic or nil,
     }
 end
 
@@ -89,5 +91,6 @@ function APL:Recommend()
         queuedLabel = result.queuedLabel,
         pairedID = result.pairedID,
         pairedLabel = result.pairedLabel,
+        diagnostic = result.diagnostic,
     }
 end

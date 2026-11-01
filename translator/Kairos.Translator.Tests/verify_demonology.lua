@@ -13,7 +13,7 @@ local function referenceList(s, diabolist)
         if ready(id) and s.shards >= 1 then return id end
     end
     local tyrantRemains = s.remains[S.TYRANT] or 0
-    if ready(S.DOGS) and s.shards >= 2 and (not diabolist or not s.talent.reign_of_tyranny
+    if ready(S.DOGS) and (not diabolist or not s.talent.reign_of_tyranny
         or tyrantRemains >= 20 + s.gcdMax or tyrantRemains <= 12 - s.gcdMax) then return S.DOGS end
     if ready(S.TYRANT) and (not diabolist or s.shards == 5) then return S.TYRANT end
     if ready(S.IMPLOSION) and s.imps >= 6 and (s.enemies > 2 or s.talent.to_hell_and_back) then return S.IMPLOSION end

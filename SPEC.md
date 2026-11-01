@@ -1,6 +1,6 @@
 # Kairos: Specification
 
-> **Status:** Draft 0.5. Addon 0.2.1 includes Arcane Sunfury and experimental Demonology modules: generated APLs, live state adapters and secrecy probes. Live agreement is still being validated.
+> **Status:** Draft 0.5. Addon 0.2.2 includes Arcane Sunfury and experimental Demonology modules: generated APLs, live state adapters and secrecy probes. Live agreement is still being validated.
 > **Target:** World of Warcraft Retail, Midnight (12.x)
 > **Last updated:** 2026-10-30
 
@@ -248,6 +248,9 @@ This reconstructs what SimC expressions need.
 ### 7.6 Diagnostics
 
 - A **flight recorder**: a ring buffer of state snapshots, each field's source and confidence, and the recommendations. It's saved to SavedVariables for the replay harness.
+- Implemented recording retains a 5,000-entry recent ring plus bounded per-combat cast/commit archives (defaults: 32 segments, 1,200 entries each). New entries carry immutable character/spec, session, client/addon version and Cooldowns-toggle context; transitions are recorded. Archive limits report omitted entries/retired segments. Recorder clear removes both stores.
+- Arcane captures its current and projected APL contracts, unknown flags, movement reading, cast/channel timing, modeled physical cooldowns and availability gates. Pre-refresh start-event commitments preserve the displayed instruction before lookahead advances. Successful casts also retain the latest evaluation, even for unchanged icons. Persisted diagnostics filter secret values.
+- The Lua offline scorer merges/deduplicates archives and the ring, uses captured commitment/toggle/movement/Orb context when present, and leaves missing new-format context unscored. Legacy captures remain provisional. Immediate Touch and its queued GCD slot have separate comparisons alongside raw main-icon agreement. Rerunning the adapter on captured inputs checks reproducibility; the log-truth reference remains at the press and does not yet rebuild every future projection boundary.
 - `/kairos probe` dumps the secrecy matrix for the spec's spells, auras, and resources.
 - `/kairos why` shows which APL line produced the current pick and which fields it read.
 

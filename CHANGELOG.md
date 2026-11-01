@@ -4,6 +4,23 @@ All notable changes to Kairos are documented here. The format follows [Keep a Ch
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-11-01
+
+### Added
+
+- Arcane decision diagnostics preserve current and projected APL inputs, movement source, cast/channel timing, stack/proc estimates and unknown flags, plus physical cooldown and toggle-gated availability. Cast commitments capture the displayed instruction before the start-event lookahead refresh; unchanged icons retain their latest evaluation for analysis. Diagnostics exclude secret values and remain available on uncertainty fallback.
+- Recorder entries carry character/spec, session, build/version and Cooldowns-toggle context, with explicit toggle transitions. Bounded per-combat archives retain up to 1,200 cast/commit entries for each of 32 segments after the main flight ring rolls over; omitted entries and retired segments are reported. Recorder clear removes both stores.
+- Demonology recommendations record the same decision diagnostics as Arcane (projected contract, movement and cast), so captured evaluations can be rerun offline.
+- The recorder also commits at UNIT_SPELLCAST_SENT, and every commit stores the evaluation on screen before the press's GCD began (the client starts the GCD at the keypress, and a refresh often forecast the next GCD before the cast events arrived). The later pick is kept as `forecast`.
+- Implosion joins Demonology's spell watch, to test whether any visible field tracks Wild Imps.
+- `tools/kairos-dump.lua apl` scores Demonology logs: shards, Demonic Core, procs, Dominion of Argus, cooldowns and Wild Imps from the log; live, AC and player agreement per APL line; imp-estimate and hidden-Core diagnostics; and a check of the log's shard model against the client's traced values. It prefers keypress snapshots, replaces snapshots that already forecast the next GCD with the pick shown before it, and reseeds shards at each combat start. The first live review is in `docs/replay/12.1.5-70688-demonology.md`.
+
+### Fixed
+
+- Demonology: Call Dreadstalkers no longer requires or spends Soul Shards (free in all 7 logged 12.1.5 casts). The Wild Imp estimate lasts six Firebolts instead of five, Implosion with To Hell and Back now leaves the three imps it summons, and imp lifetimes pause while out of combat (imps idle between pulls).
+- Demonology no longer keeps recommending Grimoire: Imp Lord after it is cast. The cast replaces the spell's entry, and the out-of-combat cooldown resync that ran in the same instant read the original ID as idle and erased the cooldown the cast had started, which then held for the whole fight. An idle read can no longer cancel the cast's own cooldown within 2 s or while the spell is replaced, and a deferred cooldown (`isEnabled` false) counts as a full cooldown from now.
+- Offline APL scoring uses new pre-refresh commitment snapshots to avoid grading a newly started channel's forecast as its start instruction. It merges archived/ring entries without double-counting, applies captured cooldown-toggle, movement/Slipstream and Orb-flight availability, and marks missing new-format context unscored. Legacy scores retain their explicit provisional assumptions. Immediate Touch cues and their queued GCD slots are scored separately alongside the raw display score; captured-input adapter reproduction is reported separately from log-truth agreement. Generated priorities and estimator gains are unchanged.
+
 ## [0.2.1] - 2026-10-30
 
 ### Changed

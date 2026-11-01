@@ -15,6 +15,7 @@ State.TALENTS = { diabolic_ritual = 428514, demonic_soul = 449614, reign_of_tyra
 State.CAST_TIMES = { [S.SHADOW] = 2, [S.HAND] = 1.5, [S.DEMONBOLT] = 4.5,
     [S.DOGS] = 2, [S.TYRANT] = 2, [S.INFERNAL] = 2, [S.RUINATION] = 1.5 }
 State.FELGUARD, State.IMP = 30146, 688
+State.READ_LAG = 2 -- seconds a cast's own cooldown outranks an idle client read
 
 local function numeric(r) return r.state ~= "unknown" and type(r.value) == "number" end
 local function boolean(r) return r.state ~= "unknown" and type(r.value) == "boolean" end
@@ -75,9 +76,27 @@ function State:Refresh(t)
     for id, base in pairs(self.COOLDOWNS) do
         local info = Signal.Read(C_Spell and C_Spell.GetSpellCooldown, id)
         local start, duration, rate = field(info, "startTime"), field(info, "duration"), field(info, "modRate")
+        local enabled = field(info, "isEnabled")
         if numeric(start) and numeric(duration) and numeric(rate) and rate.value > 0 then
-            self.cooldowns[id] = { finish = duration.value > 2 and start.value + duration.value / rate.value or t,
-                base = duration.value > 2 and duration.value / rate.value or base }
+            local own = self.cooldowns[id]
+            local cast = own and own.cast
+            if boolean(enabled) and not enabled.value then
+                -- A deferred cooldown starts when its effect ends: at least a full one from now.
+                self.cooldowns[id] = { finish = t + (own and own.base or base), base = own and own.base or base,
+                    cast = cast }
+            elseif duration.value > 2 then
+                self.cooldowns[id] = { finish = start.value + duration.value / rate.value,
+                    base = duration.value / rate.value, cast = cast }
+            else
+                -- An idle read can't cancel our own cast's cooldown while the client catches
+                -- up: the read can lag the cast event, and a Grimoire replaced after casting
+                -- (12.1.5: Imp Lord's entry becomes 132411) reads its original ID as idle.
+                local override = Signal.Read(C_Spell and C_Spell.GetOverrideSpell, id)
+                local replaced = numeric(override) and override.value ~= id
+                if not (cast and own.finish > t and (t - cast < self.READ_LAG or replaced)) then
+                    self.cooldowns[id] = { finish = t, base = base }
+                end
+            end
         end
     end
 end
@@ -106,12 +125,12 @@ function State:OnCast(id, t)
     if self.COOLDOWNS[id] then
         local previous = self.cooldowns[id]
         local base = previous and previous.base or self.COOLDOWNS[id]
-        self.cooldowns[id] = { finish = t + base, base = base }
+        self.cooldowns[id] = { finish = t + base, base = base, cast = t }
     end
     if id == S.DEMONBOLT and self.lastCoreUp and self.cooldowns[S.DOOMGUARD] then
         self.cooldowns[S.DOOMGUARD].finish = math.max(t, self.cooldowns[S.DOOMGUARD].finish - 3)
     end
-    Kairos.DemonologyDemons:OnCast(id, t, c.haste or 0)
+    Kairos.DemonologyDemons:OnCast(id, t, c.haste or 0, talent("to_hell_and_back"))
     if id == S.TYRANT and talent("argus") then self.argusUntil = t + 15
     elseif (id == S.HAND or id == S.RUINATION) and self.argusUntil > t then self.argusUntil = t + 15 end
     Kairos.Recorder:Push({ k = "demo", imps = Kairos.DemonologyDemons:Count(t), spell = id })
@@ -121,7 +140,8 @@ end
 -- outside the model and will be corrected by readable shards, glows and future probes.
 function State:Project(s, id, finish)
     local gain = { [S.SHADOW] = 1, [S.DEMONBOLT] = 2, [S.INFERNAL] = 3 }
-    local cost = { [S.HAND] = 3, [S.DOGS] = 2, [S.IMP_LORD] = 1, [S.RAVAGER] = 1, [S.DOOMGUARD] = 1 }
+    -- 12.1.5 client readings: Dreadstalkers spends no shards (7/7 casts), Imp Lord one.
+    local cost = { [S.HAND] = 3, [S.IMP_LORD] = 1, [S.RAVAGER] = 1, [S.DOOMGUARD] = 1 }
     if gain[id] then s.shards = math.min(5, s.shards + gain[id])
     elseif cost[id] then s.shards = math.max(0, s.shards - cost[id]) end
     if id == S.HAND or id == S.RUINATION then
@@ -270,6 +290,11 @@ function State:Evaluate()
     local pick, uncertain = self:Pick(s)
     pick = pick or {}
     pick.uncertain, pick.queuedUncertain = uncertain, true
+    -- Secret-checked contract inputs; the recorder copies them only when it persists.
+    if Kairos.Recorder:Enabled() then
+        pick.diagnostic = { v = 1, now = now, projected = s, movement = Kairos.State:Moving(),
+            cast = Kairos.State.cast }
+    end
     return pick
 end
 
@@ -284,6 +309,10 @@ function State:OnInit()
         if Kairos.specID ~= 266 then return end
         local now = clock()
         if now then self:OnCast(id, now) end
+    end)
+    Kairos:On("KAIROS_COMBAT_CHANGED", function(_, on)
+        local now = clock()
+        if Kairos.specID == 266 and now then Kairos.DemonologyDemons:SetCombat(on, now) end
     end)
     for _, event in ipairs({ "SPELLS_CHANGED", "TRAIT_CONFIG_UPDATED", "PLAYER_REGEN_ENABLED" }) do
         Kairos:On(event, refresh)

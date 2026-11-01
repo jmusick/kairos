@@ -41,10 +41,10 @@ lists["diabolist"] = function(s, v, offGcd)
     if not offGcd and has(s, 1276672) and (s.castable[1276672] and s.ready[1276672] and s.shards >= 1) then
         return { spellID = 1276672, line = "actions.diabolist+=/summon_doomguard", label = "diabolist:summon_doomguard" }
     end
-    if not offGcd and has(s, 104316) and (s.castable[104316] and s.ready[104316] and s.shards >= 2) and T(N(T(V(s.talent["reign_of_tyranny"])) and T(N(T(N((s.remains[265187] or 0) >= (20 + s.gcdMax))) or T(N((s.remains[265187] or 0) <= (12 - s.gcdMax))))))) then
+    if not offGcd and has(s, 104316) and (s.castable[104316] and s.ready[104316]) and T(N(T(V(s.talent["reign_of_tyranny"])) and T(N(T(N((s.remains[265187] or 0) >= (20 + s.gcdMax))) or T(N((s.remains[265187] or 0) <= (12 - s.gcdMax))))))) then
         return { spellID = 104316, line = "actions.diabolist+=/call_dreadstalkers,if=talent.reign_of_tyranny&(cooldown.summon_demonic_tyrant.remains>=20+gcd.max|cooldown.summon_demonic_tyrant.remains<=12-gcd.max)", label = "diabolist:call_dreadstalkers#1" }
     end
-    if not offGcd and has(s, 104316) and (s.castable[104316] and s.ready[104316] and s.shards >= 2) and T(N(not T(V(s.talent["reign_of_tyranny"])))) then
+    if not offGcd and has(s, 104316) and (s.castable[104316] and s.ready[104316]) and T(N(not T(V(s.talent["reign_of_tyranny"])))) then
         return { spellID = 104316, line = "actions.diabolist+=/call_dreadstalkers,if=!talent.reign_of_tyranny", label = "diabolist:call_dreadstalkers#2" }
     end
     if not offGcd and has(s, 265187) and (s.castable[265187] and s.ready[265187]) and T(N(s.shards == 5)) then
@@ -95,7 +95,7 @@ lists["soulharvest"] = function(s, v, offGcd)
     if not offGcd and has(s, 1276672) and (s.castable[1276672] and s.ready[1276672] and s.shards >= 1) then
         return { spellID = 1276672, line = "actions.soulharvest+=/summon_doomguard", label = "soulharvest:summon_doomguard" }
     end
-    if not offGcd and has(s, 104316) and (s.castable[104316] and s.ready[104316] and s.shards >= 2) then
+    if not offGcd and has(s, 104316) and (s.castable[104316] and s.ready[104316]) then
         return { spellID = 104316, line = "actions.soulharvest+=/call_dreadstalkers", label = "soulharvest:call_dreadstalkers" }
     end
     if not offGcd and has(s, 265187) and (s.castable[265187] and s.ready[265187]) then

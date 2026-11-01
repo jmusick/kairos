@@ -31,9 +31,11 @@ function State:UpdateCast(channel)
     local fn = channel and UnitChannelInfo or UnitCastingInfo
     local spellIndex = channel and 8 or 9
     local spellID = Signal.Read(function() return (select(spellIndex, fn("player"))) end)
+    local startMS = Signal.Read(function() return (select(4, fn("player"))) end)
     local endMS = Signal.Read(function() return (select(5, fn("player"))) end)
     if spellID.state == "known" and spellID.value and endMS.state == "known" and endMS.value then
-        self.cast = { spellID = spellID.value, endsAt = endMS.value / 1000, channel = channel }
+        self.cast = { spellID = spellID.value, endsAt = endMS.value / 1000, channel = channel,
+            startsAt = startMS.state == "known" and startMS.value and startMS.value / 1000 or nil }
     else
         self.cast = nil
     end

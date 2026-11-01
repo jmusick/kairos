@@ -49,6 +49,14 @@ describe("State", function()
         assert.is_nil(State:PrevCast(1))
     end)
 
+    it("omits a secret cast start while retaining readable projection timing", function()
+        UnitCastingInfo = function() return "Blast", nil, nil, Stub.Secret(), 102000, nil, nil, nil, 30451 end
+        assert.has_no_error(function() Stub.Fire("UNIT_SPELLCAST_START", "player", "cast", 30451) end)
+        assert.is_nil(State.cast.startsAt)
+        assert.are.equal(102, State.cast.endsAt)
+        assert.is_false(State.castUnknown)
+    end)
+
     it("counts hostile in-combat nameplates, unknown if any read is secret", function()
         UnitAffectingCombat = function(unit) return unit ~= "nameplate3" end
         for i = 1, 3 do Stub.Fire("NAME_PLATE_UNIT_ADDED", "nameplate" .. i) end

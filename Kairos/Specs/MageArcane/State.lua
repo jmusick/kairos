@@ -180,6 +180,7 @@ function State:FinishCast(s, id, t)
     elseif id == S.SURGE then
         s.surgeUp, s.surgeRemains = true, self.SURGE_DURATION
         s.ready[id], s.remains[id] = false, self.COOLDOWNS[id]
+        s.physicalRemains[id] = self.COOLDOWNS[id]
         s.unknown["ready:" .. id], s.unknown["remains:" .. id] = nil, nil
     elseif id ~= S.MISSILES then
         -- An unmodeled in-progress cast must not silently supply a guessed next state.
@@ -231,9 +232,11 @@ function State:Build(now, immediate)
     s.enemies = enemies -- D24; dummies can report UnitAffectingCombat=false.
     for _, id in pairs(S) do put(s.known, id, cache.known[id], false) end
     for key in pairs(self.TALENTS) do put(s.talent, key, cache.talent[key], false) end
+    s.physicalRemains = {}
     for id, base in pairs(self.COOLDOWNS) do
         local cd = self.cooldowns[id]
         local remains = cd and math.max(0, cd.finish - t) or base
+        s.physicalRemains[id] = cd and remains or nil
         s.ready[id], s.remains[id] = Kairos.Toggles:ApplyToCooldown(self.TAGS[id], remains == 0, remains, base)
         if not cd and not Kairos.Toggles:IsHeld(self.TAGS[id]) then
             s.unknown["ready:" .. id], s.unknown["remains:" .. id] = true, true
@@ -301,11 +304,8 @@ function State:Pick(s, offGcd, moving)
     return pick, #fields > 0, #fields > 0 and table.concat(fields, ", ") or nil
 end
 
-function State:Evaluate()
-    local now = Signal.Read(GetTime)
-    if not number(now) then return { uncertain = true } end
-    local s = self:Build(now.value)
-    local moving = Kairos.State:Moving()
+-- Pure evaluation entry for offline reproduction of captured live inputs.
+function State:EvaluateStates(s, current, moving)
     local isMoving = moving.state ~= "unknown" and moving.value == true
     local pick, uncertain, fields = self:Pick(s, false, isMoving)
     pick = pick or {}
@@ -315,7 +315,7 @@ function State:Evaluate()
     end
     pick.uncertain = uncertain
     pick.unknownFields = fields
-    local off, offUncertain, offFields = self:Pick(self:Build(now.value, true), true)
+    local off, offUncertain, offFields = self:Pick(current, true)
     if off and not offUncertain then
         -- Off-GCD Touch is the next button to press now. Preserve the independently
         -- evaluated on-GCD action in the smaller slot, without inventing a future proc.
@@ -343,6 +343,21 @@ function State:Evaluate()
     end
     -- One-step future proc changes aren't modeled yet; keep the queue hidden (G3).
     pick.queuedUncertain = true
+    return pick
+end
+
+function State:Evaluate()
+    local now = Signal.Read(GetTime)
+    if not number(now) then return { uncertain = true } end
+    local s, current = self:Build(now.value), self:Build(now.value, true)
+    local moving = Kairos.State:Moving()
+    local pick = self:EvaluateStates(s, current, moving)
+    -- These are already secret-checked contract inputs. The recorder takes an
+    -- owned, secret-filtered copy only at pick transitions and cast commitment.
+    if Kairos.Recorder:Enabled() then
+        pick.diagnostic = { v = 1, now = now.value, projected = s, current = current,
+            movement = moving, cast = Kairos.State.cast }
+    end
     return pick
 end
 

@@ -11,7 +11,7 @@
     "grimoire_imp_lord": { "id": 1276452, "key": "IMP_LORD", "availability": "s.castable[{id}] and s.ready[{id}] and s.shards >= 1", "toggle": "cooldowns" },
     "grimoire_fel_ravager": { "id": 1276467, "key": "RAVAGER", "availability": "s.castable[{id}] and s.ready[{id}] and s.shards >= 1", "toggle": "cooldowns" },
     "summon_doomguard": { "id": 1276672, "key": "DOOMGUARD", "availability": "s.castable[{id}] and s.ready[{id}] and s.shards >= 1", "toggle": "cooldowns" },
-    "call_dreadstalkers": { "id": 104316, "key": "DOGS", "availability": "s.castable[{id}] and s.ready[{id}] and s.shards >= 2" },
+    "call_dreadstalkers": { "id": 104316, "key": "DOGS", "availability": "s.castable[{id}] and s.ready[{id}]" },
     "summon_demonic_tyrant": { "id": 265187, "key": "TYRANT", "availability": "s.castable[{id}] and s.ready[{id}]", "toggle": "cooldowns" },
     "implosion": { "id": 196277, "key": "IMPLOSION", "availability": "s.castable[{id}] and s.ready[{id}] and s.imps > 0" },
     "ruination": { "id": 434635, "key": "RUINATION", "availability": "s.castable[{id}] and s.ruinationReady" },

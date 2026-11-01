@@ -4,7 +4,7 @@ Kairos is an experimental rotation helper for World of Warcraft Retail: Midnight
 
 *Kairos* (καιρός) is Greek for “the right moment”: the instant when acting matters. The name fits the addon's job, showing what to press next and when to press it.
 
-Version **0.2.1**. The project is still testing whether this approach can reach reliable recommendations in real encounters. It recommends spells; you press them. Kairos never sends input to the game.
+Version **0.2.2**. The project is still testing whether this approach can reach reliable recommendations in real encounters. It recommends spells; you press them. Kairos never sends input to the game.
 
 ## Beyond an Assisted Combat wrapper
 
@@ -41,7 +41,7 @@ Kairos does not inspect secret values, read game memory, inject code or modify t
 
 ## Class and specialization status
 
-Status reflects the code in **0.2.1**, not a claim of encounter readiness. **Prototype** means an independent APL and live model exist but still need validation. **Not started** means there is no Kairos rotation model; AC is used when available. **Out of scope** marks healers, which are outside the current DPS/tank plan. The roster includes Midnight's [Devourer specialization](https://worldofwarcraft.blizzard.com/en-us/news/24262570/midnight-embrace-the-void-with-the-devourer-specialization).
+Status reflects the code in **0.2.2**, not a claim of encounter readiness. **Prototype** means an independent APL and live model exist but still need validation. **Not started** means there is no Kairos rotation model; AC is used when available. **Out of scope** marks healers, which are outside the current DPS/tank plan. The roster includes Midnight's [Devourer specialization](https://worldofwarcraft.blizzard.com/en-us/news/24262570/midnight-embrace-the-void-with-the-devourer-specialization).
 
 | Class | Specialization | Role | Status | Implementation and limits |
 |---|---|---|---|---|
@@ -80,7 +80,7 @@ Status reflects the code in **0.2.1**, not a claim of encounter readiness. **Pro
 | Shaman | Enhancement | DPS | Not started | — |
 | Shaman | Restoration | Healer | Out of scope | — |
 | Warlock | Affliction | DPS | Not started | — |
-| Warlock | Demonology | DPS | Prototype | Generated Diabolist/Soul Harvester routes and a shared leveling entry; Diabolist is the initial play-test target. Learned-spell gating, shard/proc reads, estimated imps and cooldowns. Hidden Demonic Core counts require agreement across all possible counts. Imp estimates are uncalibrated; no scored live replay yet. The offline APL scorer is Arcane-only. [Translation coverage](translator/README.md#demonology-contract-and-leveling-entry). |
+| Warlock | Demonology | DPS | Prototype | Generated Diabolist/Soul Harvester routes and a shared leveling entry; Diabolist is the initial play-test target. Learned-spell gating, shard/proc reads, estimated imps and cooldowns. Hidden Demonic Core counts require agreement across all possible counts. Live review ([dummy and Timewalking dungeon](docs/replay/12.1.5-70688-demonology.md)): in game 88% and 80% agreement with the APL vs 75% and 64% for Assisted Combat. Imps idling without a target and Inner Demons imps are unmodeled, which mostly costs Implosion calls. [Translation coverage](translator/README.md#demonology-contract-and-leveling-entry). |
 | Warlock | Destruction | DPS | Not started | — |
 | Warrior | Arms | DPS | Not started | — |
 | Warrior | Fury | DPS | Not started | — |
@@ -134,6 +134,10 @@ The display has keybind text, an AC badge and a Cooldowns indicator. It stays vi
 
 Play, then `/reload` or log out so the game writes SavedVariables. The recorder, traces and probes are saved in `KairosDB`; current-session changes are not on disk until the game saves them.
 
+The 5,000-entry flight ring keeps recent traces and pick changes. Each new entry carries character/spec, session, build/version and Cooldowns-toggle context; toggle transitions are also recorded. Arcane recommendations include both current and projected APL inputs, unknown-field flags, movement source, cast/channel start and end times, modeled physical cooldowns and Orb's pending-flight flag. A cast-start/channel-start snapshot preserves the instruction visible before lookahead advances; successful casts also retain the latest evaluation even if the icon never changed. Secret values are excluded from persisted diagnostics.
+
+Bounded per-combat archives retain cast commitments and successes after the main ring rolls over: by default the last 32 combat segments, up to 1,200 entries each (`global.recorderPulls` and `global.recorderPullEntries` in SavedVariables). Long segments report omitted entries; older segments are retired at the segment limit. Reloading or changing profile starts a new recording context. `/kairos recorder clear` clears both the ring and these archives. These records support decision-point analysis, not a complete history of every display refresh.
+
 - SavedVariables: `C:\Games\World of Warcraft\_retail_\WTF\Account\<ACCOUNT>\SavedVariables\Kairos.lua`
 - Combat logs: `C:\Games\World of Warcraft\_retail_\Logs\WoWCombatLog-*.txt`
 
@@ -151,6 +155,10 @@ lua tools/kairos-dump.lua watch <WoWCombatLog.txt> <Kairos.lua> <player> [auraID
 ```
 
 `salvo` scores the stack estimator, `apl` scores priority decisions, and `watch` checks whether visible spell-state changes track a hidden aura. Scope and limitations are listed in the status table and replay reports.
+
+`apl` merges the pull archives with the ring and removes overlaps by sequence ID. New captures use pre-refresh cast commitments for sampling, plus captured toggle, movement/Slipstream and Orb availability for the reference. Missing commitment/evaluation context is explicitly unscored. Legacy samples retain their provisional cooldowns-on/stationary assumptions. The raw main-icon score remains visible; NOW Touch cues also have a separate off-GCD comparison and GCD-slot score using the displayed queued spell. These are samples at GCD decisions, not a complete audit of Touch/macro timing. Captured-state reproduction reruns the live adapter on its saved current/projected inputs; it checks reproducibility, not agreement with future truth or DPS. The combat-log reference still reconstructs aura/resource truth at the press, with approximate enemy counts and cooldowns. `verbose` prints evaluation boundaries, stack/proc inputs and availability gates.
+
+For a Demonology log, `apl` rebuilds shards, Demonic Core stacks, Diabolist procs, Dominion of Argus, cooldowns and Wild Imps from the log, and takes talents, learned spells, haste and castability from the captured diagnostic. The log never states shards, so they come from energize events and known costs, seeded per pull from the client's traced reading; the report shows how often the model then matches later readings. It also reports how often the imp estimate matches the log and how often a hidden Core count would force AC. Only captured snapshots are scored, keypress snapshots first; one that already projects past the press is replaced by the display change shown before that GCD began.
 
 ## Tests
 
@@ -195,7 +203,7 @@ The addon is split by what code is for. Anything that applies to one specializat
 | `Engine/Assisted.lua` | Blizzard's Assisted Combat (the fallback floor) |
 | `Engine/APL.lua` | APL evaluation, module contract and Assisted Combat fallback |
 | **`Kairos/Data/`** | **Collection and diagnostics** |
-| `Data/Recorder.lua` | Flight recorder |
+| `Data/Recorder.lua` | Flight ring, toggle/session context, pre-refresh cast commitments and bounded per-combat archives |
 | `Data/Trace.lua` | Fight traces: spec resources (charges/shards), glows, aura events, stacks before and after each fight |
 | `Data/CombatLog.lua` | Turns on advanced combat logging |
 | `Data/Probe.lua` | Secrecy probe and report |
@@ -208,7 +216,7 @@ The addon is split by what code is for. Anything that applies to one specializat
 | `Specs/MageArcane/Salvo.lua` | Arcane Salvo estimator: stacks in combat from casts and the Barrage glow |
 | `Specs/MageArcane/CumulativePower.lua` | Cumulative Power (Season 2 4-piece) estimator: built by Missiles, consumed at 8 by Blast or Bolt |
 | `Specs/MageArcane/APL.lua` | Sunfury APL, generated by `translator/` (don't edit); loaded before the live adapter |
-| `Specs/MageArcane/State.lua` | `ArcaneState`: live state contract, cast-boundary prediction, cached context/cooldown models, uncertainty tracking and spec 62 registration |
+| `Specs/MageArcane/State.lua` | `ArcaneState`: live contract/prediction, captured-input reproduction, cached context/cooldown models, uncertainty tracking and spec 62 registration |
 | **`Kairos/Specs/WarlockDemonology/`** | **Demonology Warlock only** |
 | `Specs/WarlockDemonology/Spec.lua` | Spell/aura IDs, traced Soul Shards and the Demo secrecy probe/watch lists |
 | `Specs/WarlockDemonology/Demons.lua` | `DemonologyDemons`: own-cast Wild Imp estimate with explicit times for future offline replay |

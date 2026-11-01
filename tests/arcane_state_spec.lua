@@ -67,6 +67,36 @@ describe("Arcane live state", function()
         assert.is_false(s.boltReady)
     end)
 
+    it("records current and projected inputs without consuming the live Bolt proc", function()
+        UnitPower = function() return 0 end
+        Stub.overlays[S.BOLT] = true
+        UnitCastingInfo = function() return "Bolt", nil, nil, 100000, 102000, nil, nil, nil, S.BOLT end
+        Stub.Fire("UNIT_SPELLCAST_START", "player", "bolt", S.BOLT)
+        local rec = K.APL:Recommend()
+        assert.are.equal(100, rec.diagnostic.now)
+        assert.are.equal(102, rec.diagnostic.projected.t)
+        assert.are.equal(100, rec.diagnostic.current.t)
+        assert.is_false(rec.diagnostic.projected.boltReady)
+        assert.is_true(rec.diagnostic.current.boltReady)
+        assert.are.equal(S.BOLT, rec.diagnostic.cast.spellID)
+        assert.is_true(Stub.overlays[S.BOLT])
+        K.db.global.recorder = false
+        assert.is_nil(K.APL:Recommend().diagnostic)
+    end)
+
+    it("keeps unknown inputs explicit in recorded fallback diagnostics", function()
+        fight()
+        A.cooldowns[S.SURGE], A.cooldowns[S.TOUCH] = { finish = 190 }, { finish = 145 }
+        Stub.acSpell = S.BLAST
+        UnitPower = function() return Stub.Secret() end
+        Stub.overlays[S.MISSILES] = false
+        local rec = K.APL:Recommend()
+        assert.is_true(rec.diagnostic.projected.unknown.charges)
+        -- This zero is a placeholder; the unknown flag must travel with it.
+        assert.are.equal(0, rec.diagnostic.projected.charges)
+        assert.are.equal("ac", rec.source)
+    end)
+
     it("times Surge, Soul and cooldowns from successful casts", function()
         fight()
         Stub.Fire("UNIT_SPELLCAST_SUCCEEDED", "player", "surge", S.SURGE)

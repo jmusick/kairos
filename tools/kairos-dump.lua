@@ -10,6 +10,7 @@
 --       replays the log through Kairos/Specs/MageArcane/Salvo.lua and scores the estimate against true stacks
 --   lua tools/kairos-dump.lua apl <WoWCombatLog.txt> <SavedVariables\Kairos.lua> <player> [from [to]] [verbose]
 --       the APL on true state vs Kairos's estimates/live picks, AC and the player's casts
+--       (Arcane or Demonology, chosen by the player's first own-spec cast in the log)
 --   lua tools/kairos-dump.lua watch <WoWCombatLog.txt> <SavedVariables\Kairos.lua> <player> [auraID ...]
 --           [from [to]] [verbose]
 --       lines the recorder's watch signatures up with auras from the log (default: Overpowered
@@ -53,6 +54,31 @@ local function entries(db)
     local count, pos = #list, flight.pos or #list
     for i = 1, count do out[i] = list[(pos + i - 1) % count + 1] end
     return out
+end
+
+-- Per-pull cast/commit archives overlap the flight ring. Sequence IDs preserve
+-- event order within coalesced frames and deduplicate that overlap.
+local function replayEntries(db)
+    local out, seen, order = {}, {}, 0
+    local function add(e)
+        if e.seq and seen[e.seq] then return end
+        if e.seq then seen[e.seq] = true end
+        order = order + 1
+        out[#out + 1] = { entry = e, order = order }
+    end
+    for _, e in ipairs(entries(db)) do add(e) end
+    for _, pull in ipairs((db.flight or {}).pulls or {}) do
+        for _, e in ipairs(pull.entries or {}) do add(e) end
+    end
+    table.sort(out, function(a, b)
+        if a.entry.seq and b.entry.seq then return a.entry.seq < b.entry.seq end
+        if a.entry.seq then return false end
+        if b.entry.seq then return true end
+        return a.order < b.order
+    end)
+    local result = {}
+    for _, item in ipairs(out) do result[#result + 1] = item.entry end
+    return result
 end
 
 --- Spell names from probe keys ("spell Arcane Blast (30451) ...") and learned aura IDs.
@@ -108,6 +134,8 @@ end
 local function describe(entry, names)
     local k = entry.k
     if k == "cast" then return "cast   " .. spellLabel(names, entry.spell) end
+    if k == "commit" then return "commit " .. spellLabel(names, entry.spell) end
+    if k == "toggle" then return ("toggle %s %s"):format(entry.key, entry.on and "on" or "off") end
     if k == "ac" then return "charges " .. tostring(entry.n) end
     if k == "shards" then return "shards " .. tostring(entry.n) end
     if k == "demo" then return ("demo   imps~%s after %s"):format(tostring(entry.imps), spellLabel(names, entry.spell)) end
@@ -338,7 +366,7 @@ local A = {
 --- (standing in for the out-of-combat reads).
 local function replayArcane(logPath, player)
     local ns = loadAddonFiles({ "Core/Signal.lua", "Specs/MageArcane/Salvo.lua",
-        "Specs/MageArcane/CumulativePower.lua", "Specs/MageArcane/APL.lua" })
+        "Specs/MageArcane/CumulativePower.lua", "Specs/MageArcane/APL.lua", "Specs/MageArcane/State.lua" })
     local Salvo, Power, APL = ns.ArcaneSalvo, ns.ArcaneCumulativePower, ns.ArcaneAPL
     local S = APL.SPELLS
     local onGcd = {
@@ -506,7 +534,7 @@ local function replayArcane(logPath, player)
             if onGcd[id] then prevGcd = id end
         end
     end)
-    return records, anchors, APL, successes
+    return records, anchors, APL, successes, ns.ArcaneState
 end
 
 local function inWindow(records, from, to)
@@ -520,7 +548,7 @@ end
 local function rate(list, test, filter)
     local agree, total = 0, 0
     for _, r in ipairs(list) do
-        if not filter or filter(r) then
+        if not r.referenceUnavailable and (not filter or filter(r)) then
             total = total + 1
             if test(r) then agree = agree + 1 end
         end
@@ -609,15 +637,20 @@ end
 local function recorderForPlayer(recorded, player, spec)
     local hasSessions = false
     for _, e in ipairs(recorded) do
-        if e.k == "session" and e.char then hasSessions = true; break end
+        if (e.k == "session" and e.char) or e.context then hasSessions = true; break end
     end
     if not hasSessions then return recorded end -- legacy fixtures/recordings
     local out, active = {}, false
+    local function matches(char, specID)
+        return char and (char == player or char:sub(1, #player + 1) == player .. "-") and specID == spec
+    end
     for _, e in ipairs(recorded) do
         if e.k == "session" then
-            active = e.char and e.char:sub(1, #player) == player and e.spec == spec
+            active = matches(e.char, e.spec)
         end
-        if active then out[#out + 1] = e end
+        local belongs = active
+        if e.context then belongs = matches(e.context.char, e.context.spec) end
+        if belongs then out[#out + 1] = e end
     end
     return out
 end
@@ -625,17 +658,16 @@ end
 -- Compare true-state APL picks, the two-estimator replay, recorded live/AC picks and
 -- player casts. Only the live column measures the complete in-game adapter; the
 -- estimator-only columns hold every other field at the log's reconstructed truth.
-function commands.apl(logPath, svPath, player, ...)
-    player = player or fail("Usage: apl <WoWCombatLog.txt> <Kairos.lua> <player> [from [to]] [verbose]")
+local function aplArcane(logPath, svPath, player, ...)
     local from, to, verbose = parseOptions(...)
-    local all, _, APL, successes = replayArcane(logPath, player)
+    local all, _, APL, successes, adapter = replayArcane(logPath, player)
     local records = inWindow(all, from, to)
     local S = APL.SPELLS
     local db = loadDB(svPath)
     local names = spellNames(db, loadProbe())
     names[S.BOLT] = names[S.BOLT] or "Prismatic Bolt"
 
-    local recorded = recorderForPlayer(entries(db), player, 62)
+    local recorded = recorderForPlayer(replayEntries(db), player, 62)
     local offset, hits, recCasts = alignRecorder(recorded, successes)
     -- GetTime can coalesce consecutive successes into one frame. Match each log
     -- success to its ordered recorder cast so a post-cast pick cannot be scored
@@ -656,25 +688,61 @@ function commands.apl(logPath, svPath, player, ...)
         end
     end
     local picks, hasKairos = {}, false
+    local lastSession
     for index, e in ipairs(recorded) do
+        local session = e.context and e.context.session
+        if offset and e.t and (e.k == "session" or (session and session ~= lastSession)) then
+            picks[#picks + 1] = { t = e.t + offset, index = index, reset = true }
+        end
+        if session then lastSession = session end
         if e.k == "pick" and e.t and offset then
             picks[#picks + 1] = { t = e.t + offset, spell = e.spell, src = e.src,
-                label = e.label, observed = e.observed, index = index }
+                label = e.label, observed = e.observed, index = index,
+                immediate = e.immediate, queued = e.queued, diagnostic = e.diagnostic, context = e.context }
             if e.src == "kairos" then hasKairos = true end
         end
     end
     local function pickAt(record)
         local found, ac
         local boundary = record.successIndex and boundaries[record.successIndex]
+        local success = boundary and recorded[boundary]
+        if success and success.context then
+            local sample = success
+            -- Prefer the pre-refresh START snapshot, including channels whose
+            -- START precedes SUCCEEDED in the same frame.
+            for i = boundary - 1, 1, -1 do
+                local e = recorded[i]
+                if e.context and e.context.session ~= success.context.session then break end
+                if e.t + offset < record.t - 0.15 then break end
+                if e.k == "commit" and e.spell == record.spell
+                    and math.abs(e.t + offset - record.t) <= 0.15 then sample = e; break end
+            end
+            if not record.atSuccess and sample == success then
+                return nil, nil, sample.context, "missing cast-start snapshot"
+            end
+            local rec = sample.recommendation
+            if not rec then return nil, nil, sample.context, "no commitment snapshot" end
+            local d = rec.diagnostic
+            if sample == success and d and d.cast and d.cast.channel and d.cast.startsAt
+                and d.cast.spellID == record.spell
+                and math.abs(d.cast.startsAt + offset - record.t) <= 0.15 then
+                return nil, rec.ac, sample.context, "post-channel forecast"
+            end
+            return rec, rec.ac, sample.context
+        end
         for _, p in ipairs(picks) do
             if boundary and p.index >= boundary then break end
             -- Instants/channels decide on success: recorder order is the boundary.
             -- Cast-time spells still decide at START, before their success boundary.
             if not (boundary and record.atSuccess) and p.t >= record.t - 0.001 then break end
-            if not p.observed then found = p end
-            if p.src == "ac" then ac = p.spell end
-            if p.src == "none" then ac = nil end
+            if p.reset then found, ac = nil, nil
+            else
+                if not p.observed then found = p end
+                if p.src == "ac" then ac = p.spell end
+                if p.src == "none" then ac = nil end
+            end
         end
+        if found and found.context then return nil, nil, found.context, "unmatched commitment" end
         return found, ac
     end
     -- Prismatic Bolt replaces Arcane Blast on the bar while its proc is up: same button.
@@ -683,22 +751,131 @@ function commands.apl(logPath, svPath, player, ...)
         return spell
     end
 
+    local stationary = { [S.BLAST] = true, [S.BOLT] = true, [S.SURGE] = true,
+        [S.PULSE] = true, [S.MISSILES] = true }
+    local function contextualState(s, context, diagnostic)
+        -- Change availability only. Never replace combat-log aura/resource truth
+        -- with the estimates being tested.
+        local out = {}
+        for k, v in pairs(s) do
+            if type(v) == "table" then
+                out[k] = {}
+                for key, value in pairs(v) do out[k][key] = value end
+            else out[k] = v end
+        end
+        if context.cooldowns == false then
+            for id, tag in pairs(adapter.TAGS) do
+                if tag == "cooldowns" then out.ready[id], out.remains[id] = false, adapter.COOLDOWNS[id] end
+            end
+        end
+        if diagnostic then
+            local projected = diagnostic.projected
+            if projected.orbInFlight then out.known[S.ORB] = false end
+            if diagnostic.movement.value == true then
+                for id in pairs(stationary) do
+                    if id ~= S.MISSILES or not projected.talent.slipstream then out.known[id] = false end
+                end
+            end
+        end
+        return out
+    end
+
+    local captured, legacy, unscored, immediate = 0, 0, 0, 0
+    local function evaluate(s)
+        return APL:Evaluate(s) or { spellID = 0, label = "no available action", line = "no available action" }
+    end
     for _, r in ipairs(records) do
-        r.aplTrue = APL:Evaluate(r.trueState)
-        r.aplEst = APL:Evaluate(r.estState)
-        r.aplSalvoOnly = APL:Evaluate(r.salvoOnlyState)
-        r.aplPowerOnly = APL:Evaluate(r.powerOnlyState)
-        local live, ac = pickAt(r)
+        local live, ac, context, reason = pickAt(r)
+        local diagnostic = live and live.diagnostic
+        if context then
+            captured = captured + 1
+            if type(context.cooldowns) ~= "boolean" then reason = "missing cooldown history" end
+            if not diagnostic or diagnostic.v ~= 1 or not diagnostic.projected
+                or not diagnostic.current or not diagnostic.movement then
+                reason = reason or "missing evaluation state"
+            elseif diagnostic.movement.state == "unknown" then
+                reason = reason or "unknown movement"
+            elseif diagnostic.movement.value and diagnostic.projected.talent.unknown.slipstream then
+                reason = reason or "unknown Slipstream"
+            end
+            if not reason then
+                for _, key in ipairs({ "trueState", "estState", "salvoOnlyState", "powerOnlyState" }) do
+                    r[key] = contextualState(r[key], context, diagnostic)
+                end
+            end
+        elseif live then legacy = legacy + 1 end
+        if reason then unscored = unscored + 1; live, ac = nil, nil end
+        r.aplTrue = evaluate(r.trueState)
+        r.aplEst = evaluate(r.estState)
+        r.aplSalvoOnly = evaluate(r.salvoOnlyState)
+        r.aplPowerOnly = evaluate(r.powerOnlyState)
+        if r.aplTrue.spellID == 0 then
+            r.referenceUnavailable = true
+            if not reason then unscored = unscored + 1 end
+            reason, live, ac = reason or "no reference action under captured availability", nil, nil
+        end
+        r.unscored, r.diagnostic = reason, diagnostic
         r.ac = ac and button(ac, r.trueState) or nil
         r.live = live and live.src == "kairos" and button(live.spell, r.trueState) or nil
         r.display = live and button(live.spell, r.trueState) or nil
         r.fallback = live and live.src == "ac" or false
         r.liveLabel = live and live.src == "kairos" and live.label or nil
+        r.liveFields = live and live.fields
         r.cast = button(r.spell, r.trueState)
+        r.gcdDisplay = r.display
+        if live and live.src == "kairos" then
+            hasKairos = true
+            if live.immediate then
+                immediate = immediate + 1
+                r.gcdDisplay = button(live.queued, r.trueState)
+                local off = APL:OffGcd(r.trueState)
+                r.cueMatches = off ~= nil and off.spellID == live.spell
+            end
+            if diagnostic and diagnostic.v == 1 then
+                local ok, result = pcall(adapter.EvaluateStates, adapter,
+                    diagnostic.projected, diagnostic.current, diagnostic.movement)
+                r.reproduced = ok and not result.uncertain and result.spellID == live.spell
+                    and result.label == live.label and (result.immediate or false) == (live.immediate or false)
+                    and result.pairedID == live.paired
+                    and (not result.queuedUncertain and result.queuedID or nil) == live.queued
+            end
+        end
     end
 
     print(("APL replay: %s (SimC %s), %d decisions"):format(APL.name, APL.simc, #records))
     print(("  recorder aligned: %d/%d casts (offset %s)"):format(hits, recCasts, tostring(offset)))
+    print(("  commitment context: %d captured, %d unscored, %d legacy samples"):format(captured, unscored, legacy))
+    local gaps, gapOrder = {}, {}
+    for _, r in ipairs(records) do
+        if r.unscored then
+            local gap = gaps[r.unscored]
+            if not gap then
+                gap = { n = 0, first = r.t }
+                gaps[r.unscored] = gap
+                gapOrder[#gapOrder + 1] = r.unscored
+            end
+            gap.n, gap.last = gap.n + 1, r.t
+        end
+    end
+    for _, reason in ipairs(gapOrder) do
+        local gap = gaps[reason]
+        print(("    unscored %d: %s (%s to %s)"):format(gap.n, reason,
+            clockText(gap.first), clockText(gap.last)))
+    end
+    if legacy > 0 then
+        print("  Legacy samples assume cooldowns enabled and stationary availability; timing/context remain provisional.")
+    end
+    if captured > 0 then
+        print("  Reference uses captured toggle/movement/Orb availability with aura/resource truth at the press.")
+        print("  Captured evaluation reproduction checks the adapter; it is not future-state or DPS agreement.")
+    end
+    if (db.flight or {}).retiredPulls then
+        print(("  Pull archive: %d retained, %d older pulls retired."):format(
+            #db.flight.pulls, db.flight.retiredPulls))
+    end
+    local dropped = 0
+    for _, pull in ipairs((db.flight or {}).pulls or {}) do dropped = dropped + (pull.dropped or 0) end
+    if dropped > 0 then print(("  Pull archives reached their entry limit: %d entries omitted."):format(dropped)) end
     local barrageProcs = 0
     for _, r in ipairs(records) do if r.barrageProc then barrageProcs = barrageProcs + 1 end end
     if barrageProcs > 0 then print(("  Barrage-generated Bolt procs excluded from pre-press state: %d"):format(barrageProcs)) end
@@ -719,6 +896,16 @@ function commands.apl(logPath, svPath, player, ...)
             return r.display == r.aplTrue.spellID end, function(r) return r.display ~= nil end))
         print("    AC fallback share of recorded decisions:    " .. rate(records, function(r)
             return r.fallback end, function(r) return r.display ~= nil end))
+        if immediate > 0 then
+            print("    GCD slot (queued behind NOW cues):          " .. rate(records, function(r)
+                return r.gcdDisplay == r.aplTrue.spellID end, function(r) return r.gcdDisplay ~= nil end))
+            print("    Immediate cue = off-GCD reference:          " .. rate(records, function(r)
+                return r.cueMatches end, function(r) return r.cueMatches ~= nil end))
+        end
+        if captured > 0 then
+            print("    Captured evaluation reproduced:             " .. rate(records, function(r)
+                return r.reproduced end, function(r) return r.reproduced ~= nil end))
+        end
     end
     print("  Player cast              = APL on true state: " .. rate(records, function(r)
         return r.cast == r.aplTrue.spellID end))
@@ -726,28 +913,30 @@ function commands.apl(logPath, svPath, player, ...)
     -- By the APL line (and clause) that decided the true-state pick.
     local lines, order = {}, {}
     for _, r in ipairs(records) do
-        local key = r.aplTrue.label or r.aplTrue.line
-        local row = lines[key]
-        if not row then
-            row = { n = 0, kairos = 0, liveN = 0, live = 0, acN = 0, ac = 0,
-                player = 0, acInstead = {}, source = r.aplTrue.line }
-            lines[key] = row
-            order[#order + 1] = key
-        end
-        row.n = row.n + 1
-        if r.aplEst.spellID == r.aplTrue.spellID then row.kairos = row.kairos + 1 end
-        if r.cast == r.aplTrue.spellID then row.player = row.player + 1 end
-        if r.live then
-            row.liveN = row.liveN + 1
-            if r.live == r.aplTrue.spellID then row.live = row.live + 1 end
-        end
-        if r.ac then
-            row.acN = row.acN + 1
-            if r.ac == r.aplTrue.spellID then
-                row.ac = row.ac + 1
-            else
-                local label = names[r.ac] or tostring(r.ac)
-                row.acInstead[label] = (row.acInstead[label] or 0) + 1
+        if not r.referenceUnavailable then
+            local key = r.aplTrue.label or r.aplTrue.line
+            local row = lines[key]
+            if not row then
+                row = { n = 0, kairos = 0, liveN = 0, live = 0, acN = 0, ac = 0,
+                    player = 0, acInstead = {}, source = r.aplTrue.line }
+                lines[key] = row
+                order[#order + 1] = key
+            end
+            row.n = row.n + 1
+            if r.aplEst.spellID == r.aplTrue.spellID then row.kairos = row.kairos + 1 end
+            if r.cast == r.aplTrue.spellID then row.player = row.player + 1 end
+            if r.live then
+                row.liveN = row.liveN + 1
+                if r.live == r.aplTrue.spellID then row.live = row.live + 1 end
+            end
+            if r.ac then
+                row.acN = row.acN + 1
+                if r.ac == r.aplTrue.spellID then
+                    row.ac = row.ac + 1
+                else
+                    local label = names[r.ac] or tostring(r.ac)
+                    row.acInstead[label] = (row.acInstead[label] or 0) + 1
+                end
             end
         end
     end
@@ -791,9 +980,545 @@ function commands.apl(logPath, svPath, player, ...)
             if hasKairos then
                 print(("    in game: %s  %s"):format(r.live and (names[r.live] or r.live) or "AC/unrecorded",
                     r.liveLabel or ""))
+                if r.unscored then print("    unscored: " .. r.unscored) end
+                local d = r.diagnostic
+                if d and d.projected and d.movement then
+                    local s = d.projected
+                    print(("    captured: eval %.3f -> %.3f, moving %s (%s), cast %s, Salvo %s, CP %s, Bolt %s"):format(
+                        d.now, s.t, tostring(d.movement.value), d.movement.state,
+                        d.cast and tostring(d.cast.spellID) or "none", tostring(s.salvo),
+                        tostring(s.cumulativePower), tostring(s.boltReady)))
+                    print(("    gates: Surge %s, Touch %s, Orb pending %s; unknown: %s"):format(
+                        tostring(s.ready[S.SURGE]), tostring(s.ready[S.TOUCH]), tostring(s.orbInFlight),
+                        r.liveFields or "none on evaluated path"))
+                end
             end
         end
     end
+end
+
+-- Combat log replay for Demonology -------------------------------------------------
+
+local D = {
+    CORE = 264173, INFERNAL_PROC = 433891, RUINATION_PROC = 433885, ARGUS = 1276166,
+    IMP_NPCS = { ["55659"] = true, ["143622"] = true }, -- Wild Imp, Inner Demons' Wild Imp
+    SHARDS = "7", ENEMY_WINDOW = 3, IMP_SLACK = 0.1, GCD = 1.5, GAP = 6, SHARD_SLACK = 0.15,
+    PRESS_WINDOW = 1, -- seconds a keypress (SENT) may precede the logged decision
+    -- The addon's own talent check, used only when no captured diagnostic names talents.
+    DIABOLIST_EVIDENCE = { [433891] = true, [433885] = true, [434506] = true, [434635] = true },
+}
+
+local function npcID(guid) return guid and guid:match("^Creature%-%d+%-%d+%-%d+%-%d+%-(%d+)%-") end
+
+--- Replays the player's Demonology events: true shards (energize gains and known
+--- costs, seeded per fight from the client's first traced reading), Demonic Core stacks, Diabolist procs, Dominion of Argus, cooldowns from
+--- casts, and Wild Imps from their summons and their own last events (offline only:
+--- an imp counts until its death or last action). The live imp estimate replays the
+--- same casts through Specs/WarlockDemonology/Demons.lua.
+local function replayDemonology(logPath, player, options)
+    local haste, toHellAndBack = options.haste, options.toHellAndBack
+    local ns = loadAddonFiles({ "Core/Signal.lua", "Specs/WarlockDemonology/Spec.lua",
+        "Specs/WarlockDemonology/Demons.lua", "Specs/WarlockDemonology/APL.lua",
+        "Specs/WarlockDemonology/State.lua" })
+    local APL, adapter, Demons = ns.DemonologyAPL, ns.DemonologyState, ns.DemonologyDemons
+    local S, onGcd = APL.SPELLS, ns.Specs[266].onGcd
+    -- 12.1.5 casts log only mana; these shard costs match the client's traced readings.
+    local COSTS = { [S.HAND] = 3, [S.IMP_LORD] = 1, [S.RAVAGER] = 1, [S.DOOMGUARD] = 1 }
+
+    -- Pass 1: the player's GUID, what they cast, and every Wild Imp's lifetime.
+    local playerGUID, seen, imps, casts = nil, { casts = {}, auras = {} }, {}, {}
+    local function each(fn)
+        local file = io.open(logPath, "r") or fail("Can't open " .. logPath)
+        for line in file:lines() do
+            local stamp, payload = line:match("^(%S+ %S+)%s%s(.*)$")
+            if payload then fn(clock(stamp), splitCSV(payload)) end
+        end
+        file:close()
+    end
+    local function mine(f) return f[3] and f[3]:sub(1, #player) == player end
+    each(function(t, f)
+        local event, id = f[1], tonumber(f[10])
+        if mine(f) then
+            playerGUID = playerGUID or f[2]
+            if event == "SPELL_CAST_SUCCESS" and id then
+                seen.casts[id] = true
+                casts[#casts + 1] = { t = t, spell = id }
+            end
+            if event == "SPELL_AURA_APPLIED" and id then seen.auras[id] = true end
+            if event == "SPELL_SUMMON" and D.IMP_NPCS[npcID(f[6])] then
+                imps[f[6]] = { born = t, last = t }
+            end
+        end
+        -- An imp's own actions bound its life; its last Firebolt lands ~1 s after it despawns.
+        local imp = imps[f[2]]
+        if imp and not event:find("_DAMAGE$") and not event:find("_MISSED$") then imp.last = math.max(imp.last, t) end
+        imp = (event == "UNIT_DIED" or event == "UNIT_DESTROYED") and imps[f[6]]
+        if imp then imp.died = imp.died or t end
+    end)
+    local function trueImps(t)
+        local n = 0
+        for _, imp in pairs(imps) do
+            if imp.born <= t and t < (imp.died or imp.last + D.IMP_SLACK) then n = n + 1 end
+        end
+        return n
+    end
+
+    local shards, core, up, lastCast, enemies = 0, 0, {}, {}, {}
+    local doomguardCut, prevGcd, records, successes, started = 0, nil, {}, {}, {}
+    -- The log never states shards (12.1.5 casts carry only mana), so the count held at
+    -- a pull is unknown. Seed it from the client's first traced reading after each gap;
+    -- the later readings then validate the energize/cost model (see the timeline).
+    -- Without a trace, decisions count from the first energize and may start offset.
+    local readings, combat = {}, {}
+    if options.readings then readings, combat = options.readings(casts) end
+    local nextReading, nextCombat, truthKnown, needSeed, lastMine = 1, 1, false, true, nil
+    local timeline, lastGain, ownGains = {}, nil, 0
+    local function setShards(t, value)
+        shards = math.max(0, math.min(5, value))
+        if timeline[#timeline] and timeline[#timeline].t == t then timeline[#timeline].n = shards
+        else timeline[#timeline + 1] = { t = t, n = shards } end
+    end
+    local function enemyCount(t)
+        local n = 0
+        for _, last in pairs(enemies) do if t - last <= D.ENEMY_WINDOW then n = n + 1 end end
+        return math.max(n, 1)
+    end
+    local function state(t, impCount)
+        local s = { unknown = {}, known = { unknown = {} }, talent = { unknown = {} }, ready = {}, remains = {},
+            castable = {}, chargesFractional = {}, t = t, fightRemains = 300, prevGcd = prevGcd,
+            shards = math.floor(shards + 1e-6), coreStacks = core, coreUp = core > 0,
+            infernalReady = up[D.INFERNAL_PROC] == true, ruinationReady = up[D.RUINATION_PROC] == true,
+            argusUp = up[D.ARGUS] == true, imps = impCount, enemies = enemyCount(t), gcdMax = D.GCD }
+        for id, base in pairs(adapter.COOLDOWNS) do
+            local finish = lastCast[id] and lastCast[id] + base - (id == S.DOOMGUARD and doomguardCut or 0)
+            s.remains[id] = finish and math.max(0, finish - t) or 0
+            s.ready[id] = s.remains[id] == 0
+        end
+        for _, id in pairs(S) do
+            s.known[id] = seen.casts[id] or false
+            s.castable[id] = true
+        end
+        s.talent.diabolic_ritual = false
+        for id in pairs(D.DIABOLIST_EVIDENCE) do
+            if seen.casts[id] or seen.auras[id] then s.talent.diabolic_ritual = true end
+        end
+        return s
+    end
+    local function record(t, spellID, atSuccess)
+        if not truthKnown then return end
+        local r = { t = t, spell = spellID, atSuccess = atSuccess, truthImps = trueImps(t),
+            estImps = Demons:Count(t), shards = math.floor(shards + 1e-6) }
+        r.trueState, r.estState = state(t, r.truthImps), state(t, r.estImps)
+        records[#records + 1] = r
+        return r
+    end
+
+    -- Pass 2: the replay.
+    each(function(t, f)
+        local event, id = f[1], tonumber(f[10])
+        -- Imps and Dreadstalkers grant Core, and pets can energize shards, so anything
+        -- landing on the player counts. Casts and damage must be the player's own.
+        local onMe = playerGUID and f[6] == playerGUID
+        if not mine(f) and not onMe then return end
+        -- Shards regenerate between pulls: reseed at each client combat start, or after
+        -- a gap in the player's casts when there's no trace (auras never go quiet).
+        if mine(f) and event:find("^SPELL_CAST_") then
+            if #combat == 0 and lastMine and t - lastMine >= D.GAP then needSeed = true end
+            lastMine = t
+        end
+        -- The client's combat changes pause and resume the imp estimate's clock.
+        while combat[nextCombat] and combat[nextCombat].t < t do
+            Demons:SetCombat(combat[nextCombat].on, combat[nextCombat].t)
+            if combat[nextCombat].on then needSeed = true end
+            nextCombat = nextCombat + 1
+        end
+        -- Seed from the last reading before the pull: shards regenerate between pulls.
+        local seeded = false
+        while readings[nextReading] and readings[nextReading].t < t do
+            local reading = readings[nextReading]
+            if needSeed and reading.t >= t - D.GAP then
+                setShards(reading.t, reading.n)
+                truthKnown, seeded = true, true
+            end
+            nextReading = nextReading + 1
+        end
+        if seeded then needSeed = false end
+        if event:find("^SPELL_AURA") and onMe and id then
+            if id == D.CORE then
+                if event == "SPELL_AURA_APPLIED" then core = 1
+                elseif event == "SPELL_AURA_REMOVED" then core = 0
+                elseif event:find("DOSE$") then core = tonumber(f[14]) or core end
+            end
+            if event == "SPELL_AURA_APPLIED" then up[id] = true
+            elseif event == "SPELL_AURA_REMOVED" then up[id] = nil end
+        elseif event == "SPELL_ENERGIZE" and onMe and f[#f - 1] == D.SHARDS then
+            -- 12.1.5 logs whole-shard amounts ("1.0000") against a fragment maximum (50).
+            local gain = (tonumber(f[#f - 3]) or 0) - (tonumber(f[#f - 2]) or 0)
+            setShards(t, shards + gain)
+            lastGain = { t = t, name = f[11], gain = gain }
+            if #readings == 0 then truthKnown = true end
+        elseif not mine(f) then
+            return
+        elseif event == "SPELL_DAMAGE" or event == "SPELL_PERIODIC_DAMAGE" then
+            if f[6] and f[6]:find("^Creature") then enemies[f[6]] = t end
+        elseif event == "SPELL_CAST_START" and id and onGcd[id] then
+            started[id] = record(t, id, false) or true
+        elseif event == "SPELL_CAST_FAILED" and id then
+            started[id] = nil
+        elseif event == "SPELL_CAST_SUCCESS" and id then
+            successes[#successes + 1] = { t = t, spell = id }
+            local decision = started[id]
+            if onGcd[id] and not decision then
+                -- An instant Demonbolt's +2 is logged ~1 ms before its own success (12.1.5,
+                -- under its energize ID 280127): an effect of the press, not state before it.
+                local own = lastGain and lastGain.name == f[11] and t - lastGain.t <= 0.01 and lastGain.gain or 0
+                local held = shards
+                shards = math.max(0, shards - own)
+                decision = record(t, id, true)
+                shards = held
+                if own > 0 and decision then ownGains = ownGains + 1 end
+            end
+            if type(decision) == "table" then decision.successIndex = #successes end
+            started[id] = nil
+            if COSTS[id] then setShards(t, shards - COSTS[id]) end
+            if id == S.DEMONBOLT and core > 0 then doomguardCut = doomguardCut + 3 end
+            if id == S.DOOMGUARD then doomguardCut = 0 end
+            Demons:OnCast(id, t, haste or 0, toHellAndBack)
+            lastCast[id] = t
+            if onGcd[id] then prevGcd = id end
+        end
+    end)
+    return records, APL, successes, adapter, timeline, ownGains
+end
+
+--- The adapter's own route: shared leveling priorities until a hero tree unlocks.
+local function pickDemonology(adapter, s)
+    local pick, uncertain = adapter:Pick(s)
+    return pick or { spellID = 0, label = "no available action", line = "no available action" }, uncertain
+end
+
+local function aplDemonology(logPath, svPath, player, ...)
+    local from, to, verbose = parseOptions(...)
+    local db = loadDB(svPath)
+    local recorded = recorderForPlayer(replayEntries(db), player, 266)
+    -- The live imp estimate uses cached haste; recover it from a captured GCD.
+    local haste, toHellAndBack
+    for _, e in ipairs(recorded) do
+        local p = e.recommendation and e.recommendation.diagnostic and e.recommendation.diagnostic.projected
+        if p and type(p.gcdMax) == "number" and p.gcdMax > 0.75 and not (p.unknown or {}).gcdMax then
+            haste = (1.5 / p.gcdMax - 1) * 100
+        end
+        if p and p.talent then toHellAndBack = p.talent.to_hell_and_back == true end
+    end
+    -- The client's traced shard readings on the log's clock, aligned by the log's casts.
+    local clientReadings, combat = {}, {}
+    local function readings(casts)
+        local offset = alignRecorder(recorded, casts)
+        if not offset then return clientReadings, combat end
+        for _, e in ipairs(recorded) do
+            local n = e.k == "shards" and e.n or (e.k == "fight" and e.shards)
+            if type(n) == "number" and e.t then clientReadings[#clientReadings + 1] = { t = e.t + offset, n = n } end
+            if e.k == "fight" and e.t and (e.phase == "start" or e.phase == "end") then
+                combat[#combat + 1] = { t = e.t + offset, on = e.phase == "start" }
+            end
+        end
+        table.sort(clientReadings, function(a, b) return a.t < b.t end)
+        table.sort(combat, function(a, b) return a.t < b.t end)
+        return clientReadings, combat
+    end
+    local all, APL, successes, adapter, timeline, ownGains = replayDemonology(logPath, player,
+        { haste = haste, toHellAndBack = toHellAndBack, readings = readings })
+    local records = inWindow(all, from, to)
+    local S = APL.SPELLS
+    local names = spellNames(db, loadProbe())
+    for key, id in pairs(S) do names[id] = names[id] or key:sub(1, 1) .. key:sub(2):lower() end
+
+    local offset, hits, recCasts = alignRecorder(recorded, successes)
+    local boundaries, lastCastIndex = {}, 0
+    if offset then
+        for successIndex, success in ipairs(successes) do
+            local best, distance
+            for index = lastCastIndex + 1, #recorded do
+                local entry = recorded[index]
+                if entry.t and entry.t + offset > success.t + 0.15 then break end
+                if entry.k == "cast" and entry.spell == success.spell and entry.t then
+                    local delta = math.abs(entry.t + offset - success.t)
+                    if delta <= 0.15 and (not distance or delta < distance) then best, distance = index, delta end
+                end
+            end
+            if best then boundaries[successIndex], lastCastIndex = best, best end
+        end
+    end
+    -- The keypress (SENT) snapshot holds the instruction on screen at the press. Older
+    -- captures fall back to START for cast-time spells and the cast entry for instants,
+    -- which a refresh after the press's own GCD began can already have advanced.
+    local function sampleAt(r)
+        local boundary = r.successIndex and boundaries[r.successIndex]
+        local success = boundary and recorded[boundary]
+        if not success then return nil, "no aligned recorder cast" end
+        local start
+        for i = boundary - 1, 1, -1 do
+            local e = recorded[i]
+            if e.t + offset < r.t - D.PRESS_WINDOW then break end
+            if e.spell == r.spell and e.k == "sent" then return e end
+            if e.spell == r.spell and e.k == "commit" and not start and e.t + offset >= r.t - 0.15 then start = e end
+        end
+        if r.atSuccess then return success end
+        return start, not start and "missing cast-start snapshot" or nil
+    end
+    -- A reading validates the log model if the model holds its value within the slack:
+    -- a cast's cost and its client update land milliseconds apart on the two clocks.
+    local function modelMatches(reading)
+        local value, matched = nil, false
+        for _, point in ipairs(timeline) do
+            if point.t > reading.t + D.SHARD_SLACK then break end
+            if point.t >= reading.t - D.SHARD_SLACK and point.n == reading.n then matched = true end
+            value = point.n
+        end
+        return matched or value == reading.n
+    end
+    local checked = {}
+    for _, reading in ipairs(clientReadings) do
+        if (not from or reading.t >= from) and (not to or reading.t <= to) and timeline[1]
+            and reading.t > timeline[1].t then
+            checked[#checked + 1] = { ok = modelMatches(reading), t = reading.t, n = reading.n }
+        end
+    end
+
+    -- Display changes (pick entries) on the log's clock, for snapshots that postdate the press.
+    local stream = {}
+    if offset then
+        for _, e in ipairs(recorded) do
+            if e.k == "pick" and e.t then stream[#stream + 1] = { t = e.t + offset, entry = e } end
+        end
+    end
+    local function onScreenAt(t)
+        local shown, ac
+        for _, item in ipairs(stream) do
+            if item.t >= t then break end
+            local e = item.entry
+            if not e.observed then shown = e end
+            if e.src == "ac" then ac = e.spell elseif e.src == "none" then ac = nil end
+        end
+        return shown, ac
+    end
+
+    local captured, unscored, gaps, gapOrder, recovered = 0, 0, {}, {}, 0
+    local talentSource = "inferred from the log (diabolic_ritual only)"
+    for _, r in ipairs(records) do
+        local sample, reason = sampleAt(r)
+        local rec = sample and sample.recommendation
+        if sample and not rec then reason = "no commitment snapshot" end
+        if sample and not sample.combat then reason = "out of combat" end
+        local d = rec and rec.diagnostic
+        if d and d.v == 1 and d.projected then
+            captured = captured + 1
+            -- Talents, learned spells, haste and movement come from the live client.
+            -- Aura, resource, imp and cooldown truth stays with the log.
+            local p = d.projected
+            for _, key in ipairs({ "trueState", "estState" }) do
+                local s = r[key]
+                s.talent, s.known, s.castable, s.gcdMax = p.talent, p.known, p.castable, p.gcdMax
+                if sample.context and sample.context.cooldowns == false then
+                    for id, tag in pairs(adapter.TAGS) do
+                        if tag == "cooldowns" then s.ready[id], s.remains[id] = false, adapter.COOLDOWNS[id] end
+                    end
+                end
+            end
+            talentSource = "captured from the live client"
+        end
+        r.aplTrue = pickDemonology(adapter, r.trueState)
+        r.aplEst = pickDemonology(adapter, r.estState)
+        -- The live adapter sees Core presence, not its count, while the aura is secret.
+        if r.trueState.coreUp then
+            r.trueState.unknown.coreStacks = true
+            local _, uncertain = adapter:Pick(r.trueState)
+            r.trueState.unknown.coreStacks = nil
+            r.coreForcesAC = uncertain
+        else
+            r.coreForcesAC = false
+        end
+        if r.aplTrue.spellID == 0 then r.referenceUnavailable, reason = true, reason or "no reference action" end
+        if reason then
+            unscored = unscored + 1
+            local gap = gaps[reason]
+            if not gap then gap = { n = 0, first = r.t }; gaps[reason] = gap; gapOrder[#gapOrder + 1] = reason end
+            gap.n, gap.last = gap.n + 1, r.t
+        end
+        if rec and not reason then
+            r.display = rec.spell
+            r.live = rec.src == "kairos" and rec.spell or nil
+            r.fallback = rec.src == "ac"
+            r.liveLabel = r.live and rec.label
+            r.ac = rec.ac
+            r.liveFields = rec.fields
+            if r.live and d and d.v == 1 then
+                local ok, again = pcall(adapter.Pick, adapter, d.projected)
+                r.reproduced = ok and again ~= nil and again.spellID == rec.spell
+                r.rerun = ok and again and again.spellID or nil
+            end
+        end
+        r.diagnostic = d
+        r.sampled = sample and sample.k
+        -- A snapshot projected well past the press was evaluated after its GCD began
+        -- (captures before the recorder's OnScreen). Grade the display stream's pick
+        -- from just before that GCD started instead.
+        r.postPress = d and d.projected and offset and d.projected.t + offset > r.t + 0.2 or false
+        if r.postPress and r.display and not d.cast then
+            local shown, ac = onScreenAt(d.projected.t + offset - (d.projected.gcdMax or D.GCD))
+            if shown then
+                recovered = recovered + 1
+                r.display, r.fallback, r.ac = shown.spell, shown.src == "ac", ac
+                r.live = shown.src == "kairos" and shown.spell or nil
+                r.liveLabel, r.liveFields = r.live and shown.label, shown.fields
+                r.sampled, r.postPress = "stream", false
+            end
+        end
+    end
+
+    print(("APL replay: %s (SimC %s), %d decisions"):format(APL.name, APL.simc, #records))
+    print(("  recorder aligned: %d/%d casts (offset %s)"):format(hits, recCasts, tostring(offset)))
+    print(("  commitment context: %d captured, %d unscored"):format(captured, unscored))
+    for _, reason in ipairs(gapOrder) do
+        local gap = gaps[reason]
+        print(("    unscored %d: %s (%s to %s)"):format(gap.n, reason, clockText(gap.first), clockText(gap.last)))
+    end
+    print("  Talents and learned spells: " .. talentSource .. ".")
+    print("  Reference: shards from energize/costs (seeded per pull from the client), Core stacks,")
+    print("  procs, Argus, cooldowns from casts, Wild Imps from their own events; enemies are")
+    print("  targets hit in the last 3 s.")
+    print("  Log shard model = client reading:             " .. rate(checked, function(c) return c.ok end))
+    if ownGains > 0 then print(("  Shards a press generated itself, excluded from its state: %d"):format(ownGains)) end
+    print("  Imp estimate = log imps:                      " .. rate(records, function(r)
+        return r.estImps == r.truthImps end))
+    print("    within one imp:                             " .. rate(records, function(r)
+        return math.abs(r.estImps - r.truthImps) <= 1 end))
+    print("  Kairos imp estimate      = APL on true state: " .. rate(records, function(r)
+        return r.aplEst.spellID == r.aplTrue.spellID end))
+    print("  Hidden Core count would force AC:             " .. rate(records, function(r)
+        return r.coreForcesAC end))
+    print("  Assisted Combat          = APL on true state: " .. rate(records, function(r)
+        return r.ac == r.aplTrue.spellID end, function(r) return r.ac ~= nil end))
+    print("  Kairos in game           = APL on true state: " .. rate(records, function(r)
+        return r.live == r.aplTrue.spellID end, function(r) return r.live ~= nil end))
+    print("    Display including AC fallback:              " .. rate(records, function(r)
+        return r.display == r.aplTrue.spellID end, function(r) return r.display ~= nil end))
+    print("    AC fallback share of recorded decisions:    " .. rate(records, function(r)
+        return r.fallback end, function(r) return r.display ~= nil end))
+    local sent, sampled = 0, 0
+    for _, r in ipairs(records) do
+        if r.display then sampled = sampled + 1 end
+        if r.display and r.sampled == "sent" then sent = sent + 1 end
+    end
+    print(("    snapshots at the keypress: %d of %d"):format(sent, sampled))
+    if recovered > 0 then
+        print(("    post-press snapshots replaced by the pick shown before the GCD: %d"):format(recovered))
+    end
+    print("    Taken before the press's GCD began:         " .. rate(records, function(r)
+        return r.live == r.aplTrue.spellID end, function(r) return r.live ~= nil and not r.postPress end))
+    print("    Taken after it (next-GCD forecast):         " .. rate(records, function(r)
+        return r.live == r.aplTrue.spellID end, function(r) return r.live ~= nil and r.postPress end))
+    print("    Captured evaluation reproduced:             " .. rate(records, function(r)
+        return r.reproduced end, function(r) return r.reproduced ~= nil end))
+    print("    Current adapter on captured inputs = APL:   " .. rate(records, function(r)
+        return r.rerun == r.aplTrue.spellID end, function(r) return r.reproduced ~= nil end))
+    print("  Player cast              = APL on true state: " .. rate(records, function(r)
+        return r.spell == r.aplTrue.spellID end))
+
+    local lines, order = {}, {}
+    for _, r in ipairs(records) do
+        if not r.referenceUnavailable then
+            local key = r.aplTrue.label or r.aplTrue.line
+            local row = lines[key]
+            if not row then
+                row = { n = 0, est = 0, liveN = 0, live = 0, acN = 0, ac = 0, player = 0, instead = {} }
+                lines[key], order[#order + 1] = row, key
+            end
+            row.n = row.n + 1
+            if r.aplEst.spellID == r.aplTrue.spellID then row.est = row.est + 1 end
+            if r.spell == r.aplTrue.spellID then row.player = row.player + 1 end
+            if r.live then
+                row.liveN = row.liveN + 1
+                if r.live == r.aplTrue.spellID then row.live = row.live + 1
+                else
+                    local label = names[r.live] or tostring(r.live)
+                    row.instead[label] = (row.instead[label] or 0) + 1
+                end
+            end
+            if r.ac then
+                row.acN = row.acN + 1
+                if r.ac == r.aplTrue.spellID then row.ac = row.ac + 1 end
+            end
+        end
+    end
+    table.sort(order, function(a, b) return lines[a].n > lines[b].n end)
+    print("")
+    print("| APL line (true state) | Decisions | Imp estimate agrees | In game agrees | AC agrees | Player agrees | In game picked instead |")
+    print("|---|---|---|---|---|---|---|")
+    for _, key in ipairs(order) do
+        local row = lines[key]
+        local instead = {}
+        for label, n in pairs(row.instead) do instead[#instead + 1] = { label, n } end
+        table.sort(instead, function(a, b) return a[2] > b[2] end)
+        local parts = {}
+        for i = 1, math.min(3, #instead) do parts[i] = ("%s %d"):format(instead[i][1], instead[i][2]) end
+        print(("| %s | %d | %d | %d/%d | %d/%d | %d | %s |"):format(key, row.n, row.est, row.live, row.liveN,
+            row.ac, row.acN, row.player, table.concat(parts, ", ")))
+    end
+
+    if verbose then
+        for _, c in ipairs(checked) do
+            if not c.ok then
+                local model
+                for _, point in ipairs(timeline) do if point.t <= c.t then model = point.n else break end end
+                print(("%s  shard model %s, client %d"):format(clockText(c.t), tostring(model), c.n))
+            end
+        end
+    end
+    for _, r in ipairs(records) do
+        local wrong = r.live and r.live ~= r.aplTrue.spellID
+        if verbose or wrong or (r.reproduced == false) then
+            local s = r.trueState
+            print(("%s  APL %-14s in game %-14s AC %-14s cast %-14s %s"):format(clockText(r.t),
+                names[r.aplTrue.spellID] or r.aplTrue.spellID,
+                r.live and (names[r.live] or r.live) or (r.fallback and "AC" or "-"),
+                r.ac and (names[r.ac] or r.ac) or "-", names[r.spell] or r.spell, r.aplTrue.label or ""))
+            if r.reproduced == false then
+                print(("    current adapter on the captured inputs: %s"):format(names[r.rerun] or tostring(r.rerun)))
+            end
+            print(("    log: shards %d, core %d, imps %d (est %d), infernal %s, ruination %s, argus %s, enemies %d"):format(
+                s.shards, s.coreStacks, r.truthImps, r.estImps, tostring(s.infernalReady),
+                tostring(s.ruinationReady), tostring(s.argusUp), s.enemies))
+            local d = r.diagnostic
+            if d and d.projected then
+                local p = d.projected
+                print(("    captured: eval %.3f -> %.3f, moving %s, cast %s, shards %s, core %s%s, imps %s, enemies %s; label %s; unknown: %s"):format(
+                    d.now, p.t, tostring(d.movement and d.movement.value), d.cast and tostring(d.cast.spellID) or "none",
+                    tostring(p.shards), tostring(p.coreStacks), p.unknown and p.unknown.coreStacks and "?" or "",
+                    tostring(p.imps), tostring(p.enemies), tostring(r.liveLabel), r.liveFields or "none"))
+            end
+        end
+    end
+end
+
+function commands.apl(logPath, svPath, player, ...)
+    player = player or fail("Usage: apl <WoWCombatLog.txt> <Kairos.lua> <player> [from [to]] [verbose]")
+    -- The player's first own-spec cast picks the replay.
+    local demonology = { [105174] = true, [264178] = true, [104316] = true, [265187] = true, [686] = true }
+    local file = io.open(logPath, "r") or fail("Can't open " .. logPath)
+    local spec
+    for line in file:lines() do
+        local payload = line:match("^%S+ %S+%s%s(SPELL_CAST_SUCCESS,.*)$")
+        local fields = payload and splitCSV(payload)
+        if fields and fields[3] and fields[3]:sub(1, #player) == player then
+            local id = tonumber(fields[10])
+            if demonology[id] then spec = 266; break end
+            if id == 30451 or id == 44425 or id == 5143 then spec = 62; break end
+        end
+    end
+    file:close()
+    if spec == 266 then return aplDemonology(logPath, svPath, player, ...) end
+    return aplArcane(logPath, svPath, player, ...)
 end
 
 --- Auras the watch is compared with by default: Overpowered Missiles (secret in combat),

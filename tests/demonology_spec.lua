@@ -32,7 +32,8 @@ describe("Demonology live module", function()
         assert.is_false(A:Build(100).known[S.IMP_LORD])
     end)
 
-    it("uses Dreadstalkers at two shards and gates unlearned spells", function()
+    it("uses Dreadstalkers without spending shards and gates unlearned spells", function()
+        Stub.shards = 0
         assert.are.equal(S.DOGS, K.APL:Recommend().spellID)
         Stub.knownSpells[S.DOGS] = false
         Stub.Fire("SPELLS_CHANGED")
@@ -95,6 +96,34 @@ describe("Demonology live module", function()
         end
         A:Refresh(100)
         assert.are.equal(19, A:Build(100).remains[S.DOGS])
+    end)
+
+    it("keeps a just-cast Grimoire on cooldown when the client still reads it idle", function()
+        Stub.knownSpells[S.IMP_LORD] = true
+        Stub.shards = 3
+        A:Refresh(99)
+        assert.are.equal(S.IMP_LORD, K.APL:Recommend().spellID)
+        -- 12.1.5: the cast replaces the spellbook entry (the in-combat probe resolves the
+        -- name to 132411) and SPELLS_CHANGED refreshes before PLAYER_REGEN_DISABLED.
+        Stub.Fire("UNIT_SPELLCAST_SUCCEEDED", "player", "grimoire", S.IMP_LORD)
+        Stub.overrides[S.IMP_LORD] = 132411
+        Stub.Fire("SPELLS_CHANGED")
+        fight()
+        assert.is_false(A:Build(Stub.now).ready[S.IMP_LORD])
+        assert.is_false(K.APL:Recommend().spellID == S.IMP_LORD)
+        -- After combat, a lagging read still can't cancel it; a deferred cooldown that
+        -- hasn't started (isEnabled false) counts as a full cooldown from now.
+        K.State.inCombat = false
+        A:Refresh(Stub.now + 3)
+        assert.is_false(A:Build(Stub.now + 3).ready[S.IMP_LORD])
+        Stub.overrides[S.IMP_LORD] = nil
+        Stub.cooldowns[S.IMP_LORD] = { startTime = 0, duration = 0, isEnabled = false, modRate = 1 }
+        A:Refresh(Stub.now + 130)
+        assert.are.equal(120, A:Build(Stub.now + 130).remains[S.IMP_LORD])
+        -- Once the client agrees it is idle, the cast no longer holds it.
+        Stub.cooldowns[S.IMP_LORD] = nil
+        A:Refresh(Stub.now + 131)
+        assert.is_true(A:Build(Stub.now + 131).ready[S.IMP_LORD])
     end)
 
     it("requires the actual Diabolist replacement proc for Infernal Bolt and free Ruination", function()
@@ -211,7 +240,7 @@ describe("Demonology live module", function()
         assert.are.equal(0, K.DemonologyDemons:Count(102))
         K.State.cast.spellID = S.DOGS
         s = A:Build(100)
-        assert.are.equal(1, s.shards)
+        assert.are.equal(3, s.shards) -- free in 12.1.5
         assert.is_false(s.ready[S.DOGS])
         K.State.cast.spellID = S.INFERNAL
         assert.are.equal(5, A:Build(100).shards)
@@ -289,6 +318,25 @@ describe("Demonology live module", function()
         Stub.Fire("UNIT_POWER_UPDATE", "player", Stub.Secret())
         assert.are.equal(n, #K.Recorder:Entries())
     end)
+
+    it("captures its projected inputs for offline reproduction, and only while recording", function()
+        fight()
+        Stub.shards = 3
+        K.State.cast = { spellID = S.HAND, endsAt = 102 }
+        local rec = K.APL:Recommend()
+        assert.are.equal(102, rec.diagnostic.projected.t)
+        assert.are.equal(0, rec.diagnostic.projected.shards)
+        assert.are.equal(S.HAND, rec.diagnostic.cast.spellID)
+        K.Recorder:Clear()
+        K.Recorder:NoteRecommendation(rec)
+        K.Recorder:Commit("cast", S.HAND)
+        local saved = K.Recorder:Entries()[2].recommendation.diagnostic
+        assert.are.equal(3, saved.projected.imps)
+        local again = A:Pick(saved.projected)
+        assert.are.equal(rec.spellID, again.spellID)
+        K.db.global.recorder = false
+        assert.is_nil(K.APL:Recommend().diagnostic)
+    end)
 end)
 
 describe("Demonology Wild Imp estimate", function()
@@ -305,17 +353,40 @@ describe("Demonology Wild Imp estimate", function()
         assert.are.equal(6, D:Count(101.5))
         D:OnCast(264130, 102, 0)
         assert.are.equal(4, D:Count(102))
-        assert.are.equal(3, D:Count(110.5))
-        assert.are.equal(0, D:Count(112))
+        assert.are.equal(4, D:Count(111.5))
+        assert.are.equal(3, D:Count(112))
+        assert.are.equal(0, D:Count(113.5))
         D:OnCast(105174, 120, 0)
         D:OnCast(196277, 121, 0)
         assert.are.equal(0, D:Count(121))
+        D:OnCast(105174, 130, 0)
+        D:OnCast(196277, 131, 0, true) -- To Hell and Back
+        assert.are.equal(3, D:Count(131))
+        assert.are.equal(0, D:Count(143))
     end)
-    it("scales the five Firebolt lifetime estimate by haste and does not invent extra summons", function()
+    it("pauses imp lifetimes while the player is out of combat", function()
+        D:OnCast(105174, 100, 0)
+        D:SetCombat(false, 104)
+        assert.are.equal(3, D:Count(130)) -- idle imps keep their energy between pulls
+        D:SetCombat(true, 130)
+        assert.are.equal(3, D:Count(137.9))
+        assert.are.equal(0, D:Count(138))
+    end)
+    it("follows the player's combat state from the adapter", function()
+        Stub.specs[1] = 266
+        K = Stub.LoadAddon()
+        D = K.DemonologyDemons
+        Stub.Fire("PLAYER_REGEN_DISABLED")
+        D:OnCast(105174, 100, 0)
+        Stub.now = 105
+        Stub.Fire("PLAYER_REGEN_ENABLED")
+        assert.are.equal(3, D:Count(200))
+    end)
+    it("scales the six Firebolt lifetime estimate by haste and does not invent extra summons", function()
         D:Spawn(100, 3, 100)
         assert.are.equal("estimated", D:Read(104).state)
         assert.are.equal(3, D:Read(104).value)
         D:OnCast(265187, 104, 0)
-        assert.are.equal(0, D:Count(105))
+        assert.are.equal(0, D:Count(106))
     end)
 end)
