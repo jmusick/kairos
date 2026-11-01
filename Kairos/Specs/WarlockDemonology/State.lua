@@ -17,6 +17,10 @@ State.CAST_TIMES = { [S.SHADOW] = 2, [S.HAND] = 1.5, [S.DEMONBOLT] = 4.5,
 State.FELGUARD, State.IMP = 30146, 688
 State.READ_LAG = 2 -- seconds a cast's own cooldown outranks an idle client read
 State.ART_LAG = 0.5 -- seconds after a Hand its Demonic Art proc may still be landing (log: 0-0.1 s)
+-- Dominion of Argus is one four-rank node: rank 1 opens it, ranks 2-3 add 5 s each, rank 4
+-- refunds shards. 12.1.5 logs: exactly 15.0 s (rank 1, 33 windows) and 20.0 s (rank 2, 5),
+-- timed from Tyrant; Hand of Gul'dan never refreshed it.
+State.ARGUS = { node = 110404, aura = 1276166, base = 15, perRank = 5, extraRanks = 2 }
 
 local function numeric(r) return r.state ~= "unknown" and type(r.value) == "number" end
 local function boolean(r) return r.state ~= "unknown" and type(r.value) == "boolean" end
@@ -30,6 +34,11 @@ end
 local function knows(id)
     return Signal.Read(C_SpellBook and C_SpellBook.IsSpellKnown or IsPlayerSpell or IsSpellKnown, id)
 end
+local function rank(node)
+    local config = Signal.Read(C_ClassTalents and C_ClassTalents.GetActiveConfigID)
+    if not numeric(config) then return Signal.Unknown("talent-config") end
+    return field(Signal.Read(C_Traits and C_Traits.GetNodeInfo, config.value, node), "currentRank")
+end
 local function put(s, key, r, default)
     if r and r.state ~= "unknown" and not Signal.IsSecret(r.value) and type(r.value) == type(default) then
         s[key] = r.value
@@ -37,7 +46,7 @@ local function put(s, key, r, default)
 end
 
 function State:Reset()
-    self.cache, self.cooldowns, self.refreshedAt, self.argusUntil, self.handAt = nil, {}, nil, 0, nil
+    self.cache, self.cooldowns, self.refreshedAt, self.argusAt, self.handAt = nil, {}, nil, nil, nil
     Kairos.DemonologyDemons:Reset()
 end
 State:Reset()
@@ -54,6 +63,17 @@ function State:Refresh(t)
     for key, id in pairs(self.TALENTS) do
         local r = knows(id)
         if boolean(r) then c.talent[key] = r end
+    end
+    local A = self.ARGUS
+    local argusRank = rank(A.node)
+    if numeric(argusRank) then
+        c.argusDuration = A.base + A.perRank * math.max(0, math.min(A.extraRanks, argusRank.value - 1))
+    end
+    -- A running Argus (a pull that ended inside it) states its own duration out of combat.
+    local hidden = Signal.Read(C_Secrets and C_Secrets.ShouldSpellAuraBeSecret, A.aura)
+    if boolean(hidden) and not hidden.value then
+        local duration = field(Signal.Read(C_UnitAuras and C_UnitAuras.GetPlayerAuraBySpellID, A.aura), "duration")
+        if numeric(duration) and duration.value > 0 then c.argusDuration = duration.value end
     end
     for _, id in pairs(S) do
         local r = knows(id)
@@ -133,8 +153,7 @@ function State:OnCast(id, t)
     end
     if id == S.HAND then self.handAt = t end
     Kairos.DemonologyDemons:OnCast(id, t, c.haste or 0, talent("to_hell_and_back"))
-    if id == S.TYRANT and talent("argus") then self.argusUntil = t + 15
-    elseif (id == S.HAND or id == S.RUINATION) and self.argusUntil > t then self.argusUntil = t + 15 end
+    if id == S.TYRANT and talent("argus") then self.argusAt = t end
     Kairos.Recorder:Push({ k = "demo", imps = Kairos.DemonologyDemons:Count(t), spell = id })
 end
 
@@ -154,8 +173,7 @@ function State:Project(s, id, finish)
     end
     if id == S.RUINATION then s.ruinationReady, s.unknown.ruinationReady = false, nil end
     if id == S.INFERNAL then s.infernalReady, s.unknown.infernalReady = false, nil end
-    if id == S.TYRANT and s.talent.argus then s.argusUp, s.argusUntil = true, finish + 15
-    elseif (id == S.HAND or id == S.RUINATION) and s.argusUp then s.argusUntil = finish + 15 end
+    if id == S.TYRANT and s.talent.argus then self:ArgusFrom(s, finish) end
     if id == S.IMPLOSION then
         s.imps = s.talent.to_hell_and_back and 3 or 0
         if s.talent.unknown.to_hell_and_back then s.unknown.imps = true end
@@ -210,7 +228,9 @@ function State:Build(now)
     -- A Hand in progress or just landed may still grant its Demonic Art's proc.
     s.handPending = (cast and cast.spellID == S.HAND and cast.endsAt > now)
         or (self.handAt ~= nil and now - self.handAt < self.ART_LAG)
-    s.argusUp, s.argusUntil = s.talent.argus and self.argusUntil > s.t, self.argusUntil
+    s.argusDuration = c.argusDuration
+    s.argusUp = false
+    if self.argusAt and s.talent.argus then self:ArgusFrom(s, self.argusAt) end
     if s.talent.unknown.argus then s.unknown.argusUp = true end
     -- Where readable, Implosion's cast count is the true imp count (see Demons.lua).
     if s.known[S.IMPLOSION] then
@@ -237,6 +257,16 @@ function State:Build(now)
     if cast and not cast.channel and cast.endsAt > now then self:Project(s, cast.spellID, cast.endsAt) end
     self:Castable(s, Kairos.State:Moving())
     return s
+end
+
+-- Dominion of Argus from a Tyrant at `from`. Without a known rank it surely lasts the base
+-- duration and possibly every extra rank's; only that span is unknown.
+function State:ArgusFrom(s, from)
+    local A = self.ARGUS
+    s.argusUntil = from + (s.argusDuration or A.base + A.perRank * A.extraRanks)
+    s.argusSure = from + (s.argusDuration or A.base)
+    s.argusUp = s.argusUntil > s.t
+    s.unknown.argusUp = (s.argusUp and s.argusSure <= s.t) or s.talent.unknown.argus or nil
 end
 
 function State:CastTime(id, coreUp)
@@ -285,6 +315,7 @@ function State:Advance(s, id, moving)
     if q.argusUp and q.argusUntil and q.argusUntil <= start then q.argusUp = false end
     self:Project(q, id, start)
     if q.argusUp and q.argusUntil and q.argusUntil <= finish then q.argusUp = false end
+    if q.argusUp and q.argusSure and q.argusSure <= finish then q.unknown.argusUp = true end
     self:Castable(q, moving)
     return q
 end

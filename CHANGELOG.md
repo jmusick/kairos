@@ -4,6 +4,12 @@ All notable changes to Kairos are documented here. The format follows [Keep a Ch
 
 ## [Unreleased]
 
+## [0.2.7] - 2026-11-01
+
+### Fixed
+
+- Demonology times Dominion of Argus from Summon Demonic Tyrant only, for 15 s plus 5 s per point in its second rank (read from the talent tree out of combat, or from the aura's own duration when it's readable). Hand of Gul'dan and Ruination no longer extend it. The old rule kept Argus "up" for as long as Hands kept coming, which recommended Hand of Gul'dan over Demonbolt, Shadow Bolt and Implosion after the buff had ended. In 12.1.5 logs the buff lasted exactly 15.0 s at rank 1 (33 windows) and 20.0 s at rank 2 (5), and no Hand ever refreshed it. With an unknown rank, only the 15–25 s span falls back to Assisted Combat. Rescoring captured decisions, the new rule matched the log's Argus at 98–99% of decisions in five dungeons (52–77% before in four of them). In a Timewalking Everbloom run with rank 2 it would have raised Kairos's agreement with the APL from 234/261 to 247/261, and in Skyreach from 129/139 to 134/139.
+
 ## [0.2.6] - 2026-11-01
 
 ### Added

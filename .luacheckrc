@@ -22,7 +22,7 @@ read_globals = {
     "UnitThreatSituation", "LoggingCombat", "C_CVar",
     "UnitAffectingCombat", "UnitCanAttack", "UnitCastingInfo", "UnitChannelInfo", "UnitExists", "UnitGUID",
     "UnitHealth", "UnitHealthMax", "UnitName", "UnitPower", "UnitPowerMax", "UnitPowerType", "UnitSpellHaste",
-    "C_SpellBook", "IsPlayerSpell", "IsSpellKnown",
+    "C_SpellBook", "IsPlayerSpell", "IsSpellKnown", "C_ClassTalents", "C_Traits",
     "UnitIsDeadOrGhost",
     "C_Item", "GetInventoryItemID",
 }

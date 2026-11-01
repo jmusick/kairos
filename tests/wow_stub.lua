@@ -92,6 +92,7 @@ function Stub.Install()
     Stub.spellNames = {}    -- [spellID] = name
     Stub.acSpell = nil
     Stub.knownSpells = {}
+    Stub.talentRanks = {}   -- [nodeID] = currentRank in the active config
     Stub.overlays = {}
     Stub.cooldowns = {}
     Stub.charges = {}
@@ -211,6 +212,12 @@ function Stub.Install()
         GetRotationSpells = function() return {} end,
     }
     _G.C_SpellBook = { IsSpellKnown = function(id) return Stub.knownSpells[id] or false end }
+    _G.C_ClassTalents = { GetActiveConfigID = function() return 1 end }
+    _G.C_Traits = {
+        GetNodeInfo = function(_, node)
+            return { ID = node, currentRank = Stub.talentRanks[node] or 0, maxRanks = 4 }
+        end,
+    }
     _G.IsPlayerSpell = nil
     _G.IsSpellKnown = nil
     _G.C_UnitAuras = {

@@ -316,15 +316,64 @@ describe("Demonology live module", function()
         assert.are.equal(3, A:Build(100).imps)
     end)
 
-    it("times the optional Dominion of Argus buff from Tyrant and refresh casts", function()
-        Stub.knownSpells[1276163], Stub.knownSpells[1276222] = true, true
+    it("times Dominion of Argus from Tyrant by its rank, without Hand refreshes", function()
+        Stub.knownSpells[1276163] = true
+        Stub.talentRanks[A.ARGUS.node] = 1
         Stub.Fire("SPELLS_CHANGED")
         fight()
         A:OnCast(S.TYRANT, 100)
         assert.is_true(A:Build(110).argusUp)
         A:OnCast(S.HAND, 110)
-        assert.is_true(A:Build(120).argusUp)
+        A:OnCast(S.HAND, 114)
+        local s = A:Build(116)
+        assert.is_false(s.argusUp)
+        assert.is_nil(s.unknown.argusUp)
+    end)
+
+    it("adds five seconds of Argus for each extra rank", function()
+        Stub.knownSpells[1276163] = true
+        for rank, duration in pairs({ [2] = 20, [3] = 25, [4] = 25 }) do
+            Stub.talentRanks[A.ARGUS.node] = rank
+            K.State.inCombat = false
+            A:Refresh(100)
+            fight()
+            A:OnCast(S.TYRANT, 100)
+            assert.is_true(A:Build(100 + duration - 0.1).argusUp)
+            assert.is_false(A:Build(100 + duration + 0.1).argusUp)
+        end
+    end)
+
+    it("prefers a readable Argus aura's duration and hides only the span an unknown rank decides", function()
+        Stub.knownSpells[1276163] = true
+        C_ClassTalents.GetActiveConfigID = function() return Stub.Secret() end
+        A:Reset()
+        Stub.Fire("SPELLS_CHANGED")
+        fight()
+        A:OnCast(S.TYRANT, 100)
+        assert.is_true(A:Build(114).argusUp)
+        assert.is_nil(A:Build(114).unknown.argusUp)
+        assert.is_true(A:Build(120).unknown.argusUp)
         assert.is_false(A:Build(126).argusUp)
+        assert.is_nil(A:Build(126).unknown.argusUp)
+        Stub.auras[A.ARGUS.aura] = { spellId = A.ARGUS.aura, applications = 1, duration = 20 }
+        K.State.inCombat = false
+        A:Refresh(121)
+        assert.is_true(A:Build(119.9).argusUp)
+        assert.is_nil(A:Build(119.9).unknown.argusUp)
+        assert.is_false(A:Build(120.1).argusUp)
+    end)
+
+    it("projects a fresh Tyrant's Argus into the queue state", function()
+        Stub.knownSpells[1276163] = true
+        Stub.talentRanks[A.ARGUS.node] = 2
+        Stub.Fire("SPELLS_CHANGED")
+        fight()
+        local s = A:Build(100)
+        assert.is_false(s.argusUp)
+        local q = A:Advance(s, S.TYRANT, K.State:Moving())
+        assert.is_true(q.argusUp)
+        assert.is_nil(q.unknown.argusUp)
+        assert.are.equal(100 + A:CastTime(S.TYRANT) + 20, q.argusUntil)
     end)
 
     it("survives secret resources, procs, cooldown fields and cached context", function()
