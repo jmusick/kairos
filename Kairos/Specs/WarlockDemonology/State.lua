@@ -319,6 +319,10 @@ function State:OnInit()
         local now = clock()
         if Kairos.specID == 266 and now then Kairos.DemonologyDemons:SetCombat(on, now) end
     end)
+    Kairos:On("KAIROS_TARGET_CHANGED", function(_, on)
+        local now = clock()
+        if Kairos.specID == 266 and now then Kairos.DemonologyDemons:SetTarget(on, now) end
+    end)
     for _, event in ipairs({ "SPELLS_CHANGED", "TRAIT_CONFIG_UPDATED", "PLAYER_REGEN_ENABLED" }) do
         Kairos:On(event, refresh)
     end

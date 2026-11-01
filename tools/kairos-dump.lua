@@ -1126,10 +1126,15 @@ local function replayDemonology(logPath, player, options)
             if #combat == 0 and lastMine and t - lastMine >= D.GAP then needSeed = true end
             lastMine = t
         end
-        -- The client's combat changes pause and resume the imp estimate's clock.
+        -- The client's combat and target changes pause and resume the imp estimate's clock.
         while combat[nextCombat] and combat[nextCombat].t < t do
-            Demons:SetCombat(combat[nextCombat].on, combat[nextCombat].t)
-            if combat[nextCombat].on then needSeed = true end
+            local change = combat[nextCombat]
+            if change.target ~= nil then
+                Demons:SetTarget(change.target, change.t)
+            else
+                Demons:SetCombat(change.on, change.t)
+                if change.on then needSeed = true end
+            end
             nextCombat = nextCombat + 1
         end
         -- Readable Implosion cast counts (traced by the spell watch) anchor the estimate,
@@ -1227,6 +1232,9 @@ local function aplDemonology(logPath, svPath, player, ...)
             if type(n) == "number" and e.t then clientReadings[#clientReadings + 1] = { t = e.t + offset, n = n } end
             if e.k == "fight" and e.t and (e.phase == "start" or e.phase == "end") then
                 combat[#combat + 1] = { t = e.t + offset, on = e.phase == "start" }
+            end
+            if e.k == "target" and e.t and type(e.on) == "boolean" then
+                combat[#combat + 1] = { t = e.t + offset, target = e.on }
             end
             local count = e.k == "watch" and e.spell == 196277 and e.t and tonumber((e.sig or ""):match(" cc=(%d+)"))
             if count then counts[#counts + 1] = { t = e.t + offset, n = count } end

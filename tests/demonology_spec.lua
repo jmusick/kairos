@@ -373,6 +373,18 @@ describe("Demonology Wild Imp estimate", function()
         assert.are.equal(3, D:Count(140.9))
         assert.are.equal(0, D:Count(141))
     end)
+    it("pauses imp lifetimes in combat without a live hostile target", function()
+        D:SetCombat(true, 99)
+        D:OnCast(105174, 100, 0)
+        D:SetTarget(false, 103)  -- 1 cast done; the second was in progress
+        D:SetCombat(false, 110)
+        D:SetCombat(true, 120)   -- back in combat, still nothing to hit
+        assert.are.equal(3, D:Count(140))
+        D:SetTarget(true, 140)
+        -- 5 casts left (10 s), after 3 s to re-engage.
+        assert.are.equal(3, D:Count(152.9))
+        assert.are.equal(0, D:Count(153))
+    end)
     it("anchors to a readable imp count, adding missed imps and dropping extras", function()
         D:OnCast(105174, 100, 0)
         D:Anchor(101, 5, 0)
@@ -400,6 +412,17 @@ describe("Demonology Wild Imp estimate", function()
         D:OnCast(105174, 100, 0)
         Stub.now = 105
         Stub.Fire("PLAYER_REGEN_ENABLED")
+        assert.are.equal(3, D:Count(200))
+    end)
+    it("follows the player's target from the adapter", function()
+        Stub.specs[1] = 266
+        K = Stub.LoadAddon()
+        D = K.DemonologyDemons
+        Stub.Fire("PLAYER_REGEN_DISABLED")
+        D:OnCast(105174, 100, 0)
+        Stub.now = 105
+        UnitIsDeadOrGhost = function() return true end
+        Stub.Fire("UNIT_HEALTH", "target")
         assert.are.equal(3, D:Count(200))
     end)
     it("scales the six Firebolt lifetime estimate by haste and does not invent extra summons", function()

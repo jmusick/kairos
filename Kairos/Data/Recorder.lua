@@ -130,7 +130,7 @@ function Recorder:Commit(kind, spellID, channel)
     self:Push({ k = kind, spell = spellID, channel = channel,
         recommendation = enabled and copy(shown) or nil,
         forecast = enabled and forecast and forecast.spell ~= (shown and shown.spell) and forecast.spell or nil,
-        combat = Kairos.State.inCombat or nil })
+        target = Kairos.State:Target(), combat = Kairos.State.inCombat or nil })
 end
 
 function Recorder:NoteRecommendation(rec)
@@ -221,6 +221,9 @@ function Recorder:OnInit()
     Kairos:On("KAIROS_TOGGLE_CHANGED", function(_, key, on)
         self:Context()
         self:Push({ k = "toggle", key = key, on = on })
+    end)
+    Kairos:On("KAIROS_TARGET_CHANGED", function(_, on)
+        if self:Enabled() then self:Push({ k = "target", on = on, combat = Kairos.State.inCombat or nil }) end
     end)
     Kairos:On("KAIROS_COMBAT_CHANGED", function(_, on)
         if on then self:BeginPull() else self:EndPull("combat") end

@@ -4,7 +4,7 @@ Kairos is an experimental rotation helper for World of Warcraft Retail: Midnight
 
 *Kairos* (καιρός) is Greek for “the right moment”: the instant when acting matters. The name fits the addon's job, showing what to press next and when to press it.
 
-Version **0.2.4**. The project is still testing whether this approach can reach reliable recommendations in real encounters. It recommends spells; you press them. Kairos never sends input to the game.
+Version **0.2.5**. The project is still testing whether this approach can reach reliable recommendations in real encounters. It recommends spells; you press them. Kairos never sends input to the game.
 
 ## Beyond an Assisted Combat wrapper
 
@@ -41,7 +41,7 @@ Kairos does not inspect secret values, read game memory, inject code or modify t
 
 ## Class and specialization status
 
-Status reflects the code in **0.2.4**, not a claim of encounter readiness. **Prototype** means an independent APL and live model exist but still need validation. **Not started** means there is no Kairos rotation model; AC is used when available. **Out of scope** marks healers, which are outside the current DPS/tank plan. The roster includes Midnight's [Devourer specialization](https://worldofwarcraft.blizzard.com/en-us/news/24262570/midnight-embrace-the-void-with-the-devourer-specialization).
+Status reflects the code in **0.2.5**, not a claim of encounter readiness. **Prototype** means an independent APL and live model exist but still need validation. **Not started** means there is no Kairos rotation model; AC is used when available. **Out of scope** marks healers, which are outside the current DPS/tank plan. The roster includes Midnight's [Devourer specialization](https://worldofwarcraft.blizzard.com/en-us/news/24262570/midnight-embrace-the-void-with-the-devourer-specialization).
 
 | Class | Specialization | Role | Status | Implementation and limits |
 |---|---|---|---|---|
@@ -80,7 +80,7 @@ Status reflects the code in **0.2.4**, not a claim of encounter readiness. **Pro
 | Shaman | Enhancement | DPS | Not started | — |
 | Shaman | Restoration | Healer | Out of scope | — |
 | Warlock | Affliction | DPS | Not started | — |
-| Warlock | Demonology | DPS | Prototype | Generated Diabolist/Soul Harvester routes and a shared leveling entry; Diabolist is the initial play-test target. Learned-spell gating, shard/proc reads, estimated imps and cooldowns. Hidden Demonic Core counts require agreement across all possible counts. Live review ([dummy and two Timewalking dungeons](docs/replay/12.1.5-70688-demonology.md)): in game 88%, 80% and 88% agreement with the APL vs 75%, 64% and 57% for Assisted Combat. Most misses are Implosion calls from the imp estimate, which now anchors to Implosion's readable cast count between pulls. [Translation coverage](translator/README.md#demonology-contract-and-leveling-entry). |
+| Warlock | Demonology | DPS | Prototype | Generated Diabolist/Soul Harvester routes and a shared leveling entry; Diabolist is the initial play-test target. Learned-spell gating, shard/proc reads, estimated imps and cooldowns. Hidden Demonic Core counts require agreement across all possible counts. Live review ([dummy and five Timewalking dungeons](docs/replay/12.1.5-70688-demonology.md)): in game 88%, 80%, 88%, 86%, 87% and 93% agreement with the APL vs 75%, 64%, 57%, 66%, 59% and 70% for Assisted Combat. Most misses are Implosion calls from the imp estimate, which now anchors to Implosion's readable cast count between pulls and pauses while there's no live hostile target. [Translation coverage](translator/README.md#demonology-contract-and-leveling-entry). |
 | Warlock | Destruction | DPS | Not started | — |
 | Warrior | Arms | DPS | Not started | — |
 | Warrior | Fury | DPS | Not started | — |

@@ -65,6 +65,29 @@ describe("Recorder commitment context", function()
         assert.is_nil(R:Entries()[#R:Entries()].forecast)
     end)
 
+    it("records whether a live hostile target exists, on change and at each commit", function()
+        local function kind(k)
+            local out = {}
+            for _, e in ipairs(R:Entries()) do if e.k == k then out[#out + 1] = e end end
+            return out
+        end
+        local dead = false
+        UnitIsDeadOrGhost = function() return dead end
+        Stub.Fire("PLAYER_TARGET_CHANGED")
+        assert.is_true(kind("target")[1].on)
+        Stub.Fire("UNIT_HEALTH", "target")
+        assert.are.equal(1, #kind("target")) -- unchanged state isn't repeated
+        dead = true
+        Stub.Fire("UNIT_HEALTH", "target")
+        assert.is_false(kind("target")[2].on)
+        R:Commit("cast", 686)
+        assert.is_false(kind("cast")[1].target)
+        UnitCanAttack = function() return Stub.Secret() end
+        dead = false
+        Stub.Fire("PLAYER_TARGET_CHANGED")
+        assert.are.equal(2, #kind("target")) -- a secret read records nothing
+    end)
+
     it("filters secret keys and values and owns the persisted snapshot", function()
         local secret = Stub.Secret()
         local d = { known = 4, hidden = secret, nested = { [secret] = 7, value = secret, ok = false } }

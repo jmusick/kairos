@@ -7,18 +7,23 @@
 -- 12 s on a timer whose phase isn't visible (it runs out of combat and can shift), so it
 -- stays unmodeled. Imps spend energy only while they have a target: in The Everbloom
 -- they stopped casting for exactly the 18 s the player was out of combat between pulls
--- and lived on, so the lifetime clock pauses out of combat. Travel, target downtime in
--- combat and haste changes can still cause drift.
+-- and lived on, and in Bloodmaul Slag Mines they stopped in combat while the player had
+-- no live hostile target, so the lifetime clock pauses in both cases. Travel and haste
+-- changes can still cause drift.
 local _, Kairos = ...
 local Demons = Kairos:NewModule("DemonologyDemons")
 
--- idle holds out-of-combat spans { from, to }; an open span (no `to`) is ongoing.
-function Demons:Reset() self.batches, self.idle = {}, {} end
+-- idle holds spans { from, to } without combat or a live hostile target; an open span
+-- (no `to`) is ongoing. combat and target are nil until known, which counts as engaged.
+function Demons:Reset() self.batches, self.idle, self.combat, self.target = {}, {}, nil, nil end
 Demons:Reset()
 
-function Demons:SetCombat(on, t)
+function Demons:SetCombat(on, t) self.combat = on; self:Engage(t) end
+function Demons:SetTarget(on, t) self.target = on; self:Engage(t) end
+
+function Demons:Engage(t)
     local last = self.idle[#self.idle]
-    if on then
+    if self.combat ~= false and self.target ~= false then
         if last and not last.to then last.to = t end
     elseif not last or last.to then
         self.idle[#self.idle + 1] = { from = t }
@@ -26,12 +31,15 @@ function Demons:SetCombat(on, t)
     while #self.idle > 32 do table.remove(self.idle, 1) end
 end
 
--- Seconds of energy a batch has spent by t. Out of combat it spends none and keeps only
--- whole Firebolts (a cast in progress when the pack dies isn't finished); back in combat
--- it waits REENGAGE seconds before spending again. Carried imps' first cast came a median
+-- Seconds of energy a batch has spent by t. While idle it spends none and keeps only
+-- whole Firebolts (a cast in progress when the pack dies isn't finished); re-engaged it
+-- waits REENGAGE seconds before spending again. Carried imps' first cast came a median
 -- 2.1-2.3 s after combat start (about 0.7 s plus one cast) in two dungeons; 3 s scored best
 -- across the dummy and both dungeons (imp-estimate picks 109/109, 234/246, 187/196 vs
--- 109, 223, 178 without these rules), so it also absorbs target gaps. Fitted, not validated.
+-- 109, 223, 178 without these rules). Treating a lost target like leaving combat, with
+-- the same 3 s, took Bloodmaul Slag Mines from 185/200 to 197/200 (0, 1 and 2 s scored
+-- 194-195). Fitted on that log; in fresh Skyreach data imps idled and re-engaged as
+-- modeled, but the pause changed only 1 of 20 Implosion picks there.
 function Demons:Spent(batch, t)
     local spent, cursor, interval = 0, batch.born, batch.life / self.CASTS
     for _, span in ipairs(self.idle) do

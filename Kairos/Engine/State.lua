@@ -9,6 +9,7 @@ State.MAX_CASTS = 10
 State.casts = {}        -- newest first: { spellID, t }
 State.cast = nil        -- { spellID, endsAt, channel } while casting or channeling
 State.inCombat = false
+State.target = nil      -- live hostile target (true/false) once known
 State.nameplates = {}   -- [unitToken] = true
 
 function State:RecordCast(spellID, t)
@@ -71,6 +72,27 @@ function State:EnemyCount()
     return Signal.Known(count)
 end
 
+--- Whether the player has a live hostile target, or nil when any read is secret. Pets
+--- and guardians attack that target: Demonology's imps stop casting in combat when
+--- there's nothing to hit, which casts alone can't reveal.
+function State:Target()
+    local exists = Signal.Read(UnitExists, "target")
+    if exists.state == "unknown" then return nil end
+    if not exists.value then return false end
+    local hostile, dead = Signal.Read(UnitCanAttack, "player", "target"), Signal.Read(UnitIsDeadOrGhost, "target")
+    if hostile.state == "unknown" or dead.state == "unknown" then return nil end
+    return hostile.value == true and not dead.value
+end
+
+-- Fires KAIROS_TARGET_CHANGED when the known target state changes; secret reads keep the last.
+function State:NoteTarget()
+    local target = self:Target()
+    if target ~= nil and target ~= self.target then
+        self.target = target
+        Kairos:Fire("KAIROS_TARGET_CHANGED", target)
+    end
+end
+
 function State:OnInit()
     Kairos:On("KAIROS_PROFILE_CHANGED", function() self.lastGcd = nil end)
     Kairos:OnUnit("UNIT_SPELLCAST_SUCCEEDED", "player", function(_, _, _, spellID)
@@ -105,6 +127,8 @@ function State:OnInit()
         self.inCombat = false
         Kairos:Fire("KAIROS_COMBAT_CHANGED", false)
     end)
+    Kairos:On("PLAYER_TARGET_CHANGED", function() self:NoteTarget() end)
+    Kairos:OnUnit("UNIT_HEALTH", "target", function() self:NoteTarget() end)
 
     Kairos:On("NAME_PLATE_UNIT_ADDED", function(_, unit)
         if not Signal.IsSecret(unit) then self.nameplates[unit] = true end

@@ -4,6 +4,16 @@ All notable changes to Kairos are documented here. The format follows [Keep a Ch
 
 ## [Unreleased]
 
+## [0.2.5] - 2026-11-01
+
+### Added
+
+- The recorder logs whether the player has a live hostile target, on target changes and target health events and with every cast commit. Demonology's imps idle in combat when there's nothing to hit, and this lets a target-based pause be tested offline.
+
+### Changed
+
+- Demonology's Wild Imp estimate also pauses in combat while the player has no live hostile target, resuming 3 s after a target returns, as after combat starts. On Bloodmaul Slag Mines the estimate's picks matched the log's at 197/200 decisions, up from 185, and at 28/31 Implosion decisions, up from 16. It was fitted on that session. In a fresh Skyreach run, imps idled and re-engaged as modeled, but the pause changed only one of 20 Implosion picks there.
+
 ## [0.2.4] - 2026-11-01
 
 ### Added
