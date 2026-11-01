@@ -4,6 +4,8 @@ All notable changes to Kairos are documented here. The format follows [Keep a Ch
 
 ## [Unreleased]
 
+## [0.2.4] - 2026-11-01
+
 ### Added
 
 - CurseForge publishing configuration for Kairos Rotation Helper (project 1778452), with tagged-release packaging, a project logo and a link to the article explaining the addon's theory.

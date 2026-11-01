@@ -4,7 +4,7 @@ Kairos is an experimental rotation helper for World of Warcraft Retail: Midnight
 
 *Kairos* (καιρός) is Greek for “the right moment”: the instant when acting matters. The name fits the addon's job, showing what to press next and when to press it.
 
-Version **0.2.3**. The project is still testing whether this approach can reach reliable recommendations in real encounters. It recommends spells; you press them. Kairos never sends input to the game.
+Version **0.2.4**. The project is still testing whether this approach can reach reliable recommendations in real encounters. It recommends spells; you press them. Kairos never sends input to the game.
 
 ## Beyond an Assisted Combat wrapper
 
@@ -41,7 +41,7 @@ Kairos does not inspect secret values, read game memory, inject code or modify t
 
 ## Class and specialization status
 
-Status reflects the code in **0.2.3**, not a claim of encounter readiness. **Prototype** means an independent APL and live model exist but still need validation. **Not started** means there is no Kairos rotation model; AC is used when available. **Out of scope** marks healers, which are outside the current DPS/tank plan. The roster includes Midnight's [Devourer specialization](https://worldofwarcraft.blizzard.com/en-us/news/24262570/midnight-embrace-the-void-with-the-devourer-specialization).
+Status reflects the code in **0.2.4**, not a claim of encounter readiness. **Prototype** means an independent APL and live model exist but still need validation. **Not started** means there is no Kairos rotation model; AC is used when available. **Out of scope** marks healers, which are outside the current DPS/tank plan. The roster includes Midnight's [Devourer specialization](https://worldofwarcraft.blizzard.com/en-us/news/24262570/midnight-embrace-the-void-with-the-devourer-specialization).
 
 | Class | Specialization | Role | Status | Implementation and limits |
 |---|---|---|---|---|
