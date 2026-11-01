@@ -4,7 +4,7 @@ Guidance for AI coding agents working in this repository.
 
 ## Read first
 
-[SPEC.md](SPEC.md) is the source of truth for scope and design. Its decision log (D1–D38) records settled choices. Don't reopen one without the user; if a change would contradict one, stop and ask.
+[SPEC.md](SPEC.md) is the source of truth for scope and design. Its decision log (D1–D39) records settled choices. Don't reopen one without the user; if a change would contradict one, stop and ask.
 
 Hard lines from the spec, which no change may cross:
 
@@ -47,13 +47,13 @@ Hard lines from the spec, which no change may cross:
   - `watch` lines the recorder's spell-watch signatures (`Data/Trace.lua`) up with auras from the log, field by field, and reports whether any field tracks one. Pass aura IDs to check others; by default it checks Overpowered Missiles, with Clearcasting and Arcane Soul as controls.
   - To compare a trace with a combat log, align them by matching casts (recorder `t` is `GetTime()`; `at` has only one-second resolution). A Blast or Prismatic Bolt success and the next queued spell land milliseconds apart; both are real presses.
   - Open-world training dummies drop combat within seconds of a pause, even mid-channel, so one dummy session shows up as many short fights.
-- Packaging: BigWigs packager with `.pkgmeta` (`Kairos/Kairos` moves to the package root). No CI yet (D23).
+- Packaging: `.github/workflows/release.yml` runs BigWigs on pushed `v*` tags (D39). `.pkgmeta` moves `Kairos/Kairos` to the package root. Only addon files and the packager's generated changelog ship; translator, tests and development docs are excluded. There is no test CI yet; D39 supersedes D23 for release automation only.
 
 ## Releases
 
 The version lives in `## Version` in `Kairos/Kairos.toc` and in `CHANGELOG.md` (Keep a Changelog format, newest first, with an Unreleased section). Bump both together. Update `## Interface` when Blizzard ships a new client build.
 
-The public GitHub repository is `jmusick/kairos`, with `main` as its default branch (D38). Release commits and tags go to GitHub; do not publish to CurseForge yet.
+The public GitHub repository is `jmusick/kairos`, with `main` as its default branch (D38). CurseForge project **1778452**, **Kairos Rotation Helper**, receives tagged releases through the BigWigs GitHub workflow, matching Hidden Lodge (D39); ordinary commits must not publish. Keep CurseForge's native automatic packaging off. See README's publishing instructions. The `CURSEFORGE_API_TOKEN` Actions secret supplies `CF_API_KEY`; keep its value out of the repository, documentation and logs.
 
 ## Notes
 

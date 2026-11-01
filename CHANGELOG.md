@@ -4,6 +4,14 @@ All notable changes to Kairos are documented here. The format follows [Keep a Ch
 
 ## [Unreleased]
 
+### Added
+
+- CurseForge publishing configuration for Kairos Rotation Helper (project 1778452), with tagged-release packaging, a project logo and a link to the article explaining the addon's theory.
+
+### Fixed
+
+- Addon packages exclude the offline translator and root development documents, keeping the installable `Kairos/` folder at the ZIP root.
+
 ## [0.2.3] - 2026-11-01
 
 ### Changed

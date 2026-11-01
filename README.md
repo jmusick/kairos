@@ -98,9 +98,11 @@ The [offline translator](translator/README.md) also has golden-file and independ
 
 Tuono's reconstruction research is a reference for this approach; Kairos is a separate implementation. See the [prior-art survey](SPEC.md#5-prior-art-survey-2026-10-29) for context.
 
+Read [Kairos: Rebuilding Priority Recommendations](https://orboro.net/blog/kairos-rebuilding-priority-recommendations) for the theory behind the addon.
+
 ## Install for development
 
-Use a checkout of this repository. CurseForge publishing is deferred. Copy the `Kairos/` folder into your Retail `Interface/AddOns/` directory, or junction it there so `/reload` picks up edits:
+The CurseForge project is [Kairos Rotation Helper](https://www.curseforge.com/wow/addons/kairos-rotation-helper). New projects and files require CurseForge moderation before they become available. For development, copy the `Kairos/` folder from a checkout into your Retail `Interface/AddOns/` directory, or junction it there so `/reload` picks up edits:
 
 ```powershell
 New-Item -ItemType Junction -Path 'C:\Games\World of Warcraft\_retail_\Interface\AddOns\Kairos' -Target 'C:\Users\JD\source\kairos\Kairos'
@@ -109,6 +111,16 @@ New-Item -ItemType Junction -Path 'C:\Games\World of Warcraft\_retail_\Interface
 Run `/reload`, then `/kairos status` to confirm the addon loaded. Keep enemy nameplates on for enemy counting. Turn on `/console scriptErrors 1` (or use BugSack) while testing.
 
 The display has keybind text, an AC badge and a Cooldowns indicator. It stays visible regardless of combat while enabled. Native Settings controls cover locking, position, scale, main icon size (32–128), and per-character/spec profiles. The Cooldowns toggle can be bound under **Key Bindings > AddOns > Kairos**; it affects Kairos's supported priorities and does not change Blizzard's AC fallback. Interrupt recommendations are not wired yet.
+
+## Publishing to CurseForge
+
+CurseForge project **1778452** links to this repository. [The release workflow](.github/workflows/release.yml) follows Hidden Lodge's setup: pushing a `v*` tag runs `BigWigsMods/packager@v2` and uploads the ZIP to CurseForge and GitHub Releases. Ordinary branch pushes do not publish. CurseForge's native automatic packaging stays off to avoid duplicate uploads.
+
+The root `.pkgmeta` moves the nested addon to the ZIP root, producing `Kairos/Kairos.toc`, `Kairos/Core/`, and the rest of the addon. The translator, tests, tools and development documents are excluded. The packager adds a release changelog. Generated APLs already live in the addon, so publishing requires no translator build.
+
+Before the first release, add a CurseForge publishing token as the **`CURSEFORGE_API_TOKEN`** repository secret under **Settings > Secrets and variables > Actions**. The workflow maps it to BigWigs' `CF_API_KEY`; GitHub supplies its own `GITHUB_TOKEN` for GitHub Releases. A missing CurseForge token fails the workflow rather than silently skipping that upload. Never commit the token or put it in documentation or logs. No repository webhook is needed. See [BigWigs' workflow documentation](https://github.com/BigWigsMods/packager/wiki/GitHub-Actions-workflow).
+
+For each release, update `Kairos/Kairos.toc` and `CHANGELOG.md` together, commit, create an annotated version tag, and push the commit and tag to GitHub. Tags such as `v0.2.4` become releases; tags containing `alpha` or `beta` get that release type. Check CurseForge's Builds and Files pages for packaging and moderation results. Ordinary branch pushes do not publish a file. Do not move an existing tag to republish different contents.
 
 ## Commands
 
@@ -190,6 +202,8 @@ The addon is split by what code is for. Anything that applies to one specializat
 
 | File | Purpose |
 |---|---|
+| `.github/workflows/release.yml` | Publish tagged addon packages to CurseForge and GitHub Releases with BigWigs |
+| `.pkgmeta` | Addon package layout and development-file exclusions |
 | `Kairos/Kairos.toc` | Load order, version, SavedVariables |
 | `Kairos/Bindings.xml` | The Cooldowns toggle keybind |
 | **`Kairos/Core/`** | **Foundation** |

@@ -2,7 +2,7 @@
 
 > **Status:** Draft 0.5. Addon 0.2.3 includes Arcane Sunfury and experimental Demonology modules: generated APLs, live state adapters and secrecy probes. Live agreement is still being validated.
 > **Target:** World of Warcraft Retail, Midnight (12.x)
-> **Last updated:** 2026-10-30
+> **Last updated:** 2026-11-01
 
 *Kairos* (καιρός) is Greek for "the right moment," the instant when acting matters most. The addon's job is to point at that moment: what to press next.
 
@@ -62,6 +62,7 @@ Kairos **recommends** and never **acts**. It shows the player what to press next
 | D36 | 2026-10-30 | **Allow manual enable/disable**, at the user's request. Disabled hides the display and suspends recommendation evaluations; passive state tracking and recording settings remain active. D28 continues to mean visibility is independent of combat while enabled. |
 | D37 | 2026-10-30 | **Hold Arcane Surge until Touch is ready at the evaluation boundary**, at the user's explicit request after a delayed mini-burst left Touch 11 s behind Surge. This is a Kairos availability constraint on the pinned list (D4), declared in translator metadata; it does not falsify either spell's physical cooldown. Unknown Touch readiness forces AC when this gate is needed. |
 | D38 | 2026-10-30 | **Host publicly at `github.com/jmusick/kairos`, with `main` as the default branch**, at the user's explicit approval. This supersedes D12's private visibility and resolves Q10. Release commits and tags go to GitHub; CurseForge publishing is deferred. Tuono remains reference only. |
+| D39 | 2026-11-01 | **Publish the addon on CurseForge as Kairos Rotation Helper** (project 1778452), at the user's request, **using Hidden Lodge's BigWigs GitHub Actions setup**. This supersedes D38's publishing deferral and D23's no-CI choice for release automation only; test CI remains deferred. Pushed `v*` tags package and upload to CurseForge and GitHub Releases using `CURSEFORGE_API_TOKEN`. The root `.pkgmeta` ships `Kairos/` at the ZIP root without the translator, tests or development docs. Keep CurseForge's native automatic packaging off; no webhook is needed. |
 
 ---
 
@@ -394,7 +395,7 @@ Resolved: D15–D33, including Evocation (D25), keybinds (D26), settings (D27), 
 1. **Q6: Which tank spec comes after Arcane?** Deferred until after the gate.
 2. **Q8: Interrupt icon timing.** Show it whenever the interrupt is ready, or only while the target is casting? This depends on whether `UnitCastingInfo("target")` presence, not details, is readable in instances. Probe item.
 3. **Q9: Nameplate range filtering.** Count every hostile in-combat nameplate, or only those in range of a reference spell? This depends on whether range checks on `nameplateN` units are secret in instances. Probe item.
-4. **Q10: Repo hosting.** Resolved by D38: public GitHub repository `jmusick/kairos`, default branch `main`. CurseForge publishing is deferred.
+4. **Q10: Repo hosting.** Resolved by D38/D39: public GitHub repository `jmusick/kairos`, default branch `main`, with tagged addon releases packaged for CurseForge.
 5. **Q12: Spell queue window.** Should the main icon update early enough to queue the next spell (about 400 ms before the GCD ends, by default)? Is `SpellQueueWindow` readable, so it can be matched exactly?
 
 ---
