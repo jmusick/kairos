@@ -2,7 +2,7 @@
 ## Title: Kairos
 ## Notes: Rotation helper for Midnight. Shows what to press next. Recommends, never acts.
 ## Author: JD
-## Version: 0.2.5
+## Version: 0.2.6
 ## X-Curse-Project-ID: 1778452
 ## Category: Combat
 ## IconTexture: Interface\Icons\Spell_Nature_TimeStop

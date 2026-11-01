@@ -210,7 +210,8 @@ calls and the `in_opener` variable. The two `target_if` Demonbolt rules are omit
 whole, while their generic Demonbolt fallbacks remain. Items, racials, potion/external
 buff recommendations and precombat actions remain unsupported in generated code.
 The live wrapper separately maps the source's `summon_pet` upkeep to a learned
-Felguard/Imp outside combat. No queued recommendations are emitted.
+Felguard/Imp outside combat. The generated code emits no queued recommendation; the
+live adapter derives one by advancing its state past the main pick and re-evaluating.
 
 Spell IDs, costs and base timers were checked against the pinned
 [Warlock initialization](https://github.com/simulationcraft/simc/blob/515f4a3fe9/engine/class_modules/warlock/sc_warlock_init.cpp),

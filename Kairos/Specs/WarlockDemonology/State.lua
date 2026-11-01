@@ -16,6 +16,7 @@ State.CAST_TIMES = { [S.SHADOW] = 2, [S.HAND] = 1.5, [S.DEMONBOLT] = 4.5,
     [S.DOGS] = 2, [S.TYRANT] = 2, [S.INFERNAL] = 2, [S.RUINATION] = 1.5 }
 State.FELGUARD, State.IMP = 30146, 688
 State.READ_LAG = 2 -- seconds a cast's own cooldown outranks an idle client read
+State.ART_LAG = 0.5 -- seconds after a Hand its Demonic Art proc may still be landing (log: 0-0.1 s)
 
 local function numeric(r) return r.state ~= "unknown" and type(r.value) == "number" end
 local function boolean(r) return r.state ~= "unknown" and type(r.value) == "boolean" end
@@ -36,7 +37,7 @@ local function put(s, key, r, default)
 end
 
 function State:Reset()
-    self.cache, self.cooldowns, self.refreshedAt, self.argusUntil = nil, {}, nil, 0
+    self.cache, self.cooldowns, self.refreshedAt, self.argusUntil, self.handAt = nil, {}, nil, 0, nil
     Kairos.DemonologyDemons:Reset()
 end
 State:Reset()
@@ -130,6 +131,7 @@ function State:OnCast(id, t)
     if id == S.DEMONBOLT and self.lastCoreUp and self.cooldowns[S.DOOMGUARD] then
         self.cooldowns[S.DOOMGUARD].finish = math.max(t, self.cooldowns[S.DOOMGUARD].finish - 3)
     end
+    if id == S.HAND then self.handAt = t end
     Kairos.DemonologyDemons:OnCast(id, t, c.haste or 0, talent("to_hell_and_back"))
     if id == S.TYRANT and talent("argus") then self.argusUntil = t + 15
     elseif (id == S.HAND or id == S.RUINATION) and self.argusUntil > t then self.argusUntil = t + 15 end
@@ -145,17 +147,24 @@ function State:Project(s, id, finish)
     if gain[id] then s.shards = math.min(5, s.shards + gain[id])
     elseif cost[id] then s.shards = math.max(0, s.shards - cost[id]) end
     if id == S.HAND or id == S.RUINATION then
-        s.imps = s.imps + 3
+        -- Ruination's imps land after a delay, possibly past the evaluated boundary.
+        if id == S.HAND or finish + Kairos.DemonologyDemons.RUINATION_DELAY <= s.t then s.imps = s.imps + 3 end
         if s.argusUp and s.talent.argus3 then s.shards = math.min(5, s.shards + 1) end
         if s.argusUp and s.talent.unknown.argus3 then s.unknown.shards = true end
     end
     if id == S.RUINATION then s.ruinationReady, s.unknown.ruinationReady = false, nil end
     if id == S.INFERNAL then s.infernalReady, s.unknown.infernalReady = false, nil end
-    if id == S.TYRANT and s.talent.argus then s.argusUp = true end
+    if id == S.TYRANT and s.talent.argus then s.argusUp, s.argusUntil = true, finish + 15
+    elseif (id == S.HAND or id == S.RUINATION) and s.argusUp then s.argusUntil = finish + 15 end
+    if id == S.IMPLOSION then
+        s.imps = s.talent.to_hell_and_back and 3 or 0
+        if s.talent.unknown.to_hell_and_back then s.unknown.imps = true end
+    elseif id == S.SIPHON then s.imps = math.max(0, s.imps - 2) end
     if id == S.DEMONBOLT and s.coreUp then
-        -- If the hidden count was 1..4, after consumption it is 0..3: presence unknown.
-        if s.unknown.coreStacks then s.unknown.coreUp = true
-        else s.coreStacks = math.max(0, s.coreStacks - 1); s.coreUp = s.coreStacks > 0 end
+        -- A hidden count keeps coreStacks as its lower bound: 1..4 becomes 0..3, so
+        -- presence is unknown.
+        s.coreStacks = math.max(0, s.coreStacks - 1)
+        if s.unknown.coreStacks then s.unknown.coreUp = true else s.coreUp = s.coreStacks > 0 end
     end
     if self.COOLDOWNS[id] then
         local base = self.COOLDOWNS[id]
@@ -198,7 +207,10 @@ function State:Build(now)
     put(s, "ruinationReady", self:Proc(S.RUINATION, S.HAND, s.known[S.RUINATION]), false)
     if s.known.unknown[S.INFERNAL] then s.unknown.infernalReady = true end
     if s.known.unknown[S.RUINATION] then s.unknown.ruinationReady = true end
-    s.argusUp = s.talent.argus and self.argusUntil > s.t
+    -- A Hand in progress or just landed may still grant its Demonic Art's proc.
+    s.handPending = (cast and cast.spellID == S.HAND and cast.endsAt > now)
+        or (self.handAt ~= nil and now - self.handAt < self.ART_LAG)
+    s.argusUp, s.argusUntil = s.talent.argus and self.argusUntil > s.t, self.argusUntil
     if s.talent.unknown.argus then s.unknown.argusUp = true end
     -- Where readable, Implosion's cast count is the true imp count (see Demons.lua).
     if s.known[S.IMPLOSION] then
@@ -206,6 +218,7 @@ function State:Build(now)
         if numeric(count) then Kairos.DemonologyDemons:Anchor(now, count.value, c.haste or 0) end
     end
     s.imps = Kairos.DemonologyDemons:Read(s.t).value
+    s.impExpiry = Kairos.DemonologyDemons:Expiries(s.t)
     local enemies = 0
     for unit in pairs(Kairos.State.nameplates) do
         local r = Signal.Read(UnitCanAttack, "player", unit)
@@ -222,16 +235,90 @@ function State:Build(now)
         end
     end
     if cast and not cast.channel and cast.endsAt > now then self:Project(s, cast.spellID, cast.endsAt) end
-    -- Movement filters availability before the APL picks, so moving prefers instants.
-    local moving = Kairos.State:Moving()
-    for _, id in pairs(S) do
-        local time = c.castTimes[id]
-        if time == nil then time = self.CAST_TIMES[id] or 0 end
-        if id == S.DEMONBOLT and s.coreUp then time = 0 end
-        s.castable[id] = time == 0 or (moving.state ~= "unknown" and not moving.value)
-        if time > 0 and moving.state == "unknown" then s.unknown["castable:" .. id] = true end
-    end
+    self:Castable(s, Kairos.State:Moving())
     return s
+end
+
+function State:CastTime(id, coreUp)
+    if id == S.DEMONBOLT and coreUp then return 0 end
+    local time = self.cache and self.cache.castTimes[id]
+    if time == nil then time = self.CAST_TIMES[id] or 0 end
+    return time
+end
+
+-- Movement filters availability before the APL picks, so moving prefers instants.
+function State:Castable(s, moving)
+    local stationary = moving.state ~= "unknown" and not moving.value
+    for _, id in pairs(S) do
+        local time = self:CastTime(id, s.coreUp)
+        s.castable[id] = time == 0 or stationary
+        s.unknown["castable:" .. id] = time > 0 and moving.state == "unknown" or nil
+    end
+end
+
+local function copy(t)
+    local out = {}
+    for k, v in pairs(t) do out[k] = type(v) == "table" and copy(v) or v end
+    return out
+end
+
+-- One lookahead step (SPEC §7.3): a copy of the state when the main pick's cast or GCD
+-- ends, with only its deterministic effects applied.
+function State:Advance(s, id, moving)
+    local q = copy(s)
+    local cast = self:CastTime(id, s.coreUp)
+    local start, finish = s.t + cast, s.t + math.max(cast, s.gcdMax)
+    q.t = finish
+    for cd, remains in pairs(q.remains) do
+        if remains > 0 then
+            q.remains[cd] = math.max(0, remains - (finish - s.t))
+            q.ready[cd] = q.remains[cd] == 0
+        end
+    end
+    -- Power Siphon takes the oldest imps first, which are the ones about to expire.
+    local expiring = 0
+    for _, batch in ipairs(s.impExpiry or {}) do
+        if batch.at <= finish then expiring = expiring + batch.n end
+    end
+    if id == S.SIPHON then expiring = math.max(0, expiring - 2) end
+    q.imps = math.max(0, q.imps - expiring)
+    if q.argusUp and q.argusUntil and q.argusUntil <= start then q.argusUp = false end
+    self:Project(q, id, start)
+    if q.argusUp and q.argusUntil and q.argusUntil <= finish then q.argusUp = false end
+    self:Castable(q, moving)
+    return q
+end
+
+-- The queued pick has to hold whatever the model can't time inside the window: Demonic
+-- Cores from imps or Dreadstalkers (every count from the lower bound to the cap, which
+-- also covers a hidden count) and Infernal Bolt or Ruination. Those come only from the
+-- Hand of Gul'dan that consumes a Demonic Art (12.1.5 log: Mother of Chaos gives Infernal
+-- Bolt, Pit Lord Ruination, within 0.1 s), so they're possible only after a Hand. Any
+-- disagreement or unknown read hides the queued icon (G3).
+function State:Queue(s, id, moving)
+    local q = self:Advance(s, id, moving)
+    local art = id == S.HAND or s.handPending
+    local procs = {}
+    for key, proc in pairs({ infernalReady = S.INFERNAL, ruinationReady = S.RUINATION }) do
+        local learnable = q.known[proc] or q.known.unknown[proc]
+        if q.unknown[key] or (art and not q[key] and learnable) then procs[key] = { false, true }
+        else procs[key] = { q[key] } end
+    end
+    local first, cap = nil, (q.talent.demoniac or q.talent.unknown.demoniac) and 4 or q.coreStacks
+    for n = q.coreStacks, cap do
+        for _, infernal in ipairs(procs.infernalReady) do
+            for _, ruination in ipairs(procs.ruinationReady) do
+                q.coreStacks, q.coreUp, q.infernalReady, q.ruinationReady = n, n > 0, infernal, ruination
+                q.unknown.coreStacks, q.unknown.coreUp = nil, nil
+                q.unknown.infernalReady, q.unknown.ruinationReady = nil, nil
+                self:Castable(q, moving)
+                local pick, uncertain = self:Pick(q)
+                if uncertain or not pick or (first and pick.spellID ~= first.spellID) then return nil end
+                first = first or pick
+            end
+        end
+    end
+    return first
 end
 
 function State:Pick(s)
@@ -294,7 +381,10 @@ function State:Evaluate()
     end
     local pick, uncertain = self:Pick(s)
     pick = pick or {}
-    pick.uncertain, pick.queuedUncertain = uncertain, true
+    pick.uncertain = uncertain
+    local queued = not uncertain and pick.spellID and self:Queue(s, pick.spellID, Kairos.State:Moving())
+    pick.queuedID, pick.queuedLabel = queued and queued.spellID or nil, queued and queued.label or nil
+    pick.queuedUncertain = not queued
     -- Secret-checked contract inputs; the recorder copies them only when it persists.
     if Kairos.Recorder:Enabled() then
         pick.diagnostic = { v = 1, now = now, projected = s, movement = Kairos.State:Moving(),

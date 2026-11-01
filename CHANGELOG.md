@@ -4,6 +4,16 @@ All notable changes to Kairos are documented here. The format follows [Keep a Ch
 
 ## [Unreleased]
 
+## [0.2.6] - 2026-11-01
+
+### Added
+
+- Demonology shows a queued spell in the smaller icon. The adapter advances its projected state past the main pick (cooldowns, imp expiry, Dominion of Argus, shards and imps from the pick itself) and evaluates the APL again. The queued spell appears only if it stays the same for every Demonic Core gain and hidden Core count, and, after a Hand of Gul'dan, for the Infernal Bolt or Ruination its Demonic Art can grant; otherwise the icon stays hidden. Those two procs come only from the Hand that consumes a Demonic Art (Mother of Chaos and Pit Lord, within 0.1 s in the 12.1.5 log), so they no longer hide the queue after other spells. Replaying captured diagnostics from five Timewalking dungeons, it showed at 58% of presses, and a shown queued spell matched the next main pick at 774 of 904 followed presses; on two later runs it showed at 57–60% and matched 86–87%.
+
+### Fixed
+
+- Demonology no longer counts free Ruination's imps before they land, so a Ruination finishing at the cast/GCD boundary can't recommend Implosion for imps that haven't arrived.
+
 ## [0.2.5] - 2026-11-01
 
 ### Added

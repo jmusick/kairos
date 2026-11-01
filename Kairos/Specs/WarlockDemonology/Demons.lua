@@ -74,7 +74,7 @@ function Demons:Prune(t)
     end
 end
 
-Demons.CASTS, Demons.REENGAGE = 6, 3
+Demons.CASTS, Demons.REENGAGE, Demons.RUINATION_DELAY = 6, 3, 0.4
 
 function Demons:Spawn(t, n, haste)
     self.batches[#self.batches + 1] = { born = t, life = 12 / (1 + haste / 100), n = n }
@@ -109,7 +109,7 @@ end
 function Demons:OnCast(id, t, haste, toHellAndBack)
     self:Prune(t)
     if id == 105174 then self:Spawn(t, 3, haste)
-    elseif id == 434635 then self:Spawn(t + 0.4, 3, haste) -- free Ruination summons three imps
+    elseif id == 434635 then self:Spawn(t + self.RUINATION_DELAY, 3, haste) -- free Ruination summons three imps
     elseif id == 196277 then
         self.batches = {}
         if toHellAndBack then self:Spawn(t, 3, haste) end
@@ -118,3 +118,17 @@ function Demons:OnCast(id, t, haste, toHellAndBack)
 end
 
 function Demons:Read(t) return Kairos.Signal.Estimated(self:Count(t)) end
+
+-- When each batch alive at t runs out of energy if it stays engaged, as plain data the
+-- lookahead (and offline replay) can use. Idle batches spend nothing and aren't listed.
+function Demons:Expiries(t)
+    local out, last = {}, self.idle[#self.idle]
+    if last and not last.to then return out end
+    for _, batch in ipairs(self.batches) do
+        local spent = batch.born <= t and self:Spent(batch, t) or 0
+        if spent < batch.life then
+            out[#out + 1] = { at = math.max(t, batch.born) + batch.life - spent, n = batch.n }
+        end
+    end
+    return out
+end

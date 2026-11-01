@@ -249,6 +249,73 @@ describe("Demonology live module", function()
         assert.are.equal(101.5, A:Build(100).t)
     end)
 
+    it("queues the follow-up one lookahead step past the main pick", function()
+        hold(S.TYRANT)
+        Stub.shards = 3
+        local rec = K.APL:Recommend()
+        assert.are.equal(S.DOGS, rec.spellID)
+        -- Free Dreadstalkers leave 3 shards, and Hand outranks any Core that could arrive.
+        assert.are.equal(S.HAND, rec.queuedID)
+        assert.matches("hand_of_guldan#2", rec.queuedLabel)
+    end)
+
+    it("hides the queued pick when a random Core or Diabolist art could change it", function()
+        hold(S.DOGS); hold(S.TYRANT)
+        Stub.shards = 1
+        local rec = K.APL:Recommend()
+        assert.are.equal("apl", rec.source)
+        assert.are.equal(S.SHADOW, rec.spellID)
+        assert.is_nil(rec.queuedID) -- a Core arriving mid-cast would make it Demonbolt
+        -- Without Demoniac no Core can arrive, and a Diabolist proc needs a Hand first.
+        Stub.knownSpells[426115] = false
+        Stub.knownSpells[428518], Stub.knownSpells[428522] = true, true
+        Stub.Fire("SPELLS_CHANGED")
+        hold(S.DOGS); hold(S.TYRANT) -- the out-of-combat refresh reread them as idle
+        assert.are.equal(S.SHADOW, K.APL:Recommend().queuedID)
+        -- A Hand that just landed may still grant its Demonic Art's Infernal Bolt.
+        A:OnCast(S.HAND, Stub.now)
+        assert.are.equal(S.SHADOW, K.APL:Recommend().spellID)
+        assert.is_nil(K.APL:Recommend().queuedID)
+        Stub.now = Stub.now + A.ART_LAG
+        assert.are.equal(S.SHADOW, K.APL:Recommend().queuedID)
+        -- So may a Hand recommended now: Ruination could follow it.
+        Stub.shards = 3
+        local hand = K.APL:Recommend()
+        assert.are.equal(S.HAND, hand.spellID)
+        assert.is_nil(hand.queuedID)
+    end)
+
+    it("advances cooldowns, imp expiry and the main pick's own effects", function()
+        fight()
+        hold(S.DOGS, 101); hold(S.TYRANT)
+        A.cooldowns[S.IMPLOSION] = { finish = 100, base = 15 }
+        K.DemonologyDemons:Spawn(89, 3, 0)  -- runs out at 101
+        K.DemonologyDemons:Spawn(100, 3, 0)
+        local moving = K.State:Moving()
+        local s = A:Build(100)
+        assert.are.equal(6, s.imps)
+        local q = A:Advance(s, S.IMPLOSION, moving)
+        assert.are.equal(0, q.imps)
+        assert.are.equal(15 - s.gcdMax, q.remains[S.IMPLOSION])
+        assert.is_true(s.gcdMax >= 1 and q.ready[S.DOGS])
+        assert.are.equal(6, s.imps) -- the evaluated state is untouched
+        q = A:Advance(s, S.HAND, moving)
+        assert.are.equal(100 + math.max(A:CastTime(S.HAND), s.gcdMax), q.t)
+        assert.are.equal(6, q.imps) -- three expired, three summoned
+        assert.are.equal(0, q.shards)
+        assert.are.equal(S.HAND, q.prevGcd)
+    end)
+
+    it("counts free Ruination's imps only once they land", function()
+        Stub.knownSpells[428522] = true
+        Stub.Fire("SPELLS_CHANGED")
+        fight()
+        K.State.cast = { spellID = S.RUINATION, endsAt = 102 }
+        assert.are.equal(0, A:Build(100).imps)
+        Stub.cooldowns[61304] = { startTime = 101, duration = 1.5, modRate = 1 }
+        assert.are.equal(3, A:Build(100).imps)
+    end)
+
     it("times the optional Dominion of Argus buff from Tyrant and refresh casts", function()
         Stub.knownSpells[1276163], Stub.knownSpells[1276222] = true, true
         Stub.Fire("SPELLS_CHANGED")
