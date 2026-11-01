@@ -1069,9 +1069,9 @@ local function replayDemonology(logPath, player, options)
     -- a pull is unknown. Seed it from the client's first traced reading after each gap;
     -- the later readings then validate the energize/cost model (see the timeline).
     -- Without a trace, decisions count from the first energize and may start offset.
-    local readings, combat = {}, {}
-    if options.readings then readings, combat = options.readings(casts) end
-    local nextReading, nextCombat, truthKnown, needSeed, lastMine = 1, 1, false, true, nil
+    local readings, combat, counts = {}, {}, {}
+    if options.readings then readings, combat, counts = options.readings(casts) end
+    local nextReading, nextCombat, nextCount, truthKnown, needSeed, lastMine = 1, 1, 1, false, true, nil
     local timeline, lastGain, ownGains = {}, nil, 0
     local function setShards(t, value)
         shards = math.max(0, math.min(5, value))
@@ -1132,6 +1132,12 @@ local function replayDemonology(logPath, player, options)
             if combat[nextCombat].on then needSeed = true end
             nextCombat = nextCombat + 1
         end
+        -- Readable Implosion cast counts (traced by the spell watch) anchor the estimate,
+        -- as the live adapter does on every refresh where the count isn't secret.
+        while counts[nextCount] and counts[nextCount].t < t do
+            if seen.casts[S.IMPLOSION] then Demons:Anchor(counts[nextCount].t, counts[nextCount].n, haste or 0) end
+            nextCount = nextCount + 1
+        end
         -- Seed from the last reading before the pull: shards regenerate between pulls.
         local seeded = false
         while readings[nextReading] and readings[nextReading].t < t do
@@ -1152,8 +1158,9 @@ local function replayDemonology(logPath, player, options)
             if event == "SPELL_AURA_APPLIED" then up[id] = true
             elseif event == "SPELL_AURA_REMOVED" then up[id] = nil end
         elseif event == "SPELL_ENERGIZE" and onMe and f[#f - 1] == D.SHARDS then
-            -- 12.1.5 logs whole-shard amounts ("1.0000") against a fragment maximum (50).
-            local gain = (tonumber(f[#f - 3]) or 0) - (tonumber(f[#f - 2]) or 0)
+            -- 12.1.5 logs shard amounts ("1.0000") against a fragment maximum (50). The
+            -- amount is the effective gain; the next field is what the cap wasted.
+            local gain = tonumber(f[#f - 3]) or 0
             setShards(t, shards + gain)
             lastGain = { t = t, name = f[11], gain = gain }
             if #readings == 0 then truthKnown = true end
@@ -1211,20 +1218,23 @@ local function aplDemonology(logPath, svPath, player, ...)
         if p and p.talent then toHellAndBack = p.talent.to_hell_and_back == true end
     end
     -- The client's traced shard readings on the log's clock, aligned by the log's casts.
-    local clientReadings, combat = {}, {}
+    local clientReadings, combat, counts = {}, {}, {}
     local function readings(casts)
         local offset = alignRecorder(recorded, casts)
-        if not offset then return clientReadings, combat end
+        if not offset then return clientReadings, combat, counts end
         for _, e in ipairs(recorded) do
             local n = e.k == "shards" and e.n or (e.k == "fight" and e.shards)
             if type(n) == "number" and e.t then clientReadings[#clientReadings + 1] = { t = e.t + offset, n = n } end
             if e.k == "fight" and e.t and (e.phase == "start" or e.phase == "end") then
                 combat[#combat + 1] = { t = e.t + offset, on = e.phase == "start" }
             end
+            local count = e.k == "watch" and e.spell == 196277 and e.t and tonumber((e.sig or ""):match(" cc=(%d+)"))
+            if count then counts[#counts + 1] = { t = e.t + offset, n = count } end
         end
         table.sort(clientReadings, function(a, b) return a.t < b.t end)
         table.sort(combat, function(a, b) return a.t < b.t end)
-        return clientReadings, combat
+        table.sort(counts, function(a, b) return a.t < b.t end)
+        return clientReadings, combat, counts
     end
     local all, APL, successes, adapter, timeline, ownGains = replayDemonology(logPath, player,
         { haste = haste, toHellAndBack = toHellAndBack, readings = readings })
@@ -1269,11 +1279,13 @@ local function aplDemonology(logPath, svPath, player, ...)
     -- A reading validates the log model if the model holds its value within the slack:
     -- a cast's cost and its client update land milliseconds apart on the two clocks.
     local function modelMatches(reading)
+        -- The client reports whole shards; the log can carry fragments (a capped 1.8).
         local value, matched = nil, false
         for _, point in ipairs(timeline) do
             if point.t > reading.t + D.SHARD_SLACK then break end
-            if point.t >= reading.t - D.SHARD_SLACK and point.n == reading.n then matched = true end
-            value = point.n
+            local whole = math.floor(point.n + 1e-6)
+            if point.t >= reading.t - D.SHARD_SLACK and whole == reading.n then matched = true end
+            value = whole
         end
         return matched or value == reading.n
     end

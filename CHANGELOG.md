@@ -4,6 +4,16 @@ All notable changes to Kairos are documented here. The format follows [Keep a Ch
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-11-01
+
+### Changed
+
+- Demonology's Wild Imp estimate snaps to Implosion's cast count, which is the imp count, wherever the client exposes it (between pulls). Out of combat, imps keep only whole Firebolts and resume casting 3 s after combat starts.
+
+### Fixed
+
+- Offline Demonology scoring reads a shard energize's amount as the effective gain (the next field is what the cap wasted) and compares whole shards with the client, and it replays the traced Implosion counts as the live adapter would.
+
 ## [0.2.2] - 2026-11-01
 
 ### Added

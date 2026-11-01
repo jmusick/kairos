@@ -26,14 +26,27 @@ function Demons:SetCombat(on, t)
     while #self.idle > 32 do table.remove(self.idle, 1) end
 end
 
--- Seconds of energy a batch has spent by t: its age minus the time out of combat.
+-- Seconds of energy a batch has spent by t. Out of combat it spends none and keeps only
+-- whole Firebolts (a cast in progress when the pack dies isn't finished); back in combat
+-- it waits REENGAGE seconds before spending again. Carried imps' first cast came a median
+-- 2.1-2.3 s after combat start (about 0.7 s plus one cast) in two dungeons; 3 s scored best
+-- across the dummy and both dungeons (imp-estimate picks 109/109, 234/246, 187/196 vs
+-- 109, 223, 178 without these rules), so it also absorbs target gaps. Fitted, not validated.
 function Demons:Spent(batch, t)
-    local idle = 0
+    local spent, cursor, interval = 0, batch.born, batch.life / self.CASTS
     for _, span in ipairs(self.idle) do
-        local from, to = math.max(batch.born, span.from), math.min(t, span.to or t)
-        if to > from then idle = idle + to - from end
+        if span.from >= t then break end
+        local to = span.to or t
+        if to + self.REENGAGE > cursor then
+            if span.from > cursor then
+                spent = spent + span.from - cursor
+                spent = math.floor(spent / interval + 1e-9) * interval
+            end
+            cursor = math.max(cursor, to + (span.to and self.REENGAGE or 0))
+            if cursor >= t then return spent end
+        end
     end
-    return t - batch.born - idle
+    return spent + math.max(0, t - cursor)
 end
 
 function Demons:Count(t)
@@ -53,8 +66,24 @@ function Demons:Prune(t)
     end
 end
 
+Demons.CASTS, Demons.REENGAGE = 6, 3
+
 function Demons:Spawn(t, n, haste)
     self.batches[#self.batches + 1] = { born = t, life = 12 / (1 + haste / 100), n = n }
+end
+
+-- 12.1.5: Implosion's cast count is the Wild Imp count wherever it's readable (out of
+-- combat; secret in combat). Imps the estimate missed (Inner Demons, idle carried imps)
+-- join as a fresh batch; extras are dropped oldest first. Replaying the traced counts in
+-- Shadowmoon Burial Grounds put the estimate within one imp at 77/196 decisions, from 52.
+function Demons:Anchor(t, n, haste)
+    self:Prune(t)
+    local missing = n - self:Count(t)
+    if missing > 0 then
+        self:Spawn(t, missing, haste)
+    elseif missing < 0 then
+        self:Consume(t, -missing)
+    end
 end
 
 function Demons:Consume(t, n)

@@ -98,6 +98,7 @@ function Stub.Install()
     Stub.auras = {}
     Stub.overrides = {}
     Stub.castTimes = {}
+    Stub.castCounts = {}    -- [spellID] = C_Spell.GetSpellCastCount
     Stub.inventory = {}
     Stub.itemSets = {}
     Stub.itemMissing = {}
@@ -200,6 +201,7 @@ function Stub.Install()
             return Stub.cooldowns[id] or { startTime = 0, duration = 0, isEnabled = true, modRate = 1 }
         end,
         GetSpellCharges = function(id) return Stub.charges[id] end,
+        GetSpellCastCount = function(id) return Stub.castCounts[id] end,
         IsSpellInRange = function() return true end,
         GetSpellQueueWindow = function() return 400 end,
     }

@@ -200,6 +200,11 @@ function State:Build(now)
     if s.known.unknown[S.RUINATION] then s.unknown.ruinationReady = true end
     s.argusUp = s.talent.argus and self.argusUntil > s.t
     if s.talent.unknown.argus then s.unknown.argusUp = true end
+    -- Where readable, Implosion's cast count is the true imp count (see Demons.lua).
+    if s.known[S.IMPLOSION] then
+        local count = Signal.Read(C_Spell and C_Spell.GetSpellCastCount, S.IMPLOSION)
+        if numeric(count) then Kairos.DemonologyDemons:Anchor(now, count.value, c.haste or 0) end
+    end
     s.imps = Kairos.DemonologyDemons:Read(s.t).value
     local enemies = 0
     for unit in pairs(Kairos.State.nameplates) do

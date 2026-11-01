@@ -1,6 +1,6 @@
 # Kairos: Specification
 
-> **Status:** Draft 0.5. Addon 0.2.2 includes Arcane Sunfury and experimental Demonology modules: generated APLs, live state adapters and secrecy probes. Live agreement is still being validated.
+> **Status:** Draft 0.5. Addon 0.2.3 includes Arcane Sunfury and experimental Demonology modules: generated APLs, live state adapters and secrecy probes. Live agreement is still being validated.
 > **Target:** World of Warcraft Retail, Midnight (12.x)
 > **Last updated:** 2026-10-30
 

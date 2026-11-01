@@ -364,13 +364,33 @@ describe("Demonology Wild Imp estimate", function()
         assert.are.equal(3, D:Count(131))
         assert.are.equal(0, D:Count(143))
     end)
-    it("pauses imp lifetimes while the player is out of combat", function()
-        D:OnCast(105174, 100, 0)
-        D:SetCombat(false, 104)
+    it("pauses imp lifetimes out of combat, keeping whole casts and re-engaging", function()
+        D:OnCast(105174, 100, 0) -- 6 Firebolts, one every 2 s
+        D:SetCombat(false, 105)  -- 2 casts done; the third was in progress
         assert.are.equal(3, D:Count(130)) -- idle imps keep their energy between pulls
         D:SetCombat(true, 130)
-        assert.are.equal(3, D:Count(137.9))
-        assert.are.equal(0, D:Count(138))
+        -- 4 casts left (8 s), after 3 s to find a target.
+        assert.are.equal(3, D:Count(140.9))
+        assert.are.equal(0, D:Count(141))
+    end)
+    it("anchors to a readable imp count, adding missed imps and dropping extras", function()
+        D:OnCast(105174, 100, 0)
+        D:Anchor(101, 5, 0)
+        assert.are.equal(5, D:Count(101))
+        D:Anchor(102, 1, 0)
+        assert.are.equal(1, D:Count(102))
+        assert.are.equal(0, D:Count(113.1)) -- the anchored imp is fresh at 101, gone 12 s later
+    end)
+    it("reads Implosion's cast count as the imp count only where it isn't secret", function()
+        Stub.specs[1] = 266
+        Stub.knownSpells[196277] = true
+        K = Stub.LoadAddon()
+        D = K.DemonologyDemons
+        Stub.castCounts[196277] = 7
+        assert.are.equal(7, K.DemonologyState:Build(Stub.now).imps)
+        Stub.castCounts[196277] = Stub.Secret()
+        D:OnCast(196277, Stub.now, 0)
+        assert.are.equal(0, K.DemonologyState:Build(Stub.now).imps)
     end)
     it("follows the player's combat state from the adapter", function()
         Stub.specs[1] = 266
