@@ -105,11 +105,11 @@ describe("Recorder commitment context", function()
         Stub.Fire("PLAYER_REGEN_DISABLED")
         R:NoteRecommendation({ source = "apl", spellID = 365350 })
         R:Commit("cast", 365350)
-        local before = K.db.flight.pulls[1].entries[1]
+        local before = K.db.flight.pulls[1].entries[2]
         K.Toggles:Set("cooldowns", false)
         R:Commit("cast", 44425)
         for i = 1, 5 do R:Push({ k = "noise", n = i }) end
-        local after = K.db.flight.pulls[1].entries[2]
+        local after = K.db.flight.pulls[1].entries[3]
         assert.is_true(before.context.cooldowns)
         assert.is_false(after.context.cooldowns)
         assert.are.equal(before.context.session, after.context.session)
@@ -128,9 +128,41 @@ describe("Recorder commitment context", function()
         end
         assert.are.equal(2, #K.db.flight.pulls)
         assert.are.equal(1, K.db.flight.retiredPulls)
+        -- The fight start and one cast fit; three casts and the fight end are omitted.
         assert.are.equal(2, #K.db.flight.pulls[1].entries)
-        assert.are.equal(2, K.db.flight.pulls[1].dropped)
+        assert.are.equal(4, K.db.flight.pulls[1].dropped)
         assert.are.equal("combat", K.db.flight.pulls[1].reason)
+    end)
+
+    it("saves a press's repeated snapshot once per pull", function()
+        R:NoteRecommendation({ source = "apl", spellID = 30451, diagnostic = { now = 100 } })
+        R:Commit("sent", 30451)
+        R:Commit("cast", 30451)
+        local outside = R:Entries()
+        assert.is_not_nil(outside[#outside].recommendation)
+        Stub.Fire("PLAYER_REGEN_DISABLED")
+        R:Commit("sent", 30451)
+        R:Commit("cast", 30451)
+        local pull = K.db.flight.pulls[1].entries
+        local sent, cast = pull[#pull - 1], pull[#pull]
+        assert.are.equal(30451, sent.recommendation.spell)
+        assert.is_nil(cast.recommendation)
+        assert.are.equal(sent.seq, cast.sameAs)
+        R:NoteRecommendation({ source = "apl", spellID = 5143, diagnostic = { now = 101 } })
+        R:Commit("sent", 5143)
+        assert.are.equal(5143, pull[#pull].recommendation.spell)
+        assert.is_nil(pull[#pull].sameAs)
+    end)
+
+    it("archives a pull's traces and fight end, but not its display picks", function()
+        Stub.Fire("PLAYER_REGEN_DISABLED")
+        R:Push({ k = "shards", n = 3 })
+        R:NoteRecommendation({ source = "apl", spellID = 5143 })
+        Stub.Fire("PLAYER_REGEN_ENABLED")
+        R:Push({ k = "shards", n = 4 })
+        local kinds = {}
+        for _, e in ipairs(K.db.flight.pulls[1].entries) do kinds[#kinds + 1] = e.k .. (e.phase or e.n or "") end
+        assert.are.same({ "fightstart", "shards3", "fightend" }, kinds)
     end)
 
     it("clears both archives and starts a new context across a profile switch", function()

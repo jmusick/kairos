@@ -3,18 +3,20 @@
 local _, Kairos = ...
 local DB = Kairos:NewModule("DB")
 
-DB.SCHEMA = 2
+DB.SCHEMA = 3
 
 -- One-time upgrades for saved data, keyed by the schema version they bring the data to.
 -- Needed when a default changes: applyDefaults never overwrites a saved value.
 DB.MIGRATIONS = {
     [2] = function(db) db.global.autoProbe = true end, -- auto-probe became the default
+    -- 32 pulls kept only the last half hour of a dungeon night; keep a customized limit.
+    [3] = function(db) if db.global.recorderPulls == 32 then db.global.recorderPulls = 300 end end,
 }
 
 DB.globalDefaults = {
     enabled = true,
     recorder = true,
-    recorderPulls = 32,       -- bounded cast/commit archives survive flight-ring rollover
+    recorderPulls = 300,      -- bounded per-pull archives survive flight-ring rollover
     recorderPullEntries = 1200,
     autoProbe = true,
     combatLog = true,

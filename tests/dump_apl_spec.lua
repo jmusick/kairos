@@ -215,6 +215,30 @@ describe("APL dump live scoring", function()
         assert.matches("Kairos in game%s+= APL on true state: 1/1", output)
     end)
 
+    it("reads a cast snapshot saved as a reference to the press's keypress copy", function()
+        local Stub = require("tests.wow_stub")
+        Stub.Install()
+        for _, id in ipairs({ 5143, 30451, 44425, 153626, 365350, 321507 }) do Stub.knownSpells[id] = true end
+        Stub.charges[153626] = { currentCharges = 2, maxCharges = 2,
+            cooldownStartTime = 0, cooldownDuration = 20, chargeModRate = 1 }
+        UnitPower = function() return 0 end
+        local K = Stub.LoadAddon()
+        K.Recorder:Clear()
+        K.Toggles:Set("cooldowns", false)
+        Stub.Fire("PLAYER_REGEN_DISABLED")
+        K.Display:Refresh()
+        Stub.now = 101
+        Stub.Fire("UNIT_SPELLCAST_SENT", "player", "Dummy", "surge", 365350)
+        Stub.Fire("UNIT_SPELLCAST_SUCCEEDED", "player", "surge", 365350)
+        local cast
+        for _, e in ipairs(K.db.flight.pulls[1].entries) do if e.k == "cast" then cast = e end end
+        assert.is_not_nil(cast.sameAs)
+        local output = report({}, nil, { pulls = K.db.flight.pulls })
+        assert.matches("commitment context: 1 captured, 0 unscored", output)
+        assert.matches("Captured evaluation reproduced:%s+1/1", output)
+        assert.matches("Kairos in game%s+= APL on true state: 1/1", output)
+    end)
+
     it("leaves missing toggle or evaluation history explicitly unscored", function()
         local output = report({
             { k = "cast", spell = 365350, t = 101, context = context(nil),

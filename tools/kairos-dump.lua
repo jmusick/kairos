@@ -56,13 +56,14 @@ local function entries(db)
     return out
 end
 
--- Per-pull cast/commit archives overlap the flight ring. Sequence IDs preserve
--- event order within coalesced frames and deduplicate that overlap.
+-- Per-pull archives overlap the flight ring. Sequence IDs preserve event order within
+-- coalesced frames and deduplicate that overlap. A commit that repeats the press's
+-- earlier snapshot saves `sameAs` (that entry's seq) in place of the copy.
 local function replayEntries(db)
     local out, seen, order = {}, {}, 0
     local function add(e)
         if e.seq and seen[e.seq] then return end
-        if e.seq then seen[e.seq] = true end
+        if e.seq then seen[e.seq] = e end
         order = order + 1
         out[#out + 1] = { entry = e, order = order }
     end
@@ -77,7 +78,11 @@ local function replayEntries(db)
         return a.order < b.order
     end)
     local result = {}
-    for _, item in ipairs(out) do result[#result + 1] = item.entry end
+    for _, item in ipairs(out) do
+        local e = item.entry
+        if e.sameAs and not e.recommendation then e.recommendation = (seen[e.sameAs] or {}).recommendation end
+        result[#result + 1] = e
+    end
     return result
 end
 
@@ -1116,6 +1121,13 @@ local function replayDemonology(logPath, player, options)
     -- Pass 2: the replay.
     each(function(t, f)
         local event, id = f[1], tonumber(f[10])
+        -- Auras that run out during a loading screen are never logged as removed (Core and
+        -- Argus from one dungeon stayed "up" into the next), so a zone change clears them.
+        if event == "ZONE_CHANGE" then
+            core = 0
+            for aura in pairs(up) do up[aura] = nil end
+            return
+        end
         -- Imps and Dreadstalkers grant Core, and pets can energize shards, so anything
         -- landing on the player counts. Casts and damage must be the player's own.
         local onMe = playerGUID and f[6] == playerGUID

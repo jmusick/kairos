@@ -4,6 +4,18 @@ All notable changes to Kairos are documented here. The format follows [Keep a Ch
 
 ## [Unreleased]
 
+## [0.2.8] - 2026-11-02
+
+### Changed
+
+- The recorder keeps the last 300 combat segments instead of 32, and a saved limit of 32 rises on load (a custom limit stays). Thirty-two segments held only the last half hour of an eleven-dungeon evening, so eight of the dungeons couldn't be scored offline. Each segment now also keeps its resource readings, fight and target edges and spell watches, which the Demonology replay needs to seed its shard count; display changes stay in the main ring only. A press's start and success entries no longer save another copy of the snapshot its keypress already saved (about half of all snapshots in that evening), so a segment takes roughly half the space it did.
+
+### Fixed
+
+- Demonology keeps counting a finished Shadow Bolt, Infernal Bolt or Demonbolt's shards until the client's shard reading shows them, for up to 0.5 s. The gain reaches the reading up to 0.3 s after the cast ends, and in that gap the display briefly showed a pick for the old count. After a Shadow Bolt this happened in 63 of 95 casts and changed the icon in 34; after an Infernal Bolt, in 15 of 18. With spell queueing, that gap is often when the next spell gets pressed. Rescoring captured decisions, the held count matched the log at every one of the 16 decisions where it applied, and Kairos's agreement with the APL rose from 310/329 to 318/329 in The Blinding Vale. In three later dungeons played with the hold, Shadow Bolt's icon flips fell to 5 of 98 casts. An instant Demonbolt's +2 also arrives after its cast event on the live client (it flipped the icon in 14 of 127 casts), so instants are held too, counted from the shard reading at the keypress.
+- Demonology no longer recommends an Infernal Bolt or Ruination proc that will have run out by the time the current GCD ends. Unused procs last exactly 20.0 s in 12.1.5 logs (16 of 16), timed from when Kairos first sees the override. In one Skyreach decision a Ruination proc ran out 30 ms before the press while Kairos still showed it.
+- `tools/kairos-dump.lua apl` clears its log-derived auras (Demonic Core, procs, Dominion of Argus) at each zone change, because auras that expire during a loading screen are never logged as removed. A Skyreach run had inherited Core and Argus from an Everbloom run 25 minutes earlier, which turned seven of Kairos's correct picks into misses.
+
 ## [0.2.7] - 2026-11-01
 
 ### Fixed

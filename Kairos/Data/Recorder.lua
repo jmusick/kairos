@@ -30,8 +30,11 @@ function Recorder:Push(entry)
     flight.pos = flight.pos % self.SIZE + 1
     entry.t = entry.t or GetTime()
     flight.entries[flight.pos] = entry
-    local pull = self.pull
-    if pull and (entry.k == "sent" or entry.k == "commit" or entry.k == "cast") then
+    -- Pulls keep everything but display picks, which are the bulk of the ring: the
+    -- replay needs each pull's resource readings, fight and target edges and watches.
+    -- A fight's end lands after combat drops, so it goes to the pull just ended.
+    local pull = self.pull or (entry.k == "fight" and self.ended)
+    if pull and entry.k ~= "pick" then
         if #pull.entries < Kairos.db.global.recorderPullEntries then
             pull.entries[#pull.entries + 1] = entry
         else
@@ -53,6 +56,7 @@ end
 function Recorder:Clear()
     Kairos.db.flight = {}
     self.last, self.latest, self.pull, self.context, self.history = nil, nil, nil, nil, {}
+    self.ended, self.committed = nil, nil
     self.lastAC = nil
     self:Context()
 end
@@ -95,11 +99,13 @@ function Recorder:BeginPull()
         flight.retiredPulls = (flight.retiredPulls or 0) + 1
     end
     self.pull = { t = GetTime(), at = time(), context = self.context, entries = {} }
+    self.ended = nil
     flight.pulls[#flight.pulls + 1] = self.pull
 end
 
 function Recorder:EndPull(reason)
     if self.pull then self.pull.finish, self.pull.reason = GetTime(), reason end
+    self.ended = reason == "combat" and self.pull or nil
     self.pull = nil
 end
 
@@ -127,10 +133,20 @@ function Recorder:Commit(kind, spellID, channel)
     if Kairos.State.inCombat and not self.pull then self:BeginPull() end
     local shown, forecast = self:OnScreen()
     local enabled = Kairos.db.global.enabled
-    self:Push({ k = kind, spell = spellID, channel = channel,
-        recommendation = enabled and copy(shown) or nil,
+    local entry = { k = kind, spell = spellID, channel = channel,
         forecast = enabled and forecast and forecast.spell ~= (shown and shown.spell) and forecast.spell or nil,
-        target = Kairos.State:Target(), combat = Kairos.State.inCombat or nil })
+        target = Kairos.State:Target(), combat = Kairos.State.inCombat or nil }
+    -- One press commits the same on-screen evaluation at SENT, START and SUCCEEDED (about
+    -- half of all snapshots in a 12.1.5 dungeon night). Within a pull, which keeps both
+    -- entries, a repeat names the first copy's seq instead of saving it again.
+    local prior = self.committed
+    if enabled and shown and prior and prior.shown == shown and self.pull and prior.pull == self.pull then
+        entry.sameAs = prior.seq
+    elseif enabled and shown then
+        entry.recommendation = copy(shown)
+    end
+    self:Push(entry)
+    if entry.recommendation then self.committed = { shown = shown, seq = entry.seq, pull = self.pull } end
 end
 
 function Recorder:NoteRecommendation(rec)

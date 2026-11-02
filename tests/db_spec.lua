@@ -38,7 +38,18 @@ describe("DB profiles", function()
             beforeLoad = function() KairosDB = { schema = 1, global = { autoProbe = false } } end,
         })
         assert.is_true(KairosDB.global.autoProbe)
-        assert.are.equal(2, KairosDB.schema)
+        assert.are.equal(3, KairosDB.schema)
+    end)
+
+    it("migrates schema 2 data: the old 32-pull recorder limit rises, a custom one stays", function()
+        Stub.LoadAddon({
+            beforeLoad = function() KairosDB = { schema = 2, global = { recorderPulls = 32 } } end,
+        })
+        assert.are.equal(300, KairosDB.global.recorderPulls)
+        Stub.LoadAddon({
+            beforeLoad = function() KairosDB = { schema = 2, global = { recorderPulls = 64 } } end,
+        })
+        assert.are.equal(64, KairosDB.global.recorderPulls)
     end)
 
     it("leaves a choice made after the migration alone", function()

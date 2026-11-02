@@ -316,6 +316,77 @@ describe("Demonology live module", function()
         assert.are.equal(3, A:Build(100).imps)
     end)
 
+    it("drops an Infernal Bolt proc that will have expired when the GCD ends", function()
+        Stub.knownSpells[428518] = true
+        Stub.Fire("SPELLS_CHANGED")
+        fight()
+        Stub.overrides[S.SHADOW] = S.INFERNAL
+        local s = A:Build(100)
+        assert.is_true(s.infernalReady)
+        assert.are.equal(120, s.procUntil.infernalReady)
+        assert.is_true(A:Build(119).infernalReady)
+        local q = A:Advance(A:Build(119), S.SHADOW, K.State:Moving())
+        assert.is_false(q.infernalReady) -- gone before the queued cast can start
+        Stub.cooldowns[61304] = { startTime = 119.5, duration = 1.5, modRate = 1 }
+        assert.is_false(A:Build(119.5).infernalReady)
+        Stub.cooldowns[61304] = nil
+        A:OnCast(S.INFERNAL, 121)
+        Stub.overrides[S.SHADOW] = nil
+        assert.is_false(A:Build(122).infernalReady)
+        Stub.overrides[S.SHADOW] = S.INFERNAL -- a fresh proc starts a fresh 20 s
+        assert.are.equal(150, A:Build(130).procUntil.infernalReady)
+    end)
+
+    it("holds a finished cast's shard gain until the reading shows it", function()
+        fight()
+        Stub.shards = 2
+        K.State.cast = { spellID = S.INFERNAL, endsAt = 101 }
+        assert.are.equal(5, A:Build(100).shards) -- projected while casting
+        K.State.cast = nil
+        A:OnCast(S.INFERNAL, 101)
+        local s = A:Build(101.05)
+        assert.are.equal(5, s.shards) -- UnitPower still reads 2
+        assert.are.equal(3, s.heldShards)
+        Stub.shards = 5
+        assert.are.equal(5, A:Build(101.1).shards) -- the reading arrived: no double count
+        Stub.shards = 2
+        assert.are.equal(2, A:Build(101.2).shards) -- and the hold is gone
+    end)
+
+    it("drops a held gain after the lag or when the cast wasn't the one projected", function()
+        fight()
+        Stub.shards = 1
+        K.State.cast = { spellID = S.SHADOW, endsAt = 101 }
+        A:Build(100)
+        K.State.cast = nil
+        A:OnCast(S.SHADOW, 101)
+        assert.are.equal(2, A:Build(101.1).shards)
+        assert.are.equal(1, A:Build(101 + A.POWER_LAG).shards)
+        A:OnCast(S.DEMONBOLT, 102) -- instant without a keypress reading: nothing is held
+        assert.are.equal(1, A:Build(102.05).shards)
+    end)
+
+    it("holds an instant's gain from the keypress reading, adding to a waiting hold", function()
+        fight()
+        Stub.shards = 1
+        K.State.cast = { spellID = S.SHADOW, endsAt = 101 }
+        A:Build(100)
+        K.State.cast = nil
+        A:OnCast(S.SHADOW, 101)
+        Stub.now = 101.02
+        Stub.Fire("UNIT_SPELLCAST_SENT", "player")
+        A:OnCast(S.DEMONBOLT, 101.02)
+        assert.are.equal(4, A:Build(101.05).shards) -- 1 read, +1 Shadow Bolt, +2 Demonbolt
+        Stub.shards = 4
+        assert.are.equal(4, A:Build(101.1).shards)
+        Stub.shards = 2
+        Stub.now = 103
+        Stub.Fire("UNIT_SPELLCAST_SENT", "player")
+        Stub.shards = 4 -- the energize landed before the success event
+        A:OnCast(S.DEMONBOLT, 103.01)
+        assert.are.equal(4, A:Build(103.02).shards)
+    end)
+
     it("times Dominion of Argus from Tyrant by its rank, without Hand refreshes", function()
         Stub.knownSpells[1276163] = true
         Stub.talentRanks[A.ARGUS.node] = 1

@@ -17,6 +17,13 @@ State.CAST_TIMES = { [S.SHADOW] = 2, [S.HAND] = 1.5, [S.DEMONBOLT] = 4.5,
 State.FELGUARD, State.IMP = 30146, 688
 State.READ_LAG = 2 -- seconds a cast's own cooldown outranks an idle client read
 State.ART_LAG = 0.5 -- seconds after a Hand its Demonic Art proc may still be landing (log: 0-0.1 s)
+-- Infernal Bolt and Ruination procs left unused end 20.0 s after they appear (12.1.5 log: 16 of 16).
+State.PROC_LIFE = 20
+State.PROCS = { infernalReady = S.INFERNAL, ruinationReady = S.RUINATION }
+State.GAINS ={ [S.SHADOW] = 1, [S.DEMONBOLT] = 2, [S.INFERNAL] = 3 }
+-- A finished cast's shards reach UnitPower after UNIT_SPELLCAST_SUCCEEDED (12.1.5 trace: Shadow
+-- Bolt 0-0.3 s later, after a refresh in 63 of 95 casts). Its gain is held until the reading moves.
+State.POWER_LAG = 0.5
 -- Dominion of Argus is one four-rank node: rank 1 opens it, ranks 2-3 add 5 s each, rank 4
 -- refunds shards. 12.1.5 logs: exactly 15.0 s (rank 1, 33 windows) and 20.0 s (rank 2, 5),
 -- timed from Tyrant; Hand of Gul'dan never refreshed it.
@@ -34,6 +41,10 @@ end
 local function knows(id)
     return Signal.Read(C_SpellBook and C_SpellBook.IsSpellKnown or IsPlayerSpell or IsSpellKnown, id)
 end
+local function shards()
+    local power = Enum and Enum.PowerType and Enum.PowerType.SoulShards
+    return power and Signal.Read(UnitPower, "player", power) or Signal.Unknown("power-type")
+end
 local function rank(node)
     local config = Signal.Read(C_ClassTalents and C_ClassTalents.GetActiveConfigID)
     if not numeric(config) then return Signal.Unknown("talent-config") end
@@ -47,6 +58,7 @@ end
 
 function State:Reset()
     self.cache, self.cooldowns, self.refreshedAt, self.argusAt, self.handAt = nil, {}, nil, nil, nil
+    self.castShards, self.heldGain, self.procSince = nil, nil, {}
     Kairos.DemonologyDemons:Reset()
 end
 State:Reset()
@@ -152,6 +164,19 @@ function State:OnCast(id, t)
         self.cooldowns[S.DOOMGUARD].finish = math.max(t, self.cooldowns[S.DOOMGUARD].finish - 3)
     end
     if id == S.HAND then self.handAt = t end
+    if id == S.INFERNAL or id == S.RUINATION then self.procSince[id] = nil end
+    -- The base is the reading during the cast, or at the keypress for an instant (live, an
+    -- instant Demonbolt's +2 also lands after its success); the gain counts until the
+    -- reading leaves it. A hold still waiting on the same base adds to this one.
+    local casting, sent = self.castShards, self.sentShards
+    self.castShards, self.sentShards = nil, nil
+    local base = casting and casting.spellID == id and casting.base
+    if not base and sent and t - sent.at < self.POWER_LAG then base = sent.base end
+    if base and self.GAINS[id] then
+        local held = self.heldGain
+        local gain = self.GAINS[id] + (held and held.base == base and t - held.at < self.POWER_LAG and held.gain or 0)
+        self.heldGain = { gain = gain, base = base, at = t }
+    end
     Kairos.DemonologyDemons:OnCast(id, t, c.haste or 0, talent("to_hell_and_back"))
     if id == S.TYRANT and talent("argus") then self.argusAt = t end
     Kairos.Recorder:Push({ k = "demo", imps = Kairos.DemonologyDemons:Count(t), spell = id })
@@ -160,7 +185,7 @@ end
 -- Project only deterministic effects. Random Core gains/extra guardians remain
 -- outside the model and will be corrected by readable shards, glows and future probes.
 function State:Project(s, id, finish)
-    local gain = { [S.SHADOW] = 1, [S.DEMONBOLT] = 2, [S.INFERNAL] = 3 }
+    local gain = self.GAINS
     -- 12.1.5 client readings: Dreadstalkers spends no shards (7/7 casts), Imp Lord one.
     local cost = { [S.HAND] = 3, [S.IMP_LORD] = 1, [S.RAVAGER] = 1, [S.DOOMGUARD] = 1 }
     if gain[id] then s.shards = math.min(5, s.shards + gain[id])
@@ -205,8 +230,11 @@ function State:Build(now)
     if numeric(start) and numeric(duration) and rate.state ~= "unknown" then
         s.t = math.max(s.t, start.value + duration.value / (numeric(rate) and rate.value > 0 and rate.value or 1))
     else s.timingUnknown = true end
-    local power = Enum and Enum.PowerType and Enum.PowerType.SoulShards
-    put(s, "shards", power and Signal.Read(UnitPower, "player", power) or Signal.Unknown("power-type"), 0)
+    put(s, "shards", shards(), 0)
+    local reading = not s.unknown.shards and s.shards or nil
+    local held = self.heldGain
+    if held and (reading ~= held.base or now - held.at >= self.POWER_LAG) then self.heldGain, held = nil, nil end
+    if held then s.shards, s.heldShards = math.min(5, s.shards + held.gain), held.gain end
     for _, id in pairs(S) do put(s.known, id, c.known[id], false) end
     for key in pairs(self.TALENTS) do put(s.talent, key, c.talent[key], false) end
     if c.gcdMax then s.gcdMax = c.gcdMax else s.gcdMax, s.unknown.gcdMax = 1.5, true end
@@ -225,6 +253,18 @@ function State:Build(now)
     put(s, "ruinationReady", self:Proc(S.RUINATION, S.HAND, s.known[S.RUINATION]), false)
     if s.known.unknown[S.INFERNAL] then s.unknown.infernalReady = true end
     if s.known.unknown[S.RUINATION] then s.unknown.ruinationReady = true end
+    -- A proc is timed from the first refresh that sees its override; one that will have
+    -- ended by the time the GCD does isn't available.
+    s.procUntil = {}
+    for key, id in pairs(self.PROCS) do
+        if not s.unknown[key] then
+            self.procSince[id] = s[key] and (self.procSince[id] or now) or nil
+            if self.procSince[id] then
+                s.procUntil[key] = self.procSince[id] + self.PROC_LIFE
+                if s.procUntil[key] <= s.t then s[key] = false end
+            end
+        end
+    end
     -- A Hand in progress or just landed may still grant its Demonic Art's proc.
     s.handPending = (cast and cast.spellID == S.HAND and cast.endsAt > now)
         or (self.handAt ~= nil and now - self.handAt < self.ART_LAG)
@@ -254,7 +294,10 @@ function State:Build(now)
             s.unknown["ready:" .. id], s.unknown["remains:" .. id] = true, true
         end
     end
-    if cast and not cast.channel and cast.endsAt > now then self:Project(s, cast.spellID, cast.endsAt) end
+    if cast and not cast.channel and cast.endsAt > now then
+        self.castShards = reading and { spellID = cast.spellID, base = reading } or nil
+        self:Project(s, cast.spellID, cast.endsAt)
+    end
     self:Castable(s, Kairos.State:Moving())
     return s
 end
@@ -316,6 +359,9 @@ function State:Advance(s, id, moving)
     self:Project(q, id, start)
     if q.argusUp and q.argusUntil and q.argusUntil <= finish then q.argusUp = false end
     if q.argusUp and q.argusSure and q.argusSure <= finish then q.unknown.argusUp = true end
+    for key in pairs(self.PROCS) do
+        if q[key] and q.procUntil and q.procUntil[key] and q.procUntil[key] <= finish then q[key] = false end
+    end
     self:Castable(q, moving)
     return q
 end
@@ -431,6 +477,13 @@ function State:OnInit()
         if now then self:Refresh(now) end
     end
     Kairos:On("KAIROS_PROFILE_CHANGED", function() self:Reset(); refresh() end)
+    -- The keypress comes before the cast can change shards: an instant's hold base.
+    Kairos:OnUnit("UNIT_SPELLCAST_SENT", "player", function()
+        local now, reading = clock(), shards()
+        if Kairos.specID == 266 and now and numeric(reading) and not Signal.IsSecret(reading.value) then
+            self.sentShards = { at = now, base = reading.value }
+        end
+    end)
     Kairos:On("KAIROS_PLAYER_CAST", function(_, id)
         if Kairos.specID ~= 266 then return end
         local now = clock()
