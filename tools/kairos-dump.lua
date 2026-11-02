@@ -307,6 +307,15 @@ local function clockText(t)
     return ("%02d:%02d:%06.3f"):format(math.floor(t / 3600), math.floor(t % 3600 / 60), t % 60)
 end
 
+-- A repeat press the client rejects logs SPELL_CAST_FAILED under the spell being cast
+-- without ending that cast (12.1.5: a Hand pressed again mid-cast, then the Hand's
+-- success). Any other failure, such as "Interrupted", ends it.
+local REJECTED_PRESS = { ["Another action is in progress"] = true, ["Not yet recovered"] = true }
+
+local function endsCast(f)
+    return not REJECTED_PRESS[f[#f]]
+end
+
 --- Optional trailing arguments: a start and an end time (HH:MM:SS, log-local) that limit
 --- what gets scored, and "verbose".
 local function parseOptions(...)
@@ -504,7 +513,7 @@ local function replayArcane(logPath, player)
             if id == A.MISSILE_TICK then lastTick = t end
         elseif event == "SPELL_CAST_START" and id and onGcd[id] then
             started[id] = record(t, id, false) or true
-        elseif event == "SPELL_CAST_FAILED" and id then
+        elseif event == "SPELL_CAST_FAILED" and id and endsCast(f) then
             started[id] = nil
         elseif event == "SPELL_CAST_SUCCESS" and id then
             successes[#successes + 1] = { t = t, spell = id }
@@ -1187,7 +1196,7 @@ local function replayDemonology(logPath, player, options)
             if f[6] and f[6]:find("^Creature") then enemies[f[6]] = t end
         elseif event == "SPELL_CAST_START" and id and onGcd[id] then
             started[id] = record(t, id, false) or true
-        elseif event == "SPELL_CAST_FAILED" and id then
+        elseif event == "SPELL_CAST_FAILED" and id and endsCast(f) then
             started[id] = nil
         elseif event == "SPELL_CAST_SUCCESS" and id then
             successes[#successes + 1] = { t = t, spell = id }

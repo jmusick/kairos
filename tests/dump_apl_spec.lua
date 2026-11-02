@@ -413,6 +413,33 @@ describe("APL dump live scoring", function()
         assert.matches("Kairos in game%s+= APL on true state: 1/1", output)
     end)
 
+    it("keeps a cast-time decision at START when a repeat press is rejected mid-cast", function()
+        local me, dummy = 'Player-1,"Tester",0,0,', 'Creature-1,"Dummy",0,0,'
+        local function line(time, event, dest, rest)
+            return ('10/30/2026 10:00:%s-4  %s,%s%s%s'):format(time, event, me, dest, rest)
+        end
+        local log = {
+            line("00.000", "SPELL_ENERGIZE", me, '686,"Shadow Bolt",32,1.0000,0.0000,7,50'),
+            line("03.000", "SPELL_CAST_START", dummy, '686,"Shadow Bolt",32'),
+            line("03.020", "SPELL_CAST_FAILED", dummy, '686,"Shadow Bolt",32,"Another action is in progress"'),
+            line("05.000", "SPELL_CAST_SUCCESS", dummy, '686,"Shadow Bolt",32'),
+        }
+        local ctx = { session = 1, char = "Tester-Realm", spec = 266, cooldowns = true }
+        local output = report({
+            { k = "sent", spell = 686, t = 102.9, combat = true, context = ctx,
+                recommendation = { src = "kairos", spell = 686, ac = 686 } },
+            { k = "cast", spell = 686, t = 105, combat = true, context = ctx },
+        }, log)
+        assert.matches("Kairos in game%s+= APL on true state: 1/1", output)
+        assert.matches("Player cast%s+= APL on true state: 1/1", output)
+        -- An interruption still ends the cast; the later success is its own decision.
+        log[3] = log[3]:gsub("Another action is in progress", "Interrupted")
+        output = report({
+            { k = "cast", spell = 686, t = 105, combat = true, context = ctx },
+        }, log)
+        assert.matches("Player cast%s+= APL on true state: 2/2", output)
+    end)
+
     it("grades the keypress snapshot over a later start commitment in Demonology", function()
         local me, dummy = 'Player-1,"Tester",0,0,', 'Creature-1,"Dummy",0,0,'
         local function line(time, event, dest, rest)

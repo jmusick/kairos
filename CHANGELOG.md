@@ -4,6 +4,13 @@ All notable changes to Kairos are documented here. The format follows [Keep a Ch
 
 ## [Unreleased]
 
+## [0.2.9] - 2026-11-02
+
+### Fixed
+
+- Kairos rechecks combat logging 3 s after loading screens and zone or difficulty changes, as well as at each pull. Another logging addon turns logging off a second after a loading screen in non-Mythic dungeons. After a reload mid-pull in Timewalking Grimrail Depot, the log stayed off for 65 s until the next pull. The replay then missed a Grimoire: Imp Lord cast and called Imp Lord ready for the next two minutes.
+- `tools/kairos-dump.lua apl` no longer ends a cast in progress when a repeat press of the same spell is rejected ("Another action is in progress", "Not yet recovered"). The cast's success was graded as a second decision against a snapshot from mid-cast, and its real decision at the start went ungraded. In a Bloodmaul Slag Mines run this caused 7 of Kairos's 33 misses (447 → 453/480). Kairos's score rose in nine earlier Demonology sessions and fell in one, and one doubled Arcane decision is gone.
+
 ## [0.2.8] - 2026-11-02
 
 ### Changed

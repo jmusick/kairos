@@ -157,6 +157,23 @@ describe("CombatLog", function()
         assert.are.equal("1", cvars.advancedCombatLogging)
     end)
 
+    it("rechecks after a loading screen, once another addon's own check has run", function()
+        Stub.Fire("PLAYER_REGEN_DISABLED")
+        assert.is_true(logging)
+        -- A reload mid-pull: another addon stops logging 1 s after the loading screen.
+        logging = false
+        for _, event in ipairs({ "LOADING_SCREEN_DISABLED", "ZONE_CHANGED_NEW_AREA",
+            "UPDATE_INSTANCE_INFO", "PLAYER_DIFFICULTY_CHANGED" }) do
+            Stub.timers = {}
+            Stub.Fire(event)
+            assert.are.equal(1, #Stub.timers)
+            assert.is_true(Stub.timers[1].delay > 1)
+            Stub.timers[1].fn()
+            assert.is_true(logging)
+            logging = false
+        end
+    end)
+
     it("leaves logging alone when the setting is off", function()
         KairosDB.global.combatLog = false
         Kairos.CombatLog:Ensure()

@@ -6,6 +6,11 @@ local CombatLog = Kairos:NewModule("CombatLog")
 local Signal = Kairos.Signal
 
 CombatLog.DELAY = 3
+-- Logging managers act on these zone events: one turns logging off 1 s after the last
+-- of them outside Mythic content, which once left the log off for a minute after a reload
+-- mid-pull. Recheck DELAY after each, so the check lands after theirs.
+CombatLog.ZONE_EVENTS = { "PLAYER_ENTERING_WORLD", "LOADING_SCREEN_DISABLED", "ZONE_CHANGED_NEW_AREA",
+    "UPDATE_INSTANCE_INFO", "PLAYER_DIFFICULTY_CHANGED" }
 
 function CombatLog:Ensure()
     if not Kairos.db.global.combatLog then return end
@@ -29,7 +34,9 @@ function CombatLog:OnLogin()
     -- the log file or fight another addon every frame.
     Kairos:On("PLAYER_REGEN_DISABLED", function() self:Ensure() end)
     Kairos:On("ENCOUNTER_START", function() self:Ensure() end)
-    Kairos:On("PLAYER_ENTERING_WORLD", function()
-        C_Timer.After(self.DELAY, function() self:Ensure() end)
-    end)
+    for _, event in ipairs(self.ZONE_EVENTS) do
+        Kairos:On(event, function()
+            C_Timer.After(self.DELAY, function() self:Ensure() end)
+        end)
+    end
 end
