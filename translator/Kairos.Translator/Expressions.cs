@@ -6,7 +6,7 @@ namespace Kairos.Translator;
 // N converts a Lua predicate to a SimC number, T converts a number to a predicate.
 public sealed class ExpressionCompiler(Func<string, string?> bind)
 {
-    private static readonly Regex Token = new(@"\G\s*(?:(?<number>\d+(?:\.\d+)?)|(?<name>[a-zA-Z_][a-zA-Z_0-9.]*)|(?<op>>=|<=|!=|==|[()+*<>=!&|^+\-]))");
+    private static readonly Regex Token = new(@"\G\s*(?:(?<number>\d+(?:\.\d+)?)|(?<name>[a-zA-Z_][a-zA-Z_0-9.]*)|(?<op>>=|<=|<\?|>\?|!=|==|[()+*<>=!&|^+\-]))");
     private readonly List<string> tokens = [];
     private int position;
     public HashSet<string> Identifiers { get; } = new(StringComparer.Ordinal);
@@ -35,7 +35,7 @@ public sealed class ExpressionCompiler(Func<string, string?> bind)
     {
         "|" => 1, "^" => 2, "&" => 3,
         "=" or "==" or "!=" or "<" or ">" or "<=" or ">=" => 4,
-        "+" or "-" => 5, "*" => 6, _ => -1
+        "<?" or ">?" => 5, "+" or "-" => 6, "*" => 7, _ => -1
     };
 
     // At the top level, `|` has the lowest precedence, so everything before the first `|`
@@ -47,7 +47,7 @@ public sealed class ExpressionCompiler(Func<string, string?> bind)
         string left;
         if (token is "!" or "-" or "+")
         {
-            var operand = Parse(7);
+            var operand = Parse(8);
             left = token switch { "!" => $"N(not T({operand}))", "+" => operand, _ => $"(-{operand})" };
         }
         else if (token == "(")
@@ -80,6 +80,9 @@ public sealed class ExpressionCompiler(Func<string, string?> bind)
                 "=" or "==" => $"N({left} == {right})",
                 "!=" => $"N({left} ~= {right})",
                 "<" or ">" or "<=" or ">=" => $"N({left} {op} {right})",
+                // SimC's `<?` is max and `>?` is min (engine/sim/expressions.cpp).
+                "<?" => $"math.max({left}, {right})",
+                ">?" => $"math.min({left}, {right})",
                 _ => $"({left} {op} {right})"
             };
         }

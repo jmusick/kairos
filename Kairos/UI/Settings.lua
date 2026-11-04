@@ -1,5 +1,5 @@
 -- Settings panel (D27): the native Blizzard Settings API, no libraries. Proxy settings
--- read and write through Kairos.profile, so they follow spec and character swaps.
+-- read and write the account-wide display settings (D41).
 local _, Kairos = ...
 local SettingsPanel = Kairos:NewModule("SettingsPanel")
 
@@ -76,8 +76,8 @@ function SettingsPanel:AddSlider(key, name, tooltip, default, min, max, step, ge
 end
 
 local function displayOption(field)
-    return function() return Kairos.profile.display[field] end, function(value)
-        Kairos.profile.display[field] = value
+    return function() return Kairos.db.global.display[field] end, function(value)
+        Kairos.db.global.display[field] = value
         Kairos.Display:ApplyLayout()
     end
 end
@@ -93,7 +93,7 @@ function SettingsPanel:OnLogin()
     self:AddSlider("SCALE", "Scale", "Size of the display.", 1, 0.5, 2, 0.05, displayOption("scale"))
     local getSize, setSize = displayOption("mainSize")
     self:AddSlider("MAIN_SIZE", "Main icon size", "Width and height before display scale (32-128). Type a value and press Enter.",
-        Kairos.DB.profileDefaults.display.mainSize, 32, 128, 1, getSize, setSize, true)
+        Kairos.DB.globalDefaults.display.mainSize, 32, 128, 1, getSize, setSize, true)
     local function coordinate(index)
         return function()
             local x, y = Kairos.Display:GetPosition()
@@ -106,9 +106,9 @@ function SettingsPanel:OnLogin()
     local getX, setX = coordinate(3)
     local getY, setY = coordinate(4)
     self:AddSlider("POSITION_X", "X coordinate", "Main icon offset from screen center (right positive). Type a value and press Enter.",
-        Kairos.DB.profileDefaults.display.point[3], -2000, 2000, 1, getX, setX, true)
+        Kairos.DB.globalDefaults.display.point[3], -2000, 2000, 1, getX, setX, true)
     self:AddSlider("POSITION_Y", "Y coordinate", "Main icon offset from screen center (up positive). Type a value and press Enter.",
-        Kairos.DB.profileDefaults.display.point[4], -1200, 1200, 1, getY, setY, true)
+        Kairos.DB.globalDefaults.display.point[4], -1200, 1200, 1, getY, setY, true)
     self:AddCheckbox("SHOW_QUEUED", "Show queued spell", "The smaller icon: what comes after the main pick.",
         true, displayOption("showQueued"))
     self:AddCheckbox("SHOW_KEYBINDS", "Show keybinds", "Keybind text on each icon. Override with /kairos bind.",

@@ -5,12 +5,12 @@ local _, Kairos = ...
 local Display = Kairos:NewModule("Display")
 local Signal = Kairos.Signal
 
-Display.MAIN_SIZE = Kairos.DB.profileDefaults.display.mainSize
+Display.MAIN_SIZE = Kairos.DB.globalDefaults.display.mainSize
 Display.QUEUED_SIZE = 36
 Display.INTERRUPT_SIZE = 28
 Display.PAIRED_SIZE = 26
 Display.UNKNOWN_ICON = "Interface\\Icons\\INV_Misc_QuestionMark"
-Display.DEFAULT_POINT = Kairos.DB.profileDefaults.display.point
+Display.DEFAULT_POINT = Kairos.DB.globalDefaults.display.point
 
 local function createIcon(parent, size, fontObject)
     local button = CreateFrame("Frame", nil, parent, "BackdropTemplate")
@@ -107,12 +107,12 @@ function Display:SetEnabled(enabled)
 end
 
 function Display:SetPosition(x, y)
-    Kairos.profile.display.point = { "CENTER", "CENTER", x, y }
+    Kairos.db.global.display.point = { "CENTER", "CENTER", x, y }
     self:ApplyLayout()
 end
 
 function Display:GetPosition(fromFrame)
-    local point = Kairos.profile.display.point or self.DEFAULT_POINT
+    local point = Kairos.db.global.display.point or self.DEFAULT_POINT
     if not fromFrame and point[1] == "CENTER" and point[2] == "CENTER" then return point[3], point[4] end
     -- Dragging can leave a TOPLEFT/BOTTOMLEFT anchor. Convert the actual main-frame
     -- center into the same CENTER offsets the command and both controls write.
@@ -138,7 +138,7 @@ end
 function Display:ApplyLayout()
     local frame = self.frame
     if not frame then return end
-    local settings = Kairos.profile.display
+    local settings = Kairos.db.global.display
     local point = settings.point or self.DEFAULT_POINT
     local size = settings.mainSize or self.MAIN_SIZE
     frame:SetSize(size, size)
@@ -195,7 +195,7 @@ function Display:Refresh()
     local frame = self.frame
     if not frame then return end
     if not Kairos.db.global.enabled then frame:Hide(); return end
-    local settings = Kairos.profile.display
+    local settings = Kairos.db.global.display
     local rec = Kairos.APL:Recommend()
     self.current = rec
     Kairos.Recorder:NoteRecommendation(rec)

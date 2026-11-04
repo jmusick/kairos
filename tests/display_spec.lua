@@ -46,7 +46,7 @@ describe("Display", function()
         assert.are.equal(1000 + 321507, frame.offGcd.icon.texture)
         assert.are.equal("NOW", frame.offGcd.caption.text)
         assert.are.equal(1000 + 30451, frame.main.icon.texture)
-        Kairos.profile.display.showOffGcd = false
+        Kairos.db.global.display.showOffGcd = false
         Stub.Tick(1)
         assert.is_false(frame.offGcd.shown)
     end)
@@ -107,11 +107,11 @@ describe("Display", function()
 
     it("sets exact screen-center coordinates and rejects invalid values", function()
         SlashCmdList.KAIROS("position 125.5 -240")
-        assert.are.same({ "CENTER", "CENTER", 125.5, -240 }, Kairos.profile.display.point)
+        assert.are.same({ "CENTER", "CENTER", 125.5, -240 }, Kairos.db.global.display.point)
         SlashCmdList.KAIROS("pos nope 10")
-        assert.are.same({ "CENTER", "CENTER", 125.5, -240 }, Kairos.profile.display.point)
+        assert.are.same({ "CENTER", "CENTER", 125.5, -240 }, Kairos.db.global.display.point)
         SlashCmdList.KAIROS("position 1e999 0")
-        assert.are.same({ "CENTER", "CENTER", 125.5, -240 }, Kairos.profile.display.point)
+        assert.are.same({ "CENTER", "CENTER", 125.5, -240 }, Kairos.db.global.display.point)
         SlashCmdList.KAIROS("reset")
         assert.are.same({ "CENTER", UIParent, "CENTER", 0, -180 }, frame.points)
     end)
@@ -148,8 +148,8 @@ describe("Display", function()
     it("overlaps the paired spell on the main icon independently of the queued setting", function()
         local pairedID = 321507
         Kairos.Keybinds:SetOverride(pairedID, "M4")
-        Kairos.profile.display.showQueued = false
-        Kairos.profile.display.showOffGcd = false
+        Kairos.db.global.display.showQueued = false
+        Kairos.db.global.display.showOffGcd = false
         Kairos.APL:Register(62, { Evaluate = function()
             return { spellID = 44425, pairedID = pairedID, pairedLabel = "touch" }
         end })
@@ -167,7 +167,7 @@ describe("Display", function()
     end)
 
     it("converts dragged anchors to screen-center coordinates at the frame's scale", function()
-        Kairos.profile.display.point = { "TOPLEFT", "TOPLEFT", 120, -200 }
+        Kairos.db.global.display.point = { "TOPLEFT", "TOPLEFT", 120, -200 }
         frame.GetCenter = function() return 600, 350 end
         frame.GetEffectiveScale = function() return 2 end
         UIParent.GetCenter = function() return 1000, 600 end
@@ -176,7 +176,7 @@ describe("Display", function()
         assert.are.equal(100, x)
         assert.are.equal(50, y)
         frame:GetScript("OnDragStop")(frame)
-        assert.are.same({ "CENTER", "CENTER", 100, 50 }, Kairos.profile.display.point)
+        assert.are.same({ "CENTER", "CENTER", 100, 50 }, Kairos.db.global.display.point)
         Kairos.Display:SetPosition(0, 50)
         assert.are.same({ "CENTER", UIParent, "CENTER", 0, 50 }, frame.points)
     end)
@@ -210,7 +210,7 @@ describe("Display", function()
             RegisterAddOnCategory = function() end,
         }
         Kairos.SettingsPanel:OnLogin()
-        Kairos.profile.display.point = { "TOPLEFT", "TOPLEFT", 999, -999 }
+        Kairos.db.global.display.point = { "TOPLEFT", "TOPLEFT", 999, -999 }
         frame.GetCenter = function() return 1200, 550 end
         frame.GetEffectiveScale = function() return 1 end
         UIParent.GetCenter = function() return 1000, 600 end
@@ -225,13 +225,13 @@ describe("Display", function()
         local edit = row.KairosCoordinateEdit
         edit:SetText("0")
         edit:GetScript("OnEnterPressed")(edit)
-        assert.are.same({ "CENTER", "CENTER", 0, -50 }, Kairos.profile.display.point)
+        assert.are.same({ "CENTER", "CENTER", 0, -50 }, Kairos.db.global.display.point)
         initializers[x]:Resetter(row)
         assert.is_false(edit.shown)
         initializers[y]:InitFrame(row)
         edit:SetText("-200.5")
         edit:GetScript("OnEnterPressed")(edit)
-        assert.are.same({ "CENTER", "CENTER", 0, -200.5 }, Kairos.profile.display.point)
+        assert.are.same({ "CENTER", "CENTER", 0, -200.5 }, Kairos.db.global.display.point)
         x:SetValue(25) -- the old X callback cannot write into the reused Y editor
         assert.are.equal("-200.50", edit.text)
         edit:SetText("invalid")

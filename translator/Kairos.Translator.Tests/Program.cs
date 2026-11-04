@@ -40,13 +40,15 @@ var goldenLua = new Dictionary<string, string>
     ["mage_arcane"] = "Kairos/Specs/MageArcane/APL.lua",
     ["control"] = "translator/golden/control/APL.lua",
     ["warlock_demonology"] = "Kairos/Specs/WarlockDemonology/APL.lua",
+    ["warlock_affliction"] = "Kairos/Specs/WarlockAffliction/APL.lua",
+    ["warlock_destruction"] = "Kairos/Specs/WarlockDestruction/APL.lua",
 };
-foreach (var fixture in new[] { "mage_arcane", "control", "warlock_demonology" })
+foreach (var fixture in goldenLua.Keys)
 {
     Test($"golden Lua and coverage: {fixture}", () =>
     {
-        var fixtureTranslator = fixture == "warlock_demonology"
-            ? new Translator(Metadata.Load("translator/metadata/warlock_demonology.json")) : translator;
+        var fixtureTranslator = fixture.StartsWith("warlock_")
+            ? new Translator(Metadata.Load($"translator/metadata/{fixture}.json")) : translator;
         var result = fixtureTranslator.Translate(File.ReadAllText($"translator/fixtures/{fixture}.simc"));
         Equal(Normalize(File.ReadAllText(goldenLua[fixture])), result.Lua);
         Equal(Normalize(File.ReadAllText($"translator/golden/{fixture}/coverage.json")), result.Report);
@@ -74,7 +76,11 @@ var expressions = new (string Input, string Lua, int Expected)[]
     ("a<=b", "N(a <= b)", 0),
     ("a==3", "N(a == 3)", 1),
     ("-a+ +b", "((-a) + b)", -1),
-    ("0.95<1", "N(0.95 < 1)", 1)
+    ("0.95<1", "N(0.95 < 1)", 1),
+    // SimC: `<?` is max, `>?` is min, binding tighter than comparisons and looser than +.
+    ("a<?b", "math.max(a, b)", 3),
+    ("a>?b+2", "math.min(a, (b + 2))", 3),
+    ("a>?b<3", "N(math.min(a, b) < 3)", 1)
 };
 foreach (var example in expressions)
     Test("expression: " + example.Input, () => Equal(example.Lua, expressionCompiler.Compile(example.Input)));
@@ -149,6 +155,51 @@ Test("Demonology coverage includes both hero lists and reports every omission", 
     Equal(true, result.Coverage.Any(c => c.List == "soulharvest" && c.Kind == "action" && c.Status == "bound"));
     Equal(true, result.Coverage.Any(c => c.Kind == "option" && c.Text.StartsWith("target_if=") && c.Status == "unsupported"));
     Equal(true, result.Lua.Contains("function APL:Leveling(s)"));
+});
+Test("action-scoped bindings give bare names their action's meaning", () =>
+{
+    var metadata = Metadata.Load("translator/metadata/mage_arcane.json");
+    var scoped = new Translator(metadata with { Bindings = new(metadata.Bindings) { ["arcane_blast:remains"] = "s.blastRemains" } });
+    var result = scoped.Translate("actions=arcane_blast,if=remains<3\nactions+=/arcane_barrage,if=remains<3");
+    Equal(true, result.Lua.Contains("T(N(s.blastRemains < 3))"));
+    Equal(false, result.Lua.Contains("spellID = 44425"));
+    Equal(true, result.Coverage.Any(c => c.Number == 2 && c.Kind == "binding" && c.Text == "remains" && c.Status == "unsupported"));
+});
+Test("approximated channel options are opt-in", () =>
+{
+    const string line = "actions=arcane_missiles,chain=1,early_chain_if=no.binding,interrupt_if=tick_time>0.5";
+    Equal(false, translator.Translate(line).Lua.Contains("spellID = 5143"));
+    var metadata = Metadata.Load("translator/metadata/mage_arcane.json");
+    var result = new Translator(metadata with { ApproximatedOptions = ["early_chain_if", "interrupt_if"] }).Translate(line);
+    Equal(true, result.Lua.Contains("spellID = 5143"));
+    Equal(3, result.Coverage.Count(c => c.Kind == "option" && c.Status == "approximated"));
+    Equal(false, result.Coverage.Any(c => c.Kind == "expression" && c.Text == "tick_time>0.5"));
+});
+Test("variables bind before their declaration and keep a numeric default", () =>
+{
+    var result = translator.Translate("actions=arcane_blast,if=variable.late>1\nactions+=/variable,name=late,value=gcd.max,default=2");
+    Equal(true, result.Lua.Contains("T(N((v[\"late\"] or 2) > 1))"));
+    Equal(true, result.Coverage.Any(c => c.Kind == "option" && c.Text == "default=2" && c.Status == "bound"));
+    var bad = translator.Translate("actions=arcane_blast,if=variable.late\nactions+=/variable,name=late,value=1,default=x");
+    Equal(false, bad.Lua.Contains("spellID = 30451"));
+});
+Test("Affliction and Destruction coverage report every action", () =>
+{
+    foreach (var spec in new[] { "warlock_affliction", "warlock_destruction" })
+    {
+        var source = File.ReadAllText($"translator/fixtures/{spec}.simc");
+        var result = new Translator(Metadata.Load($"translator/metadata/{spec}.json")).Translate(source);
+        Equal(SimcParser.Parse(source).Count, result.Coverage.Count(c => c.Kind == "action"));
+        Equal(true, result.Coverage.Any(c => c.Kind == "option" && c.Text.StartsWith("target_if=") && c.Status == "unsupported"));
+    }
+    var affliction = new Translator(Metadata.Load("translator/metadata/warlock_affliction.json"))
+        .Translate(File.ReadAllText("translator/fixtures/warlock_affliction.simc"));
+    Equal(true, affliction.Lua.Contains("math.max(s.agonyRemains, s.corruptionRemains)"));
+    Equal(true, affliction.Lua.Contains("label = \"default:drain_soul\""));
+    Equal(true, affliction.Lua.Contains("function APL:Leveling(s)"));
+    var destruction = new Translator(Metadata.Load("translator/metadata/warlock_destruction.json"))
+        .Translate(File.ReadAllText("translator/fixtures/warlock_destruction.simc"));
+    Equal(true, destruction.Lua.Contains("label = \"default:chaos_bolt#1\""));
 });
 Test("additional entry points reject missing, excluded and reserved names", () =>
 {

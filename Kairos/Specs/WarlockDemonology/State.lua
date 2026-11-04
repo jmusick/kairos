@@ -11,7 +11,8 @@ State.TAGS = { [S.TYRANT] = "cooldowns", [S.IMP_LORD] = "cooldowns",
     [S.RAVAGER] = "cooldowns", [S.DOOMGUARD] = "cooldowns" }
 State.TALENTS = { diabolic_ritual = 428514, demonic_soul = 449614, reign_of_tyranny = 1276748,
     to_hell_and_back = 1281511, doom = 460551, argus = 1276163, argus3 = 1276222,
-    secrets_of_the_coven = 428518, ruination = 428522, demoniac = 426115 }
+    secrets_of_the_coven = 428518, ruination = 428522, demoniac = 426115, infernal_machine = 429917,
+    inner_demons = 267216 }
 State.CAST_TIMES = { [S.SHADOW] = 2, [S.HAND] = 1.5, [S.DEMONBOLT] = 4.5,
     [S.DOGS] = 2, [S.TYRANT] = 2, [S.INFERNAL] = 2, [S.RUINATION] = 1.5 }
 State.FELGUARD, State.IMP = 30146, 688
@@ -20,6 +21,9 @@ State.ART_LAG = 0.5 -- seconds after a Hand its Demonic Art proc may still be la
 -- Infernal Bolt and Ruination procs left unused end 20.0 s after they appear (12.1.5 log: 16 of 16).
 State.PROC_LIFE = 20
 State.PROCS = { infernalReady = S.INFERNAL, ruinationReady = S.RUINATION }
+-- Shards each Diabolic Ritual spender takes off the ritual (Dreadstalkers is free in 12.1.5,
+-- but still starts one); the ritual model is in Ritual.lua.
+State.SPENDERS = { [S.HAND] = 3, [S.DOGS] = 0, [S.IMP_LORD] = 1, [S.RAVAGER] = 1, [S.DOOMGUARD] = 1 }
 State.GAINS ={ [S.SHADOW] = 1, [S.DEMONBOLT] = 2, [S.INFERNAL] = 3 }
 -- A finished cast's shards reach UnitPower after UNIT_SPELLCAST_SUCCEEDED (12.1.5 trace: Shadow
 -- Bolt 0-0.3 s later, after a refresh in 63 of 95 casts). Its gain is held until the reading moves.
@@ -59,7 +63,9 @@ end
 function State:Reset()
     self.cache, self.cooldowns, self.refreshedAt, self.argusAt, self.handAt = nil, {}, nil, nil, nil
     self.castShards, self.heldGain, self.procSince = nil, nil, {}
+    self.tyrantAt, self.artProc, self.handArt = nil, nil, nil
     Kairos.DemonologyDemons:Reset()
+    Kairos.DemonologyRitual:Reset()
 end
 State:Reset()
 
@@ -76,6 +82,7 @@ function State:Refresh(t)
         local r = knows(id)
         if boolean(r) then c.talent[key] = r end
     end
+    if c.talent.inner_demons then Kairos.DemonologyDemons.innerTalent = c.talent.inner_demons.value end
     local A = self.ARGUS
     local argusRank = rank(A.node)
     if numeric(argusRank) then
@@ -87,6 +94,7 @@ function State:Refresh(t)
         local duration = field(Signal.Read(C_UnitAuras and C_UnitAuras.GetPlayerAuraBySpellID, A.aura), "duration")
         if numeric(duration) and duration.value > 0 then c.argusDuration = duration.value end
     end
+    self:AnchorRitual(t)
     for _, id in pairs(S) do
         local r = knows(id)
         if boolean(r) then c.known[id] = r end
@@ -134,6 +142,25 @@ function State:Refresh(t)
     end
 end
 
+-- Ritual and Art auras are readable out of combat: they anchor the ritual model. Any
+-- unknown read leaves the model as it was.
+function State:AnchorRitual(t)
+    local R, readings = Kairos.DemonologyRitual, {}
+    for kind, ids in pairs(R.AURAS) do
+        readings[kind] = {}
+        for slot, id in pairs(ids) do
+            local hidden = Signal.Read(C_Secrets and C_Secrets.ShouldSpellAuraBeSecret, id)
+            if not boolean(hidden) or hidden.value then return end
+            local r = Signal.Read(C_UnitAuras and C_UnitAuras.GetPlayerAuraBySpellID, id)
+            if r.state == "unknown" then return end
+            local expires = r.value ~= nil and field(r, "expirationTime")
+            if expires and not numeric(expires) then return end
+            readings[kind][slot] = expires and expires.value or false
+        end
+    end
+    R:Anchor(t, readings)
+end
+
 -- A secret aura can return nil. Only a confirmed non-secret query proves absence.
 local function aura(id)
     local hidden = Signal.Read(C_Secrets and C_Secrets.ShouldSpellAuraBeSecret, id)
@@ -172,19 +199,44 @@ function State:OnCast(id, t)
     self.castShards, self.sentShards = nil, nil
     local base = casting and casting.spellID == id and casting.base
     if not base and sent and t - sent.at < self.POWER_LAG then base = sent.base end
-    if base and self.GAINS[id] then
+    local own = self.GAINS[id]
+    -- A Hand inside Dominion of Argus (rank 4) refunds a shard ~20 ms after its success, while
+    -- the reading already shows its cost (12.1.5 key: 66 refunds): hold it from the paid base.
+    local argus = self.argusAt and t < self.argusAt + (c.argusDuration or self.ARGUS.base)
+    if id == S.HAND and argus and talent("argus3") and base then own, base = 1, math.max(0, base - 3) end
+    if base and own then
         local held = self.heldGain
-        local gain = self.GAINS[id] + (held and held.base == base and t - held.at < self.POWER_LAG and held.gain or 0)
+        local gain = own + (held and held.base == base and t - held.at < self.POWER_LAG and held.gain or 0)
         self.heldGain = { gain = gain, base = base, at = t }
     end
+    -- Diabolic Ritual: spenders in combat advance it, and a Hand consumes the Art that was up
+    -- when its cast began. That Art's proc lands 0-0.1 s after the Hand (ART_LAG).
+    if id == S.HAND then self.handArt = nil end
+    if self.SPENDERS[id] and talent("diabolic_ritual") and Kairos.State.inCombat then
+        local R = Kairos.DemonologyRitual
+        local machine = talent("infernal_machine") and self.tyrantAt ~= nil
+            and t < self.tyrantAt + R.TYRANT + (talent("reign_of_tyranny") and R.REIGN or 0)
+        local spent = self.SPENDERS[id]
+        if id == S.HAND then
+            if casting and casting.spellID == id then spent = math.min(spent, casting.base) end
+            local cast = Kairos.State.cast
+            local start = cast and cast.spellID == S.HAND and cast.startsAt or t - self:CastTime(S.HAND)
+            self.handArt = R:Hand(t, start, spent, machine)
+            local key = self.handArt and R.PROCS[self.handArt]
+            self.artProc = key and { key = key, at = t } or nil
+        else R:Spend(t, spent, machine) end
+    end
+    if id == S.TYRANT then self.tyrantAt = t end
     Kairos.DemonologyDemons:OnCast(id, t, c.haste or 0, talent("to_hell_and_back"))
     if id == S.TYRANT and talent("argus") then self.argusAt = t end
-    Kairos.Recorder:Push({ k = "demo", imps = Kairos.DemonologyDemons:Count(t), spell = id })
+    Kairos.Recorder:Push({ k = "demo", imps = Kairos.DemonologyDemons:Count(t), spell = id,
+        art = id == S.HAND and (self.handArt == false and "none" or self.handArt) or nil })
 end
 
 -- Project only deterministic effects. Random Core gains/extra guardians remain
 -- outside the model and will be corrected by readable shards, glows and future probes.
-function State:Project(s, id, finish)
+-- start is when the cast began: a Hand consumes the Demonic Art up then.
+function State:Project(s, id, finish, start)
     local gain = self.GAINS
     -- 12.1.5 client readings: Dreadstalkers spends no shards (7/7 casts), Imp Lord one.
     local cost = { [S.HAND] = 3, [S.IMP_LORD] = 1, [S.RAVAGER] = 1, [S.DOOMGUARD] = 1 }
@@ -195,6 +247,13 @@ function State:Project(s, id, finish)
         if id == S.HAND or finish + Kairos.DemonologyDemons.RUINATION_DELAY <= s.t then s.imps = s.imps + 3 end
         if s.argusUp and s.talent.argus3 then s.shards = math.min(5, s.shards + 1) end
         if s.argusUp and s.talent.unknown.argus3 then s.unknown.shards = true end
+    end
+    if id == S.HAND and s.talent.diabolic_ritual and start then
+        local R = Kairos.DemonologyRitual
+        local kind = R:ArtAt(start)
+        s.handArtKnown = kind ~= nil
+        local key = kind and R.PROCS[kind]
+        if key then s[key], s.unknown[key] = true, nil end
     end
     if id == S.RUINATION then s.ruinationReady, s.unknown.ruinationReady = false, nil end
     if id == S.INFERNAL then s.infernalReady, s.unknown.infernalReady = false, nil end
@@ -256,8 +315,13 @@ function State:Build(now)
     -- A proc is timed from the first refresh that sees its override; one that will have
     -- ended by the time the GCD does isn't available.
     s.procUntil = {}
+    local R = Kairos.DemonologyRitual
     for key, id in pairs(self.PROCS) do
         if not s.unknown[key] then
+            -- Only a Hand's Art grants these: a new one names the Art it consumed.
+            if s[key] and not self.procSince[id] and self.handAt and now - self.handAt < 2 then
+                R:Learn(key == "infernalReady" and "mother" or "pit_lord")
+            end
             self.procSince[id] = s[key] and (self.procSince[id] or now) or nil
             if self.procSince[id] then
                 s.procUntil[key] = self.procSince[id] + self.PROC_LIFE
@@ -265,9 +329,15 @@ function State:Build(now)
             end
         end
     end
-    -- A Hand in progress or just landed may still grant its Demonic Art's proc.
-    s.handPending = (cast and cast.spellID == S.HAND and cast.endsAt > now)
-        or (self.handAt ~= nil and now - self.handAt < self.ART_LAG)
+    -- A Hand in progress or just landed may still grant its Demonic Art's proc. When the
+    -- ritual model says which Art the landed one consumed, its proc counts before it shows.
+    local casting = cast and cast.spellID == S.HAND and cast.endsAt > now
+    local landed = self.handAt ~= nil and now - self.handAt < self.ART_LAG
+    s.handPending = casting or landed
+    local proc = self.artProc
+    if proc and now - proc.at < self.ART_LAG and not s[proc.key] then
+        s[proc.key], s.unknown[proc.key] = true, nil
+    end
     s.argusDuration = c.argusDuration
     s.argusUp = false
     if self.argusAt and s.talent.argus then self:ArgusFrom(s, self.argusAt) end
@@ -296,7 +366,10 @@ function State:Build(now)
     end
     if cast and not cast.channel and cast.endsAt > now then
         self.castShards = reading and { spellID = cast.spellID, base = reading } or nil
-        self:Project(s, cast.spellID, cast.endsAt)
+        self:Project(s, cast.spellID, cast.endsAt, cast.startsAt)
+    end
+    if s.handPending then
+        s.pendingArtKnown = (casting and s.handArtKnown) or (not casting and landed and self.handArt ~= nil) or false
     end
     self:Castable(s, Kairos.State:Moving())
     return s
@@ -356,7 +429,7 @@ function State:Advance(s, id, moving)
     if id == S.SIPHON then expiring = math.max(0, expiring - 2) end
     q.imps = math.max(0, q.imps - expiring)
     if q.argusUp and q.argusUntil and q.argusUntil <= start then q.argusUp = false end
-    self:Project(q, id, start)
+    self:Project(q, id, start, s.t)
     if q.argusUp and q.argusUntil and q.argusUntil <= finish then q.argusUp = false end
     if q.argusUp and q.argusSure and q.argusSure <= finish then q.unknown.argusUp = true end
     for key in pairs(self.PROCS) do
@@ -374,7 +447,8 @@ end
 -- disagreement or unknown read hides the queued icon (G3).
 function State:Queue(s, id, moving)
     local q = self:Advance(s, id, moving)
-    local art = id == S.HAND or s.handPending
+    -- Unless the ritual model knows which Art a Hand consumes, it may bring either proc.
+    local art = (id == S.HAND and not q.handArtKnown) or (s.handPending and not s.pendingArtKnown)
     local procs = {}
     for key, proc in pairs({ infernalReady = S.INFERNAL, ruinationReady = S.RUINATION }) do
         local learnable = q.known[proc] or q.known.unknown[proc]
@@ -492,6 +566,9 @@ function State:OnInit()
     Kairos:On("KAIROS_COMBAT_CHANGED", function(_, on)
         local now = clock()
         if Kairos.specID == 266 and now then Kairos.DemonologyDemons:SetCombat(on, now) end
+        -- The pull's archive keeps the phase learned out of combat, for the offline replay.
+        local phase = Kairos.DemonologyDemons.inner
+        if Kairos.specID == 266 and on and phase then Kairos.Recorder:Push({ k = "inner", phase = phase }) end
     end)
     Kairos:On("KAIROS_TARGET_CHANGED", function(_, on)
         local now = clock()
@@ -500,6 +577,8 @@ function State:OnInit()
     for _, event in ipairs({ "SPELLS_CHANGED", "TRAIT_CONFIG_UPDATED", "PLAYER_REGEN_ENABLED" }) do
         Kairos:On(event, refresh)
     end
+    -- A loading screen can move Inner Demons' phase; it's relearned out of combat.
+    Kairos:On("PLAYER_ENTERING_WORLD", function() Kairos.DemonologyDemons:Zone() end)
     Kairos:OnUnit("UNIT_SPELL_HASTE", "player", refresh)
 end
 

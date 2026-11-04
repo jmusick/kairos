@@ -6,8 +6,10 @@ namespace Kairos.Translator;
 // Key names the spell in the module's SPELLS table (default: the action name, upper-cased).
 public sealed record Spell(int Id, string Availability, string? Toggle = null, string? Key = null);
 // Module is the namespace field the generated table is exposed as (Kairos.<Module>).
+// ApproximatedOptions are channel-timing options kept as recommendations without timing (D32).
 public sealed record Metadata(string Name, int Spec, string Simc, string Module, Dictionary<string, Spell> Spells,
-    Dictionary<string, string> Bindings, string[] ExcludedLists, Dictionary<string, string>? EntryPoints = null)
+    Dictionary<string, string> Bindings, string[] ExcludedLists, Dictionary<string, string>? EntryPoints = null,
+    string[]? ApproximatedOptions = null)
 {
     public static Metadata Load(string path) => JsonSerializer.Deserialize<Metadata>(File.ReadAllText(path),
         new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? throw new FormatException("Empty metadata");

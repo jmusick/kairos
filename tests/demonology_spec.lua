@@ -278,11 +278,17 @@ describe("Demonology live module", function()
         assert.is_nil(K.APL:Recommend().queuedID)
         Stub.now = Stub.now + A.ART_LAG
         assert.are.equal(S.SHADOW, K.APL:Recommend().queuedID)
-        -- So may a Hand recommended now: Ruination could follow it.
+        -- So may a Hand recommended now, while the ritual model can't say whether an Art is up.
         Stub.shards = 3
+        C_Secrets.ShouldSpellAuraBeSecret = function(id) return id == 431944 end
+        K.DemonologyRitual:Reset()
         local hand = K.APL:Recommend()
         assert.are.equal(S.HAND, hand.spellID)
         assert.is_nil(hand.queuedID)
+        -- Read out of combat, no ritual or Art is running: the Hand brings no proc.
+        C_Secrets.ShouldSpellAuraBeSecret = function() return false end
+        A:AnchorRitual(Stub.now)
+        assert.are.equal(S.SHADOW, K.APL:Recommend().queuedID)
     end)
 
     it("advances cooldowns, imp expiry and the main pick's own effects", function()
@@ -385,6 +391,30 @@ describe("Demonology live module", function()
         Stub.shards = 4 -- the energize landed before the success event
         A:OnCast(S.DEMONBOLT, 103.01)
         assert.are.equal(4, A:Build(103.02).shards)
+    end)
+
+    it("holds the Dominion of Argus refund that lands just after a Hand", function()
+        for _, id in ipairs({ 1276163, 1276222 }) do Stub.knownSpells[id] = true end
+        Stub.Fire("SPELLS_CHANGED")
+        fight()
+        A:OnCast(S.TYRANT, 100)
+        Stub.shards = 5
+        K.State.cast = { spellID = S.HAND, endsAt = 102 }
+        assert.are.equal(3, A:Build(101).shards) -- projected: 5 - 3 + 1
+        K.State.cast = nil
+        Stub.shards = 2 -- the cost shows at the success, the refund ~20 ms later
+        A:OnCast(S.HAND, 102)
+        assert.are.equal(3, A:Build(102.01).shards)
+        Stub.shards = 3
+        assert.are.equal(3, A:Build(102.03).shards)
+        -- Outside Argus there is no refund to hold.
+        K.State.cast = { spellID = S.HAND, endsAt = 131 }
+        Stub.shards = 5
+        A:Build(130)
+        K.State.cast = nil
+        Stub.shards = 2
+        A:OnCast(S.HAND, 131)
+        assert.are.equal(2, A:Build(131.01).shards)
     end)
 
     it("times Dominion of Argus from Tyrant by its rank, without Hand refreshes", function()
@@ -563,14 +593,22 @@ describe("Demonology Wild Imp estimate", function()
     it("pauses imp lifetimes in combat without a live hostile target", function()
         D:SetCombat(true, 99)
         D:OnCast(105174, 100, 0)
-        D:SetTarget(false, 103)  -- 1 cast done; the second was in progress
+        D:SetTarget(false, 103)  -- no target and no cast: paused from 106, 3 casts done
         D:SetCombat(false, 110)
-        D:SetCombat(true, 120)   -- back in combat, still nothing to hit
+        D:SetCombat(true, 120)   -- back in combat, still nothing to hit: paused again at 123
         assert.are.equal(3, D:Count(140))
         D:SetTarget(true, 140)
-        -- 5 casts left (10 s), after 3 s to re-engage.
-        assert.are.equal(3, D:Count(152.9))
-        assert.are.equal(0, D:Count(153))
+        -- 3 casts left (6 s), after 3 s to re-engage.
+        assert.are.equal(3, D:Count(148.9))
+        assert.are.equal(0, D:Count(149))
+    end)
+    it("keeps imps fighting while the player casts without a hard target", function()
+        D:SetCombat(true, 99)
+        D:OnCast(105174, 100, 0)
+        D:SetTarget(false, 101)  -- soft targeting: no hard target, still casting
+        for t = 102, 110, 2 do D:OnCast(686, t, 0) end
+        assert.are.equal(3, D:Count(111.9))
+        assert.are.equal(0, D:Count(112)) -- 12 s of Firebolts, never paused
     end)
     it("anchors to a readable imp count, adding missed imps and dropping extras", function()
         D:OnCast(105174, 100, 0)

@@ -4,6 +4,25 @@ All notable changes to Kairos are documented here. The format follows [Keep a Ch
 
 ## [Unreleased]
 
+## [0.2.10] - 2026-11-04
+
+### Added
+
+- Demonology counts the Wild Imps Inner Demons summons, one every 12 s. Out of combat, Kairos learns their timing from Implosion's readable imp count, which ticks up by one with each; the timing then holds through the whole dungeon until the next loading screen. In three Mythic+ keys about 110 imps per key came from it.
+- Demonology predicts which Demonic Art each Hand of Gul'dan will consume, so a Hand that brings Infernal Bolt or Ruination shows that proc as the next spell while the Hand is still casting, instead of a moment after it lands, when your next press is often already queued. In an Altar of Fangs +2 this was 4 of Kairos's 17 disagreements with the APL. A new Diabolic Ritual model times each ritual from your own casts (1 s off per shard spent, plus Infernal Machine while Tyrant is out) and checks itself against the ritual auras whenever you're out of combat. Replayed through 14 logged dungeon and dummy sessions, it put 603 of 609 rituals' ends within 0.05 s of the log and named the right Art for 1361 of 1389 Hands. A ritual that a cast overruns ends a few milliseconds after that cast, so Dreadstalkers or a Grimoire pressed together with the Hand still counts toward it; the first version started the next ritual early there and misnamed about 1 in 7 Arts in two Mythic+ keys. The queued icon after a Hand now shows when the model knows the outcome, instead of always hiding.
+- Experimental Affliction and Destruction Warlock modules (D40), not yet played in game. Each has a secrecy probe list, a priority list generated from SimC's pinned APL, and a live adapter that falls back to Assisted Combat whenever a pick depends on something it can't read. Affliction follows the Soul Harvester and Hellcaller lists, with the Soul Harvester lists before a hero tree is chosen; Destruction follows its single-target list and the Hellcaller and Diabolist AoE lists. DoTs, summons and cooldowns are timed from your own casts, and a readable aura always wins over the timer. Neither shows a queued spell yet. Rules that target other enemies (`target_if`, `cycle_targets`) are left out, so Affliction won't spread DoTs in cleave or AoE. Both count only enemies in combat: on the first Affliction dummy session every hostile nameplate in Silvermoon's training area counted (11), which sent Kairos to the AoE list and Seed of Corruption on a single dummy. Training dummies never report combat, so a dummy pack reads as one target. Affliction reads Shard Instability from its glow on Unstable Affliction and Seed, and times Cascading Calamity from your Unstable Affliction casts, since both auras are secret in combat.
+- The translator reads SimC's `<?` (max) and `>?` (min) operators, gives an action's bare names like `refreshable` a per-action binding, keeps a variable's numeric `default`, and lets a rule read a variable declared later in the file. A spec can mark channel options such as `interrupt_if` as approximated, keeping the spell without channel timing (D32). Arcane and Demonology output is unchanged.
+
+### Changed
+
+- Demonology's imp estimate keeps imps fighting while you cast without a hard target. Kairos used to pause their clock whenever you had no live hostile target, but in Mythic+ you often fight on soft targets with nothing hard-targeted, and the imps keep casting. The pause now begins only after 4 s with neither a target nor a cast of yours. Together with Inner Demons, this made Kairos's imp count match the log 3-7 times as often in three Mythic+ keys, while keeping the pause where you really stop fighting (Bloodmaul Slag Mines). Implosion recommendations themselves changed little: they also need three enemies and six imps, and most of the remaining misses sit right at those edges.
+- Display settings (position, scale, main icon size, lock and which icons show) are now shared by all your characters and specs instead of being saved separately for each one (D41). The first load after updating keeps the settings of the character and spec you log in with. The Cooldowns toggle and keybind overrides are still per character and spec.
+
+### Fixed
+
+- `tools/kairos-dump.lua apl` charges Soulburn's Soul Shard. Without it the replay's shard count ran one high after every Demonic Gateway until the next pull, and graded 14 correct Kairos picks in three Mythic+ keys as misses.
+- Demonology counts the shard Dominion of Argus refunds after a Hand of Gul'dan before the client shows it. The Hand's cost reaches the shard reading at the cast's success and the refund about 20 ms later; in that gap Kairos read one shard short and could show Demonbolt where the APL wanted another Hand (seen in an Altar of Fangs +2, where Kairos otherwise agreed with the APL at 340 of 357 presses against 67% for Assisted Combat).
+
 ## [0.2.9] - 2026-11-02
 
 ### Fixed

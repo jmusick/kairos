@@ -1,8 +1,8 @@
 # Kairos: Specification
 
-> **Status:** Draft 0.5. Addon 0.2.4 includes Arcane Sunfury and experimental Demonology modules: generated APLs, live state adapters and secrecy probes. Live agreement is still being validated.
+> **Status:** Draft 0.5. The addon includes Arcane Sunfury and experimental Demonology, Affliction and Destruction modules: generated APLs, live state adapters and secrecy probes. Live agreement is still being validated; Affliction and Destruction haven't been played yet.
 > **Target:** World of Warcraft Retail, Midnight (12.x)
-> **Last updated:** 2026-11-01
+> **Last updated:** 2026-11-03
 
 *Kairos* (καιρός) is Greek for "the right moment," the instant when acting matters most. The addon's job is to point at that moment: what to press next.
 
@@ -63,6 +63,8 @@ Kairos **recommends** and never **acts**. It shows the player what to press next
 | D37 | 2026-10-30 | **Hold Arcane Surge until Touch is ready at the evaluation boundary**, at the user's explicit request after a delayed mini-burst left Touch 11 s behind Surge. This is a Kairos availability constraint on the pinned list (D4), declared in translator metadata; it does not falsify either spell's physical cooldown. Unknown Touch readiness forces AC when this gate is needed. |
 | D38 | 2026-10-30 | **Host publicly at `github.com/jmusick/kairos`, with `main` as the default branch**, at the user's explicit approval. This supersedes D12's private visibility and resolves Q10. Release commits and tags go to GitHub; CurseForge publishing is deferred. Tuono remains reference only. |
 | D39 | 2026-11-01 | **Publish the addon on CurseForge as Kairos Rotation Helper** (project 1778452), at the user's request, **using Hidden Lodge's BigWigs GitHub Actions setup**. This supersedes D38's publishing deferral and D23's no-CI choice for release automation only; test CI remains deferred. Pushed `v*` tags package and upload to CurseForge and GitHub Releases using `CURSEFORGE_API_TOKEN`. The root `.pkgmeta` ships `Kairos/` at the ZIP root without the translator, tests or development docs. Keep CurseForge's native automatic packaging off; no webhook is needed. |
+| D40 | 2026-11-03 | **Build experimental Affliction and Destruction modules**, at the user's request, on Demonology's pattern and SimC pin (D34): generated APLs, live adapters that fall back to Assisted Combat on unknown reads, and secrecy probe lists. Their queued icon stays hidden until each has a lookahead model. This does not decide or move the global fallback gate (D6). |
+| D41 | 2026-11-03 | **Display settings are account-wide**, at the user's request: position, scale, main icon size, lock and which icons show are shared by every character and spec. The Cooldowns toggle and keybind overrides stay in per-character, per-spec profiles. This refines D27's profiles; saved data migrates from the logged-in character's current spec. |
 
 ---
 
@@ -216,7 +218,7 @@ This reconstructs what SimC expressions need.
 - It loads translated APL modules (§8.2), evaluates them each frame or on events, and returns the top action plus 1 queued action.
 - **Evaluation time (D29):** the APL is evaluated on a predicted state at **the moment the current cast, channel, or GCD ends**, with the in-progress spell's effects applied (cost, charges, buff changes). The main icon is what to press next, ready for the spell queue window.
 - The queued action comes from one more lookahead step: advance the state by the main action's GCD or cast time, then re-evaluate.
-- Random effects inside that window count as unknown for the queued pick: it shows only if every outcome the adapter can't time gives the same spell. Demonology enumerates Demonic Core gains (and hidden counts), plus Infernal Bolt/Ruination after a Hand of Gul'dan, the only cast that grants them. Arcane still withholds its queue.
+- Random effects inside that window count as unknown for the queued pick: it shows only if every outcome the adapter can't time gives the same spell. Demonology enumerates Demonic Core gains (and hidden counts), plus Infernal Bolt/Ruination after a Hand of Gul'dan, the only cast that grants them, unless its Diabolic Ritual model knows which Demonic Art the Hand consumes. That model also gives the main pick a casting Hand's proc before it lands. Arcane, Affliction and Destruction still withhold their queue.
 - **Precombat (D30):** out of combat, evaluate `actions.precombat`, skipping `snapshot_stats` and already-satisfied buffs such as Arcane Intellect if it's up. Once that list is exhausted, show the first in-combat pick as the opener.
 - **Movement (D31):** `moving` and `movement.*` expressions are bound to `GetUnitSpeed("player") > 0` (*verify that it's non-secret*). While moving, cast-time actions are skipped unless the metadata lists a cast-while-moving buff that's up. Arcane has no such effect today, as far as we know.
 - **Channels (D32):** `interrupt_if`, `interrupt_immediate`, and `chain` are parsed and preserved in the generated Lua but have no UI in v1.
@@ -237,7 +239,7 @@ This reconstructs what SimC expressions need.
 - **Off-GCD timing (D35):** Touch ready now takes the main icon with a NOW badge, evaluated on current state. If the next Barrage should be immediately followed by Touch, a smaller Touch icon with a + marker overlaps its upper-right corner. The adapter verifies the generated Touch rule after that Barrage; unknown follow-up state hides the overlay. Other optional off-GCD cues and interrupts remain separate.
 - Toggle state indicator: a "CD" pip to the left of the main icon, aligned with its bottom edge, lit or dimmed.
 - Movable, scalable, and lockable. X/Y coordinates position the main icon relative to screen center, using sliders and numeric edit boxes. **Visible regardless of combat (D28)** unless manually disabled (D36). Out of combat, it shows the precombat list and the opener (D30).
-- **Settings (D27):** a native Blizzard Settings API panel and `/kairos` slash commands. Main icon size has a slider and numeric edit box (32–128, default 52), independent of overall display scale. The paired overlay stays half the main icon size; auxiliary icons retain their sizes. Kairos uses its own SavedVariables (`KairosDB`) with per-character and per-spec profiles. It has no library dependencies.
+- **Settings (D27):** a native Blizzard Settings API panel and `/kairos` slash commands. Main icon size has a slider and numeric edit box (32–128, default 52), independent of overall display scale. The paired overlay stays half the main icon size; auxiliary icons retain their sizes. Kairos uses its own SavedVariables (`KairosDB`): display settings are account-wide (D41); the Cooldowns toggle and keybind overrides are per character and spec. It has no library dependencies.
 - *Later:* confidence styling, audio cues, a separate cooldown or defensive lane, and a longer queue.
 
 ### 7.5 Toggles (Hekili-style)

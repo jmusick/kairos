@@ -79,9 +79,9 @@ Status reflects the code in **0.2.5**, not a claim of encounter readiness. **Pro
 | Shaman | Elemental | DPS | Not started | — |
 | Shaman | Enhancement | DPS | Not started | — |
 | Shaman | Restoration | Healer | Out of scope | — |
-| Warlock | Affliction | DPS | Not started | — |
+| Warlock | Affliction | DPS | Prototype (untested in game) | Generated Soul Harvester/Hellcaller routes, with the shared Soul Harvester lists as a leveling entry. Agony, Corruption, Wither, Seed, Darkglare and Malevolence are timed from own casts on the current target; a readable debuff wins, and a target Kairos can't identify after a switch makes its DoTs unknown. Hidden Nightfall counts need agreement across 1–2 stacks; Shard Instability comes from its glow and Cascading Calamity from UA casts. Only enemies in combat count, so a dummy pack reads as one target. First dummy session: [probe and findings](docs/probe/12.1.5-70688-affliction.md). No queued spell yet. `target_if` and `cycle_targets` rules (most cleave/AoE DoT spreading) are omitted. [Translation coverage](translator/README.md#affliction-and-destruction). |
 | Warlock | Demonology | DPS | Prototype | Generated Diabolist/Soul Harvester routes and a shared leveling entry; Diabolist is the initial play-test target. Learned-spell gating, shard/proc reads, estimated imps and cooldowns. Hidden Demonic Core counts require agreement across all possible counts. A queued spell from one lookahead step, shown only when no random Core, or Demonic Art proc after a Hand, could change it. Live review ([dummy and five Timewalking dungeons](docs/replay/12.1.5-70688-demonology.md)): in game 88%, 80%, 88%, 86%, 87% and 93% agreement with the APL vs 75%, 64%, 57%, 66%, 59% and 70% for Assisted Combat. Most misses are Implosion calls from the imp estimate, which now anchors to Implosion's readable cast count between pulls and pauses while there's no live hostile target. [Translation coverage](translator/README.md#demonology-contract-and-leveling-entry). |
-| Warlock | Destruction | DPS | Not started | — |
+| Warlock | Destruction | DPS | Prototype (untested in game) | Generated single-target list plus Hellcaller and Diabolist AoE routes. Fractional Soul Shards, Conflagrate charges, Backdraft, Immolate/Wither and Infernal are modeled from own casts; Infernal Bolt and Ruination from their overrides. Rules that need target health (the Diabolist Chaos Bolt and Shadowburn) fall back to AC in restricted content. No queued spell yet. [Translation coverage](translator/README.md#affliction-and-destruction). |
 | Warrior | Arms | DPS | Not started | — |
 | Warrior | Fury | DPS | Not started | — |
 | Warrior | Protection | Tank | Not started | — |
@@ -110,7 +110,7 @@ New-Item -ItemType Junction -Path 'C:\Games\World of Warcraft\_retail_\Interface
 
 Run `/reload`, then `/kairos status` to confirm the addon loaded. Keep enemy nameplates on for enemy counting. Turn on `/console scriptErrors 1` (or use BugSack) while testing.
 
-The display has keybind text, an AC badge and a Cooldowns indicator. It stays visible regardless of combat while enabled. Native Settings controls cover locking, position, scale, main icon size (32–128), and per-character/spec profiles. The Cooldowns toggle can be bound under **Key Bindings > AddOns > Kairos**; it affects Kairos's supported priorities and does not change Blizzard's AC fallback. Interrupt recommendations are not wired yet.
+The display has keybind text, an AC badge and a Cooldowns indicator. It stays visible regardless of combat while enabled. Native Settings controls cover locking, position, scale, main icon size (32–128); these display settings are shared by all your characters and specs, while the Cooldowns toggle and keybind overrides are kept per character and spec. The Cooldowns toggle can be bound under **Key Bindings > AddOns > Kairos**; it affects Kairos's supported priorities and does not change Blizzard's AC fallback. Interrupt recommendations are not wired yet.
 
 ## Publishing to CurseForge
 
@@ -209,7 +209,7 @@ The addon is split by what code is for. Anything that applies to one specializat
 | **`Kairos/Core/`** | **Foundation** |
 | `Core/Core.lua` | Namespace, module and spec registries, event bus |
 | `Core/Signal.lua` | Secret-safe reads (known, estimated, unknown) and restriction tracking |
-| `Core/DB.lua` | `KairosDB` defaults, migrations, per-character and per-spec profiles |
+| `Core/DB.lua` | `KairosDB` defaults, migrations, account-wide display settings and per-character, per-spec profiles |
 | **`Kairos/Engine/`** | **Spec-agnostic runtime** |
 | `Engine/State.lua` | Own casts, cast in progress, combat, movement, enemy nameplates |
 | `Engine/Keybinds.lua` | Slot-to-key map, macro resolution, overrides |
@@ -234,10 +234,19 @@ The addon is split by what code is for. Anything that applies to one specializat
 | **`Kairos/Specs/WarlockDemonology/`** | **Demonology Warlock only** |
 | `Specs/WarlockDemonology/Spec.lua` | Spell/aura IDs, traced Soul Shards and the Demo secrecy probe/watch lists |
 | `Specs/WarlockDemonology/Demons.lua` | `DemonologyDemons`: own-cast Wild Imp estimate with explicit times for future offline replay |
+| `Specs/WarlockDemonology/Ritual.lua` | `DemonologyRitual`: Diabolic Ritual timing and the Demonic Art each Hand of Gul'dan consumes, from own casts, anchored by out-of-combat aura reads |
 | `Specs/WarlockDemonology/APL.lua` | Generated Diabolist/Soul Harvester priorities and a shared leveling entry (don't edit) |
 | `Specs/WarlockDemonology/State.lua` | `DemonologyState`: learned spells/talents, resources/procs, cooldown and cast-boundary models, movement and uncertainty; registers spec 266 |
+| **`Kairos/Specs/WarlockAffliction/`** | **Affliction Warlock only** |
+| `Specs/WarlockAffliction/Spec.lua` | Spell/aura IDs, traced Soul Shards and the Affliction secrecy probe lists |
+| `Specs/WarlockAffliction/APL.lua` | Generated Soul Harvester/Hellcaller priorities and a leveling entry (don't edit) |
+| `Specs/WarlockAffliction/State.lua` | `AfflictionState`: learned spells/talents, own-cast DoT, summon and cooldown timers, Nightfall reads, movement and uncertainty; registers spec 265 |
+| **`Kairos/Specs/WarlockDestruction/`** | **Destruction Warlock only** |
+| `Specs/WarlockDestruction/Spec.lua` | Spell/aura IDs, traced Soul Shards and the Destruction secrecy probe lists |
+| `Specs/WarlockDestruction/APL.lua` | Generated single-target, Hellcaller and Diabolist priorities (don't edit) |
+| `Specs/WarlockDestruction/State.lua` | `DestructionState`: fractional shards, Conflagrate charges, Backdraft, DoT and cooldown models, Diabolist procs, movement and uncertainty; registers spec 267 |
 | `tests/` | Specs, the WoW API stub, and the fallback runner |
-| `translator/` | Offline C# SimC APL translator for Arcane and Demonology, with explicit coverage reports, goldens and reference comparisons |
+| `translator/` | Offline C# SimC APL translator for Arcane and the three Warlock specs, with explicit coverage reports, goldens and reference comparisons |
 | `tools/kairos-dump.lua` | Reads SavedVariables and combat logs offline, and replays logs through the Arcane modules |
 | `docs/probe/` | Probe and estimator results per client build, with findings |
 | `docs/replay/` | APL replays: Kairos, Assisted Combat and the player against the APL on true state |

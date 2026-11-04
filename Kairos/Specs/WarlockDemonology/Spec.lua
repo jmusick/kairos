@@ -11,12 +11,16 @@ Kairos:NewSpec(266, {
         spells = { "Shadow Bolt", "Hand of Gul'dan", "Demonbolt", "Call Dreadstalkers",
             "Summon Demonic Tyrant", "Power Siphon", "Implosion", "Infernal Bolt", "Ruination",
             "Grimoire: Imp Lord", "Grimoire: Fel Ravager", "Summon Doomguard", "Summon Felguard", "Summon Imp" },
-        buffs = { "Demonic Core", "Power Siphon", "Infernal Bolt", "Ruination", "Dominion of Argus" },
+        buffs = { "Demonic Core", "Power Siphon", "Infernal Bolt", "Ruination", "Dominion of Argus",
+            "Diabolic Ritual: Overlord", "Diabolic Ritual: Mother of Chaos", "Diabolic Ritual: Pit Lord",
+            "Demonic Art: Overlord", "Demonic Art: Mother of Chaos", "Demonic Art: Pit Lord" },
         debuffs = { "Doom" }, powers = { "SoulShards", "Mana" },
     },
     -- Implosion: does any count/state field track the Wild Imps the estimate can't see?
     watch = { 264178, 686, 105174, 196277 },
     auraIDs = { ["Demonic Core"] = 264173, ["Power Siphon"] = 334581,
         ["Infernal Bolt"] = 433891, ["Ruination"] = 433885, ["Dominion of Argus"] = 1276166,
-        ["Doom"] = 460553 },
+        ["Doom"] = 460553, ["Diabolic Ritual: Overlord"] = 431944, ["Diabolic Ritual: Mother of Chaos"] = 432815,
+        ["Diabolic Ritual: Pit Lord"] = 432816, ["Demonic Art: Overlord"] = 428524,
+        ["Demonic Art: Mother of Chaos"] = 432794, ["Demonic Art: Pit Lord"] = 432795 },
 })

@@ -62,7 +62,7 @@ function Kairos:ShowText(title, text)
 end
 
 local function setLocked(locked)
-    Kairos.profile.display.locked = locked
+    Kairos.db.global.display.locked = locked
     Kairos.Display:ApplyLayout()
     Kairos:Print("Display %s.", locked and "locked" or "unlocked")
 end
@@ -165,7 +165,7 @@ function Commands:Handle(input)
     elseif command == "unlock" then
         setLocked(false)
     elseif command == "reset" then
-        Kairos.profile.display.point = nil
+        Kairos.db.global.display.point = nil
         Kairos.Display:ApplyLayout()
     elseif command == "scale" then
         local scale = tonumber(rest)
@@ -173,7 +173,7 @@ function Commands:Handle(input)
             Kairos:Print("Usage: /kairos scale <0.5-2>")
             return
         end
-        Kairos.profile.display.scale = scale
+        Kairos.db.global.display.scale = scale
         Kairos.Display:ApplyLayout()
     elseif command == "cd" or command == "cooldowns" then
         if rest == "on" or rest == "off" then

@@ -2,7 +2,7 @@
 
 C#/.NET 10, with no NuGet dependencies. Nothing in this directory reads the game or
 sends input; its only output into the addon is the generated APL module. The
-fixtures `fixtures/mage_arcane.simc` and `fixtures/warlock_demonology.simc` are upstream's files byte for byte: SimC `midnight`,
+fixtures `fixtures/mage_arcane.simc` and `fixtures/warlock_{demonology,affliction,destruction}.simc` are upstream's files byte for byte: SimC `midnight`,
 commit `515f4a3fe9`, `ActionPriorityLists/default/<spec>.simc`. The pin is manual; there is no
 upstream fetch or automatic update. Generated headers include the pin and translator version.
 
@@ -38,7 +38,7 @@ translation (`Kairos.Translator.Tests/reference/mage_arcane_sunfury.lua`, the AP
 addon shipped before this one), including the boundary cases in
 `tests/arcane_apl_spec.lua`. The Arcane golden Lua is the addon's own
 `Kairos/Specs/MageArcane/APL.lua`, so the shipped file can't drift from the generator.
-The same golden check covers `Kairos/Specs/WarlockDemonology/APL.lua`; an independent
+The same golden check covers the three Warlock `APL.lua` files; for Demonology an independent
 Lua reference makes 10,000 additional Demonology spell-choice comparisons across
 the hero routes and shared leveling entry. These compare translations, not live accuracy.
 Test output goes under the test project's ignored `obj/`. This validates the
@@ -50,6 +50,8 @@ translation against the reference, not against a SimC simulation or a combat-log
 dotnet run --project translator/Kairos.Translator -- translator/fixtures/mage_arcane.simc translator/metadata/mage_arcane.json translator/golden/mage_arcane Kairos/Specs/MageArcane/APL.lua
 dotnet run --project translator/Kairos.Translator -- translator/fixtures/control.simc translator/metadata/mage_arcane.json translator/golden/control
 dotnet run --project translator/Kairos.Translator -- translator/fixtures/warlock_demonology.simc translator/metadata/warlock_demonology.json translator/golden/warlock_demonology Kairos/Specs/WarlockDemonology/APL.lua
+dotnet run --project translator/Kairos.Translator -- translator/fixtures/warlock_affliction.simc translator/metadata/warlock_affliction.json translator/golden/warlock_affliction Kairos/Specs/WarlockAffliction/APL.lua
+dotnet run --project translator/Kairos.Translator -- translator/fixtures/warlock_destruction.simc translator/metadata/warlock_destruction.json translator/golden/warlock_destruction Kairos/Specs/WarlockDestruction/APL.lua
 ```
 
 Writes `coverage.json` to the output directory, and the Lua module to the fourth
@@ -122,13 +124,18 @@ order. Conditional assignments initialize to zero if never executed. Cyclic list
 calls and list redefinitions fail explicitly.
 
 The expression compiler uses precedence parsing for parentheses, unary `!`, `+`,
-`-`, arithmetic `+ - *`, comparisons `= == != < <= > >=`, and logical `& | ^`.
+`-`, arithmetic `+ - *`, SimC's `<?` (max) and `>?` (min) between arithmetic and
+comparison, comparisons `= == != < <= > >=`, and logical `& | ^`.
 All results are numeric; emitted helpers convert between SimC's numeric truth and
 Lua booleans, so `0` is false, comparisons can be used in arithmetic, and `&`/`|`
 short-circuit. Exact bindings cover the Sunfury buffs, known cooldowns, all
 `talent.*`, the S2 four-piece bonus, `prev_gcd.1.*` for mapped spells,
 `active_enemies`, `variable.*`, and `gcd.max`. Buff suffixes are explicitly mapped,
-not guessed from names; unlisted fields are unsupported.
+not guessed from names; unlisted fields are unsupported. A binding keyed
+`action:name` gives a bare name its meaning inside that action's options (Agony's
+`refreshable` is Agony's), and wins over a plain `name` binding. Variables are bound
+in a first pass, so a rule may read one its list declares later in source order; a
+numeric `default=` option is the variable's value before any assignment.
 
 ## Coverage and remaining work
 
@@ -172,6 +179,49 @@ result becomes an overlapping paired icon. No generated priorities change. Preco
 other omissions above remain unsupported. Full one-step lookahead, the C# replay
 harness and the upstream bump script are still planned. See the root README for
 the live approximations and the first-session scoring procedure.
+
+## Affliction and Destruction
+
+`metadata/warlock_affliction.json` (`Kairos.AfflictionAPL`, spec 265) and
+`metadata/warlock_destruction.json` (`Kairos.DestructionAPL`, spec 267) use the same pin
+as Arcane (D40). Both exclude the `ogcd` and `items` lists (potions, racials, trinkets,
+external buffs). Affliction routes on `hero_tree.soul_harvester`/`hellcaller` (bound to
+the Demonic Soul and Wither talents), and its `Leveling(state)` entry enters the
+`soul_harvester` list before a hero tree is chosen. Its metadata's
+`approximatedOptions` keeps the default list's channel fillers: `early_chain_if` and
+`interrupt_if` are reported as approximated (no clip cue, D32) instead of omitting the
+rule, and their expressions aren't compiled. Specs without the option are unaffected.
+
+Omitted whole and listed in the coverage reports: every `target_if` and
+`cycle_targets` rule (most cleave and AoE DoT spreading, Havoc), `cycling_variable`,
+`raid_event.*`, `active_dot.*`, `dot_refreshable_count.*`, Affliction's
+`darkglare_active` variable, and Destruction's trinket variables (`floor`, `%`).
+Precombat recommendations other than variables remain unsupported in generated code;
+both live wrappers map `summon_pet` (Summon Imp, SimC's default) and Grimoire of
+Sacrifice themselves.
+
+The plain, non-secret Affliction input adds to the shared fields (`shards`, `enemies`,
+`gcdMax`, `fightRemains`, `prevGcd`, `known`, `castable`, `ready`, `remains`, `talent`):
+
+| Field | Meaning |
+| --- | --- |
+| `agonyRemains`, `corruptionRemains`, `witherRemains`, `seedRemains` | Seconds left on the target's own DoTs |
+| `agonyRefreshable`, `corruptionRefreshable`, `witherRefreshable` | Under 30% of base duration |
+| `darkglareRemains`, `malevolenceRemains`, `calamityRemains`, `empowermentRemains` | Seconds left on Darkglare and buffs |
+| `nightfall`, `shardInstability` | Stacks |
+| `seedInFlight`, `setS2_4pc` | Booleans |
+| `execute[id]` | Seconds a cast or channel takes, at least a GCD |
+
+Destruction's adds `shards` in tenths, `chargesFractional[id]` (Conflagrate),
+`backdraft` stacks, `immolateRemains`/`witherRemains` with their `…Duration` and
+`…Refreshable`, `infernalRemains`, `malevolenceRemains`, `ritualMother`,
+`ritualOverlord`, `ritualPitLord` (seconds), `demonicArt`, `fiendishCruelty`,
+`infernalReady`, `ruinationReady`, `chaosBoltInFlight` (booleans), `targetHealthPct`
+and `execute[id]` (with Backdraft's 30% for the casts it speeds). `target.time_to_die`
+binds to `fightRemains`. Spell IDs, cooldowns, durations, costs and gains come from the
+pinned Warlock initialization, actions and `sc_spell_data.inc` (12.1.0.69587), and still
+need the 12.1.5 in-game probe. There is no independent reference translation or replay
+score for either spec yet.
 
 ## Demonology contract and leveling entry
 

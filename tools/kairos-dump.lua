@@ -1016,6 +1016,7 @@ end
 local D = {
     CORE = 264173, INFERNAL_PROC = 433891, RUINATION_PROC = 433885, ARGUS = 1276166,
     IMP_NPCS = { ["55659"] = true, ["143622"] = true }, -- Wild Imp, Inner Demons' Wild Imp
+    INNER_SUMMON = 279910, -- Inner Demons' (and To Hell and Back's) imp summon
     SHARDS = "7", ENEMY_WINDOW = 3, IMP_SLACK = 0.1, GCD = 1.5, GAP = 6, SHARD_SLACK = 0.15,
     PRESS_WINDOW = 1, -- seconds a keypress (SENT) may precede the logged decision
     -- The addon's own talent check, used only when no captured diagnostic names talents.
@@ -1032,15 +1033,17 @@ local function npcID(guid) return guid and guid:match("^Creature%-%d+%-%d+%-%d+%
 local function replayDemonology(logPath, player, options)
     local haste, toHellAndBack = options.haste, options.toHellAndBack
     local ns = loadAddonFiles({ "Core/Signal.lua", "Specs/WarlockDemonology/Spec.lua",
-        "Specs/WarlockDemonology/Demons.lua", "Specs/WarlockDemonology/APL.lua",
-        "Specs/WarlockDemonology/State.lua" })
+        "Specs/WarlockDemonology/Demons.lua", "Specs/WarlockDemonology/Ritual.lua",
+        "Specs/WarlockDemonology/APL.lua", "Specs/WarlockDemonology/State.lua" })
     local APL, adapter, Demons = ns.DemonologyAPL, ns.DemonologyState, ns.DemonologyDemons
     local S, onGcd = APL.SPELLS, ns.Specs[266].onGcd
     -- 12.1.5 casts log only mana; these shard costs match the client's traced readings.
-    local COSTS = { [S.HAND] = 3, [S.IMP_LORD] = 1, [S.RAVAGER] = 1, [S.DOOMGUARD] = 1 }
+    -- Soulburn (385899, used for Demonic Gateway) costs one too: without it the model ran a
+    -- shard high until the next pull in all three Nov. 3 evening keys.
+    local COSTS = { [S.HAND] = 3, [S.IMP_LORD] = 1, [S.RAVAGER] = 1, [S.DOOMGUARD] = 1, [385899] = 1 }
 
     -- Pass 1: the player's GUID, what they cast, and every Wild Imp's lifetime.
-    local playerGUID, seen, imps, casts = nil, { casts = {}, auras = {} }, {}, {}
+    local playerGUID, seen, imps, casts, inner = nil, { casts = {}, auras = {} }, {}, {}, {}
     local function each(fn)
         local file = io.open(logPath, "r") or fail("Can't open " .. logPath)
         for line in file:lines() do
@@ -1061,6 +1064,7 @@ local function replayDemonology(logPath, player, options)
             if event == "SPELL_AURA_APPLIED" and id then seen.auras[id] = true end
             if event == "SPELL_SUMMON" and D.IMP_NPCS[npcID(f[6])] then
                 imps[f[6]] = { born = t, last = t }
+                if id == D.INNER_SUMMON then inner[#inner + 1] = t end
             end
         end
         -- An imp's own actions bound its life; its last Firebolt lands ~1 s after it despawns.
@@ -1069,6 +1073,12 @@ local function replayDemonology(logPath, player, options)
         imp = (event == "UNIT_DIED" or event == "UNIT_DESTROYED") and imps[f[6]]
         if imp then imp.died = imp.died or t end
     end)
+    -- Inner Demons imps come one at a time; To Hell and Back's come in threes, same spell.
+    local innerTicks = {}
+    for i, t in ipairs(inner) do
+        local alone = not ((inner[i - 1] and t - inner[i - 1] < 0.05) or (inner[i + 1] and inner[i + 1] - t < 0.05))
+        if alone then innerTicks[#innerTicks + 1] = t end
+    end
     local function trueImps(t)
         local n = 0
         for _, imp in pairs(imps) do
@@ -1083,8 +1093,13 @@ local function replayDemonology(logPath, player, options)
     -- a pull is unknown. Seed it from the client's first traced reading after each gap;
     -- the later readings then validate the energize/cost model (see the timeline).
     -- Without a trace, decisions count from the first energize and may start offset.
-    local readings, combat, counts = {}, {}, {}
-    if options.readings then readings, combat, counts = options.readings(casts) end
+    local readings, combat, counts, phases = {}, {}, {}, {}
+    if options.readings then readings, combat, counts, phases = options.readings(casts) end
+    -- Inner Demons' phase: the recorder's pull-start notes where present. Older recordings
+    -- kept no out-of-combat counts once the ring rolled over, so there the imps the log
+    -- shows out of combat stand in for the count ticks the client showed (they matched to
+    -- 0.01 s in the Nov. 3 evening trace).
+    local nextTick, nextPhase, inCombat, tickSource = 1, 1, false, #phases > 0 and "recorder" or "log"
     local nextReading, nextCombat, nextCount, truthKnown, needSeed, lastMine = 1, 1, 1, false, true, nil
     local timeline, lastGain, ownGains = {}, nil, 0
     local function setShards(t, value)
@@ -1135,6 +1150,7 @@ local function replayDemonology(logPath, player, options)
         if event == "ZONE_CHANGE" then
             core = 0
             for aura in pairs(up) do up[aura] = nil end
+            Demons:Zone() -- Inner Demons' phase can move at a loading screen
             return
         end
         -- Imps and Dreadstalkers grant Core, and pets can energize shards, so anything
@@ -1154,9 +1170,18 @@ local function replayDemonology(logPath, player, options)
                 Demons:SetTarget(change.target, change.t)
             else
                 Demons:SetCombat(change.on, change.t)
+                inCombat = change.on
                 if change.on then needSeed = true end
             end
             nextCombat = nextCombat + 1
+        end
+        while phases[nextPhase] and phases[nextPhase].t < t do
+            Demons:SetPhase(phases[nextPhase].t, phases[nextPhase].phase)
+            nextPhase = nextPhase + 1
+        end
+        while innerTicks[nextTick] and innerTicks[nextTick] < t do
+            if tickSource == "log" and not inCombat then Demons:Tick(innerTicks[nextTick]) end
+            nextTick = nextTick + 1
         end
         -- Readable Implosion cast counts (traced by the spell watch) anchor the estimate,
         -- as the live adapter does on every refresh where the count isn't secret.
@@ -1221,7 +1246,7 @@ local function replayDemonology(logPath, player, options)
             if onGcd[id] then prevGcd = id end
         end
     end)
-    return records, APL, successes, adapter, timeline, ownGains
+    return records, APL, successes, adapter, timeline, ownGains, tickSource
 end
 
 --- The adapter's own route: shared leveling priorities until a hero tree unlocks.
@@ -1244,10 +1269,10 @@ local function aplDemonology(logPath, svPath, player, ...)
         if p and p.talent then toHellAndBack = p.talent.to_hell_and_back == true end
     end
     -- The client's traced shard readings on the log's clock, aligned by the log's casts.
-    local clientReadings, combat, counts = {}, {}, {}
+    local clientReadings, combat, counts, phases = {}, {}, {}, {}
     local function readings(casts)
         local offset = alignRecorder(recorded, casts)
-        if not offset then return clientReadings, combat, counts end
+        if not offset then return clientReadings, combat, counts, phases end
         for _, e in ipairs(recorded) do
             local n = e.k == "shards" and e.n or (e.k == "fight" and e.shards)
             if type(n) == "number" and e.t then clientReadings[#clientReadings + 1] = { t = e.t + offset, n = n } end
@@ -1259,13 +1284,17 @@ local function aplDemonology(logPath, svPath, player, ...)
             end
             local count = e.k == "watch" and e.spell == 196277 and e.t and tonumber((e.sig or ""):match(" cc=(%d+)"))
             if count then counts[#counts + 1] = { t = e.t + offset, n = count } end
+            if e.k == "inner" and e.t and type(e.phase) == "number" then
+                phases[#phases + 1] = { t = e.t + offset, phase = e.phase + offset }
+            end
         end
         table.sort(clientReadings, function(a, b) return a.t < b.t end)
         table.sort(combat, function(a, b) return a.t < b.t end)
         table.sort(counts, function(a, b) return a.t < b.t end)
-        return clientReadings, combat, counts
+        table.sort(phases, function(a, b) return a.t < b.t end)
+        return clientReadings, combat, counts, phases
     end
-    local all, APL, successes, adapter, timeline, ownGains = replayDemonology(logPath, player,
+    local all, APL, successes, adapter, timeline, ownGains, tickSource = replayDemonology(logPath, player,
         { haste = haste, toHellAndBack = toHellAndBack, readings = readings })
     local records = inWindow(all, from, to)
     local S = APL.SPELLS

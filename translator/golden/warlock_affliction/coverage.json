@@ -1,0 +1,3754 @@
+[
+  {
+    "Number": 9,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat=summon_pet",
+    "Status": "unsupported",
+    "Detail": "Precombat recommendations not implemented (variables only)"
+  },
+  {
+    "Number": 10,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "trinket.1.has_buff.intellect",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 10,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "trinket.1.has_buff.mastery",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 10,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "trinket.1.has_buff.versatility",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 10,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "trinket.1.has_buff.haste",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 10,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "trinket.1.has_buff.crit",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 10,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "trinket.1.is.signet_of_the_priory",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 10,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "trinket.1.cooldown.duration",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 10,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "(trinket.1.has_buff.intellect|trinket.1.has_buff.mastery|trinket.1.has_buff.versatility|trinket.1.has_buff.haste|trinket.1.has_buff.crit|trinket.1.is.signet_of_the_priory)\u0026(trinket.1.cooldown.duration\u003E=20)",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: trinket.1.has_buff.intellect"
+  },
+  {
+    "Number": 10,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "name=trinket_1_buffs",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 10,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value=(trinket.1.has_buff.intellect|trinket.1.has_buff.mastery|trinket.1.has_buff.versatility|trinket.1.has_buff.haste|trinket.1.has_buff.crit|trinket.1.is.signet_of_the_priory)\u0026(trinket.1.cooldown.duration\u003E=20)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 10,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/variable,name=trinket_1_buffs,value=(trinket.1.has_buff.intellect|trinket.1.has_buff.mastery|trinket.1.has_buff.versatility|trinket.1.has_buff.haste|trinket.1.has_buff.crit|trinket.1.is.signet_of_the_priory)\u0026(trinket.1.cooldown.duration\u003E=20)",
+    "Status": "unsupported",
+    "Detail": "Only variable op=set with a bound value is supported"
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "trinket.2.has_buff.intellect",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "trinket.2.has_buff.mastery",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "trinket.2.has_buff.versatility",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "trinket.2.has_buff.haste",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "trinket.2.has_buff.crit",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "trinket.2.is.signet_of_the_priory",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "trinket.2.cooldown.duration",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "(trinket.2.has_buff.intellect|trinket.2.has_buff.mastery|trinket.2.has_buff.versatility|trinket.2.has_buff.haste|trinket.2.has_buff.crit|trinket.2.is.signet_of_the_priory)\u0026(trinket.2.cooldown.duration\u003E=20)",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: trinket.2.has_buff.intellect"
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "name=trinket_2_buffs",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "value=(trinket.2.has_buff.intellect|trinket.2.has_buff.mastery|trinket.2.has_buff.versatility|trinket.2.has_buff.haste|trinket.2.has_buff.crit|trinket.2.is.signet_of_the_priory)\u0026(trinket.2.cooldown.duration\u003E=20)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 11,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/variable,name=trinket_2_buffs,value=(trinket.2.has_buff.intellect|trinket.2.has_buff.mastery|trinket.2.has_buff.versatility|trinket.2.has_buff.haste|trinket.2.has_buff.crit|trinket.2.is.signet_of_the_priory)\u0026(trinket.2.cooldown.duration\u003E=20)",
+    "Status": "unsupported",
+    "Detail": "Only variable op=set with a bound value is supported"
+  },
+  {
+    "Number": 12,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/snapshot_stats",
+    "Status": "unsupported",
+    "Detail": "Precombat recommendations not implemented (variables only)"
+  },
+  {
+    "Number": 13,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "talent.grimoire_of_sacrifice",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022grimoire_of_sacrifice\u0022])"
+  },
+  {
+    "Number": 13,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "talent.grimoire_of_sacrifice",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 13,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "if=talent.grimoire_of_sacrifice",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 13,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/grimoire_of_sacrifice,if=talent.grimoire_of_sacrifice",
+    "Status": "unsupported",
+    "Detail": "Precombat recommendations not implemented (variables only)"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "hero_tree.soul_harvester",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022demonic_soul\u0022])"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "(hero_tree.soul_harvester\u0026active_enemies\u003E1)|active_enemies\u003E2",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "if=(hero_tree.soul_harvester\u0026active_enemies\u003E1)|active_enemies\u003E2",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 14,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/seed_of_corruption,if=(hero_tree.soul_harvester\u0026active_enemies\u003E1)|active_enemies\u003E2",
+    "Status": "unsupported",
+    "Detail": "Precombat recommendations not implemented (variables only)"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "hero_tree.hellcaller",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022wither\u0022])"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "active_enemies\u003C2|(hero_tree.hellcaller\u0026active_enemies\u003C3)",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "if=active_enemies\u003C2|(hero_tree.hellcaller\u0026active_enemies\u003C3)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 15,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/haunt,if=active_enemies\u003C2|(hero_tree.hellcaller\u0026active_enemies\u003C3)",
+    "Status": "unsupported",
+    "Detail": "Precombat recommendations not implemented (variables only)"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "binding",
+    "Text": "potion.liquid_luster",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "expression",
+    "Text": "potion.liquid_luster",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: potion.liquid_luster"
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "option",
+    "Text": "if=potion.liquid_luster",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 16,
+    "List": "precombat",
+    "Kind": "action",
+    "Text": "actions.precombat\u002B=/potion,if=potion.liquid_luster",
+    "Status": "unsupported",
+    "Detail": "Precombat recommendations not implemented (variables only)"
+  },
+  {
+    "Number": 19,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=variables",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 19,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions=call_action_list,name=variables",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 20,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=end_of_fight",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 20,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/call_action_list,name=end_of_fight",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 21,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=ogcd",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 21,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/call_action_list,name=ogcd",
+    "Status": "unsupported",
+    "Detail": "Target list excluded by spec metadata"
+  },
+  {
+    "Number": 22,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=items",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 22,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/call_action_list,name=items",
+    "Status": "unsupported",
+    "Detail": "Target list excluded by spec metadata"
+  },
+  {
+    "Number": 23,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "hero_tree.soul_harvester",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022demonic_soul\u0022])"
+  },
+  {
+    "Number": 23,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "hero_tree.soul_harvester",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 23,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=soul_harvester",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 23,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=hero_tree.soul_harvester",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 23,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/call_action_list,name=soul_harvester,if=hero_tree.soul_harvester",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 24,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "hero_tree.hellcaller",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022wither\u0022])"
+  },
+  {
+    "Number": 24,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "hero_tree.hellcaller",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 24,
+    "List": "default",
+    "Kind": "option",
+    "Text": "name=hellcaller",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 24,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=hero_tree.hellcaller",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 24,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/call_action_list,name=hellcaller,if=hero_tree.hellcaller",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 25,
+    "List": "default",
+    "Kind": "binding",
+    "Text": "pet.darkglare.active",
+    "Status": "bound",
+    "Detail": "N(s.darkglareRemains \u003E 0)"
+  },
+  {
+    "Number": 25,
+    "List": "default",
+    "Kind": "expression",
+    "Text": "pet.darkglare.active",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 25,
+    "List": "default",
+    "Kind": "option",
+    "Text": "chain=1",
+    "Status": "approximated",
+    "Detail": "Recommendation only; no channel timing/clip cue (D32)"
+  },
+  {
+    "Number": 25,
+    "List": "default",
+    "Kind": "option",
+    "Text": "early_chain_if=buff.nightfall.react",
+    "Status": "approximated",
+    "Detail": "Channel timing not modeled; no clip cue (D32)"
+  },
+  {
+    "Number": 25,
+    "List": "default",
+    "Kind": "option",
+    "Text": "if=pet.darkglare.active",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 25,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/malefic_grasp,chain=1,early_chain_if=buff.nightfall.react,if=pet.darkglare.active",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 26,
+    "List": "default",
+    "Kind": "option",
+    "Text": "chain=1",
+    "Status": "approximated",
+    "Detail": "Recommendation only; no channel timing/clip cue (D32)"
+  },
+  {
+    "Number": 26,
+    "List": "default",
+    "Kind": "option",
+    "Text": "early_chain_if=buff.nightfall.react",
+    "Status": "approximated",
+    "Detail": "Channel timing not modeled; no clip cue (D32)"
+  },
+  {
+    "Number": 26,
+    "List": "default",
+    "Kind": "option",
+    "Text": "interrupt_if=tick_time\u003E0.5",
+    "Status": "approximated",
+    "Detail": "Channel timing not modeled; no clip cue (D32)"
+  },
+  {
+    "Number": 26,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/drain_soul,chain=1,early_chain_if=buff.nightfall.react,interrupt_if=tick_time\u003E0.5",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 27,
+    "List": "default",
+    "Kind": "action",
+    "Text": "actions\u002B=/shadow_bolt",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 29,
+    "List": "HC_aoe",
+    "Kind": "action",
+    "Text": "actions.HC_aoe=haunt",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 30,
+    "List": "HC_aoe",
+    "Kind": "binding",
+    "Text": "dot.wither.ticking",
+    "Status": "bound",
+    "Detail": "N(s.witherRemains \u003E 0)"
+  },
+  {
+    "Number": 30,
+    "List": "HC_aoe",
+    "Kind": "binding",
+    "Text": "dot.wither.refreshable",
+    "Status": "bound",
+    "Detail": "N(s.witherRefreshable)"
+  },
+  {
+    "Number": 30,
+    "List": "HC_aoe",
+    "Kind": "binding",
+    "Text": "dot.seed_of_corruption.ticking",
+    "Status": "bound",
+    "Detail": "N(s.seedRemains \u003E 0)"
+  },
+  {
+    "Number": 30,
+    "List": "HC_aoe",
+    "Kind": "binding",
+    "Text": "prev.seed_of_corruption",
+    "Status": "bound",
+    "Detail": "N(s.prevGcd == 27243)"
+  },
+  {
+    "Number": 30,
+    "List": "HC_aoe",
+    "Kind": "binding",
+    "Text": "action.seed_of_corruption.in_flight",
+    "Status": "bound",
+    "Detail": "N(s.seedInFlight)"
+  },
+  {
+    "Number": 30,
+    "List": "HC_aoe",
+    "Kind": "expression",
+    "Text": "(!dot.wither.ticking|dot.wither.refreshable)\u0026!dot.seed_of_corruption.ticking\u0026!prev.seed_of_corruption\u0026!action.seed_of_corruption.in_flight",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 30,
+    "List": "HC_aoe",
+    "Kind": "option",
+    "Text": "if=(!dot.wither.ticking|dot.wither.refreshable)\u0026!dot.seed_of_corruption.ticking\u0026!prev.seed_of_corruption\u0026!action.seed_of_corruption.in_flight",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 30,
+    "List": "HC_aoe",
+    "Kind": "action",
+    "Text": "actions.HC_aoe\u002B=/seed_of_corruption,if=(!dot.wither.ticking|dot.wither.refreshable)\u0026!dot.seed_of_corruption.ticking\u0026!prev.seed_of_corruption\u0026!action.seed_of_corruption.in_flight",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 31,
+    "List": "HC_aoe",
+    "Kind": "action",
+    "Text": "actions.HC_aoe\u002B=/dark_harvest",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 32,
+    "List": "HC_aoe",
+    "Kind": "binding",
+    "Text": "active_dot.agony",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 32,
+    "List": "HC_aoe",
+    "Kind": "binding",
+    "Text": "remains",
+    "Status": "bound",
+    "Detail": "s.agonyRemains"
+  },
+  {
+    "Number": 32,
+    "List": "HC_aoe",
+    "Kind": "expression",
+    "Text": "active_dot.agony\u003C14\u0026remains\u003C5",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: active_dot.agony"
+  },
+  {
+    "Number": 32,
+    "List": "HC_aoe",
+    "Kind": "option",
+    "Text": "target_if=min:remains",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 32,
+    "List": "HC_aoe",
+    "Kind": "option",
+    "Text": "if=active_dot.agony\u003C14\u0026remains\u003C5",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 32,
+    "List": "HC_aoe",
+    "Kind": "action",
+    "Text": "actions.HC_aoe\u002B=/agony,target_if=min:remains,if=active_dot.agony\u003C14\u0026remains\u003C5",
+    "Status": "unsupported",
+    "Detail": "Unsupported expression or option; entire action omitted"
+  },
+  {
+    "Number": 33,
+    "List": "HC_aoe",
+    "Kind": "action",
+    "Text": "actions.HC_aoe\u002B=/summon_darkglare",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 34,
+    "List": "HC_aoe",
+    "Kind": "action",
+    "Text": "actions.HC_aoe\u002B=/malevolence",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 35,
+    "List": "HC_aoe",
+    "Kind": "binding",
+    "Text": "talent.sow_the_seeds",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022sow_the_seeds\u0022])"
+  },
+  {
+    "Number": 35,
+    "List": "HC_aoe",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 35,
+    "List": "HC_aoe",
+    "Kind": "expression",
+    "Text": "talent.sow_the_seeds|active_enemies\u003E5",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 35,
+    "List": "HC_aoe",
+    "Kind": "option",
+    "Text": "if=talent.sow_the_seeds|active_enemies\u003E5",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 35,
+    "List": "HC_aoe",
+    "Kind": "action",
+    "Text": "actions.HC_aoe\u002B=/seed_of_corruption,if=talent.sow_the_seeds|active_enemies\u003E5",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 36,
+    "List": "HC_aoe",
+    "Kind": "action",
+    "Text": "actions.HC_aoe\u002B=/unstable_affliction",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 37,
+    "List": "HC_aoe",
+    "Kind": "binding",
+    "Text": "remains",
+    "Status": "bound",
+    "Detail": "s.agonyRemains"
+  },
+  {
+    "Number": 37,
+    "List": "HC_aoe",
+    "Kind": "expression",
+    "Text": "remains\u003C5",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 37,
+    "List": "HC_aoe",
+    "Kind": "option",
+    "Text": "target_if=min:remains",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 37,
+    "List": "HC_aoe",
+    "Kind": "option",
+    "Text": "if=remains\u003C5",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 37,
+    "List": "HC_aoe",
+    "Kind": "action",
+    "Text": "actions.HC_aoe\u002B=/agony,target_if=min:remains,if=remains\u003C5",
+    "Status": "unsupported",
+    "Detail": "Unsupported expression or option; entire action omitted"
+  },
+  {
+    "Number": 38,
+    "List": "HC_aoe",
+    "Kind": "binding",
+    "Text": "pet.darkglare.remains",
+    "Status": "bound",
+    "Detail": "s.darkglareRemains"
+  },
+  {
+    "Number": 38,
+    "List": "HC_aoe",
+    "Kind": "binding",
+    "Text": "gcd",
+    "Status": "bound",
+    "Detail": "s.gcdMax"
+  },
+  {
+    "Number": 38,
+    "List": "HC_aoe",
+    "Kind": "expression",
+    "Text": "pet.darkglare.remains\u003Cgcd",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 38,
+    "List": "HC_aoe",
+    "Kind": "option",
+    "Text": "if=pet.darkglare.remains\u003Cgcd",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 38,
+    "List": "HC_aoe",
+    "Kind": "action",
+    "Text": "actions.HC_aoe\u002B=/malefic_grasp,if=pet.darkglare.remains\u003Cgcd",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 40,
+    "List": "HC_cleave",
+    "Kind": "action",
+    "Text": "actions.HC_cleave=haunt",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 41,
+    "List": "HC_cleave",
+    "Kind": "binding",
+    "Text": "talent.sow_the_seeds",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022sow_the_seeds\u0022])"
+  },
+  {
+    "Number": 41,
+    "List": "HC_cleave",
+    "Kind": "binding",
+    "Text": "dot.wither.ticking",
+    "Status": "bound",
+    "Detail": "N(s.witherRemains \u003E 0)"
+  },
+  {
+    "Number": 41,
+    "List": "HC_cleave",
+    "Kind": "binding",
+    "Text": "dot.seed_of_corruption.ticking",
+    "Status": "bound",
+    "Detail": "N(s.seedRemains \u003E 0)"
+  },
+  {
+    "Number": 41,
+    "List": "HC_cleave",
+    "Kind": "binding",
+    "Text": "prev.seed_of_corruption",
+    "Status": "bound",
+    "Detail": "N(s.prevGcd == 27243)"
+  },
+  {
+    "Number": 41,
+    "List": "HC_cleave",
+    "Kind": "binding",
+    "Text": "action.seed_of_corruption.in_flight",
+    "Status": "bound",
+    "Detail": "N(s.seedInFlight)"
+  },
+  {
+    "Number": 41,
+    "List": "HC_cleave",
+    "Kind": "expression",
+    "Text": "talent.sow_the_seeds\u0026!dot.wither.ticking\u0026!dot.seed_of_corruption.ticking\u0026!prev.seed_of_corruption\u0026!action.seed_of_corruption.in_flight",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 41,
+    "List": "HC_cleave",
+    "Kind": "option",
+    "Text": "if=talent.sow_the_seeds\u0026!dot.wither.ticking\u0026!dot.seed_of_corruption.ticking\u0026!prev.seed_of_corruption\u0026!action.seed_of_corruption.in_flight",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 41,
+    "List": "HC_cleave",
+    "Kind": "action",
+    "Text": "actions.HC_cleave\u002B=/seed_of_corruption,if=talent.sow_the_seeds\u0026!dot.wither.ticking\u0026!dot.seed_of_corruption.ticking\u0026!prev.seed_of_corruption\u0026!action.seed_of_corruption.in_flight",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 42,
+    "List": "HC_cleave",
+    "Kind": "binding",
+    "Text": "remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 42,
+    "List": "HC_cleave",
+    "Kind": "binding",
+    "Text": "action.seed_of_corruption.in_flight",
+    "Status": "bound",
+    "Detail": "N(s.seedInFlight)"
+  },
+  {
+    "Number": 42,
+    "List": "HC_cleave",
+    "Kind": "binding",
+    "Text": "dot.seed_of_corruption.remains",
+    "Status": "bound",
+    "Detail": "s.seedRemains"
+  },
+  {
+    "Number": 42,
+    "List": "HC_cleave",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 42,
+    "List": "HC_cleave",
+    "Kind": "binding",
+    "Text": "remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 42,
+    "List": "HC_cleave",
+    "Kind": "expression",
+    "Text": "remains\u003C5\u0026!(action.seed_of_corruption.in_flight|dot.seed_of_corruption.remains\u003E0)\u0026fight_remains\u003Eremains\u002B5",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: remains"
+  },
+  {
+    "Number": 42,
+    "List": "HC_cleave",
+    "Kind": "option",
+    "Text": "target_if=min:remains",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 42,
+    "List": "HC_cleave",
+    "Kind": "option",
+    "Text": "if=remains\u003C5\u0026!(action.seed_of_corruption.in_flight|dot.seed_of_corruption.remains\u003E0)\u0026fight_remains\u003Eremains\u002B5",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 42,
+    "List": "HC_cleave",
+    "Kind": "action",
+    "Text": "actions.HC_cleave\u002B=/wither,target_if=min:remains,if=remains\u003C5\u0026!(action.seed_of_corruption.in_flight|dot.seed_of_corruption.remains\u003E0)\u0026fight_remains\u003Eremains\u002B5",
+    "Status": "unsupported",
+    "Detail": "Unsupported expression or option; entire action omitted"
+  },
+  {
+    "Number": 43,
+    "List": "HC_cleave",
+    "Kind": "option",
+    "Text": "target_if=refreshable",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 43,
+    "List": "HC_cleave",
+    "Kind": "action",
+    "Text": "actions.HC_cleave\u002B=/agony,target_if=refreshable",
+    "Status": "unsupported",
+    "Detail": "Unsupported expression or option; entire action omitted"
+  },
+  {
+    "Number": 44,
+    "List": "HC_cleave",
+    "Kind": "action",
+    "Text": "actions.HC_cleave\u002B=/dark_harvest",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 45,
+    "List": "HC_cleave",
+    "Kind": "action",
+    "Text": "actions.HC_cleave\u002B=/summon_darkglare",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 46,
+    "List": "HC_cleave",
+    "Kind": "action",
+    "Text": "actions.HC_cleave\u002B=/malevolence",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 47,
+    "List": "HC_cleave",
+    "Kind": "binding",
+    "Text": "pet.darkglare.remains",
+    "Status": "bound",
+    "Detail": "s.darkglareRemains"
+  },
+  {
+    "Number": 47,
+    "List": "HC_cleave",
+    "Kind": "binding",
+    "Text": "gcd",
+    "Status": "bound",
+    "Detail": "s.gcdMax"
+  },
+  {
+    "Number": 47,
+    "List": "HC_cleave",
+    "Kind": "expression",
+    "Text": "pet.darkglare.remains\u003Cgcd",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 47,
+    "List": "HC_cleave",
+    "Kind": "option",
+    "Text": "if=pet.darkglare.remains\u003Cgcd",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 47,
+    "List": "HC_cleave",
+    "Kind": "action",
+    "Text": "actions.HC_cleave\u002B=/malefic_grasp,if=pet.darkglare.remains\u003Cgcd",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 48,
+    "List": "HC_cleave",
+    "Kind": "action",
+    "Text": "actions.HC_cleave\u002B=/unstable_affliction",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 50,
+    "List": "HC_st",
+    "Kind": "action",
+    "Text": "actions.HC_st=haunt",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 51,
+    "List": "HC_st",
+    "Kind": "binding",
+    "Text": "refreshable",
+    "Status": "bound",
+    "Detail": "N(s.agonyRefreshable)"
+  },
+  {
+    "Number": 51,
+    "List": "HC_st",
+    "Kind": "expression",
+    "Text": "refreshable",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 51,
+    "List": "HC_st",
+    "Kind": "option",
+    "Text": "if=refreshable",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 51,
+    "List": "HC_st",
+    "Kind": "action",
+    "Text": "actions.HC_st\u002B=/agony,if=refreshable",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 52,
+    "List": "HC_st",
+    "Kind": "binding",
+    "Text": "refreshable",
+    "Status": "bound",
+    "Detail": "N(s.witherRefreshable)"
+  },
+  {
+    "Number": 52,
+    "List": "HC_st",
+    "Kind": "expression",
+    "Text": "refreshable",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 52,
+    "List": "HC_st",
+    "Kind": "option",
+    "Text": "if=refreshable",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 52,
+    "List": "HC_st",
+    "Kind": "action",
+    "Text": "actions.HC_st\u002B=/wither,if=refreshable",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 53,
+    "List": "HC_st",
+    "Kind": "action",
+    "Text": "actions.HC_st\u002B=/malevolence",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 54,
+    "List": "HC_st",
+    "Kind": "binding",
+    "Text": "buff.nightfall.react",
+    "Status": "bound",
+    "Detail": "s.nightfall"
+  },
+  {
+    "Number": 54,
+    "List": "HC_st",
+    "Kind": "binding",
+    "Text": "pet.darkglare.remains",
+    "Status": "bound",
+    "Detail": "s.darkglareRemains"
+  },
+  {
+    "Number": 54,
+    "List": "HC_st",
+    "Kind": "binding",
+    "Text": "gcd",
+    "Status": "bound",
+    "Detail": "s.gcdMax"
+  },
+  {
+    "Number": 54,
+    "List": "HC_st",
+    "Kind": "expression",
+    "Text": "buff.nightfall.react\u003E1|pet.darkglare.remains\u003Cgcd",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 54,
+    "List": "HC_st",
+    "Kind": "option",
+    "Text": "if=buff.nightfall.react\u003E1|pet.darkglare.remains\u003Cgcd",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 54,
+    "List": "HC_st",
+    "Kind": "action",
+    "Text": "actions.HC_st\u002B=/malefic_grasp,if=buff.nightfall.react\u003E1|pet.darkglare.remains\u003Cgcd",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 55,
+    "List": "HC_st",
+    "Kind": "binding",
+    "Text": "buff.nightfall.react",
+    "Status": "bound",
+    "Detail": "s.nightfall"
+  },
+  {
+    "Number": 55,
+    "List": "HC_st",
+    "Kind": "expression",
+    "Text": "buff.nightfall.react\u003E1",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 55,
+    "List": "HC_st",
+    "Kind": "option",
+    "Text": "if=buff.nightfall.react\u003E1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 55,
+    "List": "HC_st",
+    "Kind": "action",
+    "Text": "actions.HC_st\u002B=/drain_soul,if=buff.nightfall.react\u003E1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 56,
+    "List": "HC_st",
+    "Kind": "binding",
+    "Text": "buff.nightfall.react",
+    "Status": "bound",
+    "Detail": "s.nightfall"
+  },
+  {
+    "Number": 56,
+    "List": "HC_st",
+    "Kind": "expression",
+    "Text": "buff.nightfall.react\u003E1",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 56,
+    "List": "HC_st",
+    "Kind": "option",
+    "Text": "if=buff.nightfall.react\u003E1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 56,
+    "List": "HC_st",
+    "Kind": "action",
+    "Text": "actions.HC_st\u002B=/shadow_bolt,if=buff.nightfall.react\u003E1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 57,
+    "List": "HC_st",
+    "Kind": "binding",
+    "Text": "pet.darkglare.remains",
+    "Status": "bound",
+    "Detail": "s.darkglareRemains"
+  },
+  {
+    "Number": 57,
+    "List": "HC_st",
+    "Kind": "binding",
+    "Text": "buff.malevolence.remains",
+    "Status": "bound",
+    "Detail": "s.malevolenceRemains"
+  },
+  {
+    "Number": 57,
+    "List": "HC_st",
+    "Kind": "binding",
+    "Text": "soul_shard",
+    "Status": "bound",
+    "Detail": "s.shards"
+  },
+  {
+    "Number": 57,
+    "List": "HC_st",
+    "Kind": "binding",
+    "Text": "buff.shard_instability.react",
+    "Status": "bound",
+    "Detail": "s.shardInstability"
+  },
+  {
+    "Number": 57,
+    "List": "HC_st",
+    "Kind": "binding",
+    "Text": "buff.cascading_calamity.remains",
+    "Status": "bound",
+    "Detail": "s.calamityRemains"
+  },
+  {
+    "Number": 57,
+    "List": "HC_st",
+    "Kind": "binding",
+    "Text": "gcd.max",
+    "Status": "bound",
+    "Detail": "s.gcdMax"
+  },
+  {
+    "Number": 57,
+    "List": "HC_st",
+    "Kind": "expression",
+    "Text": "pet.darkglare.remains|buff.malevolence.remains|soul_shard\u003E4|buff.shard_instability.react|buff.cascading_calamity.remains\u003Cgcd.max",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 57,
+    "List": "HC_st",
+    "Kind": "option",
+    "Text": "if=pet.darkglare.remains|buff.malevolence.remains|soul_shard\u003E4|buff.shard_instability.react|buff.cascading_calamity.remains\u003Cgcd.max",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 57,
+    "List": "HC_st",
+    "Kind": "action",
+    "Text": "actions.HC_st\u002B=/unstable_affliction,if=pet.darkglare.remains|buff.malevolence.remains|soul_shard\u003E4|buff.shard_instability.react|buff.cascading_calamity.remains\u003Cgcd.max",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 58,
+    "List": "HC_st",
+    "Kind": "action",
+    "Text": "actions.HC_st\u002B=/summon_darkglare",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 59,
+    "List": "HC_st",
+    "Kind": "binding",
+    "Text": "execute_time",
+    "Status": "bound",
+    "Detail": "(s.execute[1257052] or 0)"
+  },
+  {
+    "Number": 59,
+    "List": "HC_st",
+    "Kind": "binding",
+    "Text": "dot.agony.remains",
+    "Status": "bound",
+    "Detail": "s.agonyRemains"
+  },
+  {
+    "Number": 59,
+    "List": "HC_st",
+    "Kind": "binding",
+    "Text": "dot.corruption.remains",
+    "Status": "bound",
+    "Detail": "s.corruptionRemains"
+  },
+  {
+    "Number": 59,
+    "List": "HC_st",
+    "Kind": "binding",
+    "Text": "talent.cascading_calamity",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022cascading_calamity\u0022])"
+  },
+  {
+    "Number": 59,
+    "List": "HC_st",
+    "Kind": "binding",
+    "Text": "buff.cascading_calamity.remains",
+    "Status": "bound",
+    "Detail": "s.calamityRemains"
+  },
+  {
+    "Number": 59,
+    "List": "HC_st",
+    "Kind": "expression",
+    "Text": "execute_time\u003C(dot.agony.remains\u003C?dot.corruption.remains)\u0026(!talent.cascading_calamity|buff.cascading_calamity.remains)",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 59,
+    "List": "HC_st",
+    "Kind": "option",
+    "Text": "if=execute_time\u003C(dot.agony.remains\u003C?dot.corruption.remains)\u0026(!talent.cascading_calamity|buff.cascading_calamity.remains)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 59,
+    "List": "HC_st",
+    "Kind": "action",
+    "Text": "actions.HC_st\u002B=/dark_harvest,if=execute_time\u003C(dot.agony.remains\u003C?dot.corruption.remains)\u0026(!talent.cascading_calamity|buff.cascading_calamity.remains)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 61,
+    "List": "SH_aoe",
+    "Kind": "action",
+    "Text": "actions.SH_aoe=haunt",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 62,
+    "List": "SH_aoe",
+    "Kind": "binding",
+    "Text": "dot.corruption.ticking",
+    "Status": "bound",
+    "Detail": "N(s.corruptionRemains \u003E 0)"
+  },
+  {
+    "Number": 62,
+    "List": "SH_aoe",
+    "Kind": "binding",
+    "Text": "dot.corruption.refreshable",
+    "Status": "bound",
+    "Detail": "N(s.corruptionRefreshable)"
+  },
+  {
+    "Number": 62,
+    "List": "SH_aoe",
+    "Kind": "binding",
+    "Text": "dot.seed_of_corruption.ticking",
+    "Status": "bound",
+    "Detail": "N(s.seedRemains \u003E 0)"
+  },
+  {
+    "Number": 62,
+    "List": "SH_aoe",
+    "Kind": "binding",
+    "Text": "prev.seed_of_corruption",
+    "Status": "bound",
+    "Detail": "N(s.prevGcd == 27243)"
+  },
+  {
+    "Number": 62,
+    "List": "SH_aoe",
+    "Kind": "binding",
+    "Text": "action.seed_of_corruption.in_flight",
+    "Status": "bound",
+    "Detail": "N(s.seedInFlight)"
+  },
+  {
+    "Number": 62,
+    "List": "SH_aoe",
+    "Kind": "expression",
+    "Text": "(!dot.corruption.ticking|dot.corruption.refreshable)\u0026!dot.seed_of_corruption.ticking\u0026!prev.seed_of_corruption\u0026!action.seed_of_corruption.in_flight",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 62,
+    "List": "SH_aoe",
+    "Kind": "option",
+    "Text": "if=(!dot.corruption.ticking|dot.corruption.refreshable)\u0026!dot.seed_of_corruption.ticking\u0026!prev.seed_of_corruption\u0026!action.seed_of_corruption.in_flight",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 62,
+    "List": "SH_aoe",
+    "Kind": "action",
+    "Text": "actions.SH_aoe\u002B=/seed_of_corruption,if=(!dot.corruption.ticking|dot.corruption.refreshable)\u0026!dot.seed_of_corruption.ticking\u0026!prev.seed_of_corruption\u0026!action.seed_of_corruption.in_flight",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 63,
+    "List": "SH_aoe",
+    "Kind": "action",
+    "Text": "actions.SH_aoe\u002B=/dark_harvest",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 64,
+    "List": "SH_aoe",
+    "Kind": "binding",
+    "Text": "set_bonus.midnight_season_2_4pc",
+    "Status": "bound",
+    "Detail": "N(s.setS2_4pc)"
+  },
+  {
+    "Number": 64,
+    "List": "SH_aoe",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 64,
+    "List": "SH_aoe",
+    "Kind": "expression",
+    "Text": "set_bonus.midnight_season_2_4pc\u0026active_enemies\u003C=5",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 64,
+    "List": "SH_aoe",
+    "Kind": "option",
+    "Text": "target_if=!dot.unstable_affliction.ticking\u0026prev.dark_harvest",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 64,
+    "List": "SH_aoe",
+    "Kind": "option",
+    "Text": "if=set_bonus.midnight_season_2_4pc\u0026active_enemies\u003C=5",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 64,
+    "List": "SH_aoe",
+    "Kind": "action",
+    "Text": "actions.SH_aoe\u002B=/seed_of_corruption,target_if=!dot.unstable_affliction.ticking\u0026prev.dark_harvest,if=set_bonus.midnight_season_2_4pc\u0026active_enemies\u003C=5",
+    "Status": "unsupported",
+    "Detail": "Unsupported expression or option; entire action omitted"
+  },
+  {
+    "Number": 65,
+    "List": "SH_aoe",
+    "Kind": "binding",
+    "Text": "active_dot.agony",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 65,
+    "List": "SH_aoe",
+    "Kind": "binding",
+    "Text": "remains",
+    "Status": "bound",
+    "Detail": "s.agonyRemains"
+  },
+  {
+    "Number": 65,
+    "List": "SH_aoe",
+    "Kind": "expression",
+    "Text": "active_dot.agony\u003C12\u0026remains\u003C5",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: active_dot.agony"
+  },
+  {
+    "Number": 65,
+    "List": "SH_aoe",
+    "Kind": "option",
+    "Text": "target_if=min:remains",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 65,
+    "List": "SH_aoe",
+    "Kind": "option",
+    "Text": "if=active_dot.agony\u003C12\u0026remains\u003C5",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 65,
+    "List": "SH_aoe",
+    "Kind": "action",
+    "Text": "actions.SH_aoe\u002B=/agony,target_if=min:remains,if=active_dot.agony\u003C12\u0026remains\u003C5",
+    "Status": "unsupported",
+    "Detail": "Unsupported expression or option; entire action omitted"
+  },
+  {
+    "Number": 66,
+    "List": "SH_aoe",
+    "Kind": "action",
+    "Text": "actions.SH_aoe\u002B=/summon_darkglare",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 67,
+    "List": "SH_aoe",
+    "Kind": "binding",
+    "Text": "buff.nightfall.react",
+    "Status": "bound",
+    "Detail": "s.nightfall"
+  },
+  {
+    "Number": 67,
+    "List": "SH_aoe",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 67,
+    "List": "SH_aoe",
+    "Kind": "expression",
+    "Text": "buff.nightfall.react\u003E1\u0026active_enemies\u003C=6",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 67,
+    "List": "SH_aoe",
+    "Kind": "option",
+    "Text": "if=buff.nightfall.react\u003E1\u0026active_enemies\u003C=6",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 67,
+    "List": "SH_aoe",
+    "Kind": "action",
+    "Text": "actions.SH_aoe\u002B=/malefic_grasp,if=buff.nightfall.react\u003E1\u0026active_enemies\u003C=6",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 68,
+    "List": "SH_aoe",
+    "Kind": "binding",
+    "Text": "buff.nightfall.react",
+    "Status": "bound",
+    "Detail": "s.nightfall"
+  },
+  {
+    "Number": 68,
+    "List": "SH_aoe",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 68,
+    "List": "SH_aoe",
+    "Kind": "expression",
+    "Text": "buff.nightfall.react\u003E1\u0026active_enemies\u003C=7",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 68,
+    "List": "SH_aoe",
+    "Kind": "option",
+    "Text": "if=buff.nightfall.react\u003E1\u0026active_enemies\u003C=7",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 68,
+    "List": "SH_aoe",
+    "Kind": "action",
+    "Text": "actions.SH_aoe\u002B=/shadow_bolt,if=buff.nightfall.react\u003E1\u0026active_enemies\u003C=7",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 69,
+    "List": "SH_aoe",
+    "Kind": "binding",
+    "Text": "talent.sow_the_seeds",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022sow_the_seeds\u0022])"
+  },
+  {
+    "Number": 69,
+    "List": "SH_aoe",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 69,
+    "List": "SH_aoe",
+    "Kind": "expression",
+    "Text": "talent.sow_the_seeds|active_enemies\u003E5",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 69,
+    "List": "SH_aoe",
+    "Kind": "option",
+    "Text": "if=talent.sow_the_seeds|active_enemies\u003E5",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 69,
+    "List": "SH_aoe",
+    "Kind": "action",
+    "Text": "actions.SH_aoe\u002B=/seed_of_corruption,if=talent.sow_the_seeds|active_enemies\u003E5",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 70,
+    "List": "SH_aoe",
+    "Kind": "action",
+    "Text": "actions.SH_aoe\u002B=/unstable_affliction",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 71,
+    "List": "SH_aoe",
+    "Kind": "binding",
+    "Text": "remains",
+    "Status": "bound",
+    "Detail": "s.agonyRemains"
+  },
+  {
+    "Number": 71,
+    "List": "SH_aoe",
+    "Kind": "binding",
+    "Text": "duration",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 71,
+    "List": "SH_aoe",
+    "Kind": "expression",
+    "Text": "remains\u003Cduration*0.5",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: duration"
+  },
+  {
+    "Number": 71,
+    "List": "SH_aoe",
+    "Kind": "option",
+    "Text": "target_if=min:remains",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 71,
+    "List": "SH_aoe",
+    "Kind": "option",
+    "Text": "if=remains\u003Cduration*0.5",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 71,
+    "List": "SH_aoe",
+    "Kind": "action",
+    "Text": "actions.SH_aoe\u002B=/agony,target_if=min:remains,if=remains\u003Cduration*0.5",
+    "Status": "unsupported",
+    "Detail": "Unsupported expression or option; entire action omitted"
+  },
+  {
+    "Number": 72,
+    "List": "SH_aoe",
+    "Kind": "binding",
+    "Text": "pet.darkglare.remains",
+    "Status": "bound",
+    "Detail": "s.darkglareRemains"
+  },
+  {
+    "Number": 72,
+    "List": "SH_aoe",
+    "Kind": "binding",
+    "Text": "gcd",
+    "Status": "bound",
+    "Detail": "s.gcdMax"
+  },
+  {
+    "Number": 72,
+    "List": "SH_aoe",
+    "Kind": "expression",
+    "Text": "pet.darkglare.remains\u003Cgcd",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 72,
+    "List": "SH_aoe",
+    "Kind": "option",
+    "Text": "if=pet.darkglare.remains\u003Cgcd",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 72,
+    "List": "SH_aoe",
+    "Kind": "action",
+    "Text": "actions.SH_aoe\u002B=/malefic_grasp,if=pet.darkglare.remains\u003Cgcd",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 74,
+    "List": "SH_cleave",
+    "Kind": "action",
+    "Text": "actions.SH_cleave=haunt",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 75,
+    "List": "SH_cleave",
+    "Kind": "binding",
+    "Text": "dot.corruption.ticking",
+    "Status": "bound",
+    "Detail": "N(s.corruptionRemains \u003E 0)"
+  },
+  {
+    "Number": 75,
+    "List": "SH_cleave",
+    "Kind": "binding",
+    "Text": "dot.corruption.refreshable",
+    "Status": "bound",
+    "Detail": "N(s.corruptionRefreshable)"
+  },
+  {
+    "Number": 75,
+    "List": "SH_cleave",
+    "Kind": "binding",
+    "Text": "dot.seed_of_corruption.ticking",
+    "Status": "bound",
+    "Detail": "N(s.seedRemains \u003E 0)"
+  },
+  {
+    "Number": 75,
+    "List": "SH_cleave",
+    "Kind": "binding",
+    "Text": "prev.seed_of_corruption",
+    "Status": "bound",
+    "Detail": "N(s.prevGcd == 27243)"
+  },
+  {
+    "Number": 75,
+    "List": "SH_cleave",
+    "Kind": "binding",
+    "Text": "action.seed_of_corruption.in_flight",
+    "Status": "bound",
+    "Detail": "N(s.seedInFlight)"
+  },
+  {
+    "Number": 75,
+    "List": "SH_cleave",
+    "Kind": "expression",
+    "Text": "(!dot.corruption.ticking|dot.corruption.refreshable)\u0026!dot.seed_of_corruption.ticking\u0026!prev.seed_of_corruption\u0026!action.seed_of_corruption.in_flight",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 75,
+    "List": "SH_cleave",
+    "Kind": "option",
+    "Text": "if=(!dot.corruption.ticking|dot.corruption.refreshable)\u0026!dot.seed_of_corruption.ticking\u0026!prev.seed_of_corruption\u0026!action.seed_of_corruption.in_flight",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 75,
+    "List": "SH_cleave",
+    "Kind": "action",
+    "Text": "actions.SH_cleave\u002B=/seed_of_corruption,if=(!dot.corruption.ticking|dot.corruption.refreshable)\u0026!dot.seed_of_corruption.ticking\u0026!prev.seed_of_corruption\u0026!action.seed_of_corruption.in_flight",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 76,
+    "List": "SH_cleave",
+    "Kind": "option",
+    "Text": "target_if=refreshable",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 76,
+    "List": "SH_cleave",
+    "Kind": "action",
+    "Text": "actions.SH_cleave\u002B=/agony,target_if=refreshable",
+    "Status": "unsupported",
+    "Detail": "Unsupported expression or option; entire action omitted"
+  },
+  {
+    "Number": 77,
+    "List": "SH_cleave",
+    "Kind": "action",
+    "Text": "actions.SH_cleave\u002B=/dark_harvest",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 78,
+    "List": "SH_cleave",
+    "Kind": "binding",
+    "Text": "ticking",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 78,
+    "List": "SH_cleave",
+    "Kind": "binding",
+    "Text": "prev.dark_harvest",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 78,
+    "List": "SH_cleave",
+    "Kind": "expression",
+    "Text": "!ticking\u0026prev.dark_harvest",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: ticking"
+  },
+  {
+    "Number": 78,
+    "List": "SH_cleave",
+    "Kind": "option",
+    "Text": "cycle_targets=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 78,
+    "List": "SH_cleave",
+    "Kind": "option",
+    "Text": "if=!ticking\u0026prev.dark_harvest",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 78,
+    "List": "SH_cleave",
+    "Kind": "action",
+    "Text": "actions.SH_cleave\u002B=/unstable_affliction,cycle_targets=1,if=!ticking\u0026prev.dark_harvest",
+    "Status": "unsupported",
+    "Detail": "Unsupported expression or option; entire action omitted"
+  },
+  {
+    "Number": 79,
+    "List": "SH_cleave",
+    "Kind": "action",
+    "Text": "actions.SH_cleave\u002B=/unstable_affliction",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 80,
+    "List": "SH_cleave",
+    "Kind": "action",
+    "Text": "actions.SH_cleave\u002B=/summon_darkglare",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 81,
+    "List": "SH_cleave",
+    "Kind": "binding",
+    "Text": "buff.nightfall.react",
+    "Status": "bound",
+    "Detail": "s.nightfall"
+  },
+  {
+    "Number": 81,
+    "List": "SH_cleave",
+    "Kind": "binding",
+    "Text": "pet.darkglare.remains",
+    "Status": "bound",
+    "Detail": "s.darkglareRemains"
+  },
+  {
+    "Number": 81,
+    "List": "SH_cleave",
+    "Kind": "binding",
+    "Text": "gcd",
+    "Status": "bound",
+    "Detail": "s.gcdMax"
+  },
+  {
+    "Number": 81,
+    "List": "SH_cleave",
+    "Kind": "expression",
+    "Text": "buff.nightfall.react\u003E1|pet.darkglare.remains\u003Cgcd",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 81,
+    "List": "SH_cleave",
+    "Kind": "option",
+    "Text": "if=buff.nightfall.react\u003E1|pet.darkglare.remains\u003Cgcd",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 81,
+    "List": "SH_cleave",
+    "Kind": "action",
+    "Text": "actions.SH_cleave\u002B=/malefic_grasp,if=buff.nightfall.react\u003E1|pet.darkglare.remains\u003Cgcd",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 82,
+    "List": "SH_cleave",
+    "Kind": "binding",
+    "Text": "buff.nightfall.react",
+    "Status": "bound",
+    "Detail": "s.nightfall"
+  },
+  {
+    "Number": 82,
+    "List": "SH_cleave",
+    "Kind": "expression",
+    "Text": "buff.nightfall.react\u003E1",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 82,
+    "List": "SH_cleave",
+    "Kind": "option",
+    "Text": "if=buff.nightfall.react\u003E1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 82,
+    "List": "SH_cleave",
+    "Kind": "action",
+    "Text": "actions.SH_cleave\u002B=/drain_soul,if=buff.nightfall.react\u003E1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 83,
+    "List": "SH_cleave",
+    "Kind": "binding",
+    "Text": "buff.nightfall.react",
+    "Status": "bound",
+    "Detail": "s.nightfall"
+  },
+  {
+    "Number": 83,
+    "List": "SH_cleave",
+    "Kind": "expression",
+    "Text": "buff.nightfall.react\u003E1",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 83,
+    "List": "SH_cleave",
+    "Kind": "option",
+    "Text": "if=buff.nightfall.react\u003E1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 83,
+    "List": "SH_cleave",
+    "Kind": "action",
+    "Text": "actions.SH_cleave\u002B=/shadow_bolt,if=buff.nightfall.react\u003E1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 85,
+    "List": "SH_st",
+    "Kind": "action",
+    "Text": "actions.SH_st=haunt",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 86,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "remains",
+    "Status": "bound",
+    "Detail": "s.agonyRemains"
+  },
+  {
+    "Number": 86,
+    "List": "SH_st",
+    "Kind": "expression",
+    "Text": "remains\u003C3",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 86,
+    "List": "SH_st",
+    "Kind": "option",
+    "Text": "if=remains\u003C3",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 86,
+    "List": "SH_st",
+    "Kind": "action",
+    "Text": "actions.SH_st\u002B=/agony,if=remains\u003C3",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 87,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "remains",
+    "Status": "bound",
+    "Detail": "s.corruptionRemains"
+  },
+  {
+    "Number": 87,
+    "List": "SH_st",
+    "Kind": "expression",
+    "Text": "remains\u003C3",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 87,
+    "List": "SH_st",
+    "Kind": "option",
+    "Text": "if=remains\u003C3",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 87,
+    "List": "SH_st",
+    "Kind": "action",
+    "Text": "actions.SH_st\u002B=/corruption,if=remains\u003C3",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 88,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "soul_shard",
+    "Status": "bound",
+    "Detail": "s.shards"
+  },
+  {
+    "Number": 88,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "execute_time",
+    "Status": "bound",
+    "Detail": "(s.execute[1257052] or 0)"
+  },
+  {
+    "Number": 88,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "dot.agony.remains",
+    "Status": "bound",
+    "Detail": "s.agonyRemains"
+  },
+  {
+    "Number": 88,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "dot.corruption.remains",
+    "Status": "bound",
+    "Detail": "s.corruptionRemains"
+  },
+  {
+    "Number": 88,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "talent.cascading_calamity",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022cascading_calamity\u0022])"
+  },
+  {
+    "Number": 88,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "buff.cascading_calamity.remains",
+    "Status": "bound",
+    "Detail": "s.calamityRemains"
+  },
+  {
+    "Number": 88,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "set_bonus.midnight_season_2_4pc",
+    "Status": "bound",
+    "Detail": "N(s.setS2_4pc)"
+  },
+  {
+    "Number": 88,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "buff.unstable_empowerment.remains",
+    "Status": "bound",
+    "Detail": "s.empowermentRemains"
+  },
+  {
+    "Number": 88,
+    "List": "SH_st",
+    "Kind": "expression",
+    "Text": "soul_shard\u003C3\u0026execute_time\u003C(dot.agony.remains\u003C?dot.corruption.remains)\u0026(!talent.cascading_calamity|buff.cascading_calamity.remains)\u0026(!set_bonus.midnight_season_2_4pc|buff.unstable_empowerment.remains)",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 88,
+    "List": "SH_st",
+    "Kind": "option",
+    "Text": "if=soul_shard\u003C3\u0026execute_time\u003C(dot.agony.remains\u003C?dot.corruption.remains)\u0026(!talent.cascading_calamity|buff.cascading_calamity.remains)\u0026(!set_bonus.midnight_season_2_4pc|buff.unstable_empowerment.remains)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 88,
+    "List": "SH_st",
+    "Kind": "action",
+    "Text": "actions.SH_st\u002B=/dark_harvest,if=soul_shard\u003C3\u0026execute_time\u003C(dot.agony.remains\u003C?dot.corruption.remains)\u0026(!talent.cascading_calamity|buff.cascading_calamity.remains)\u0026(!set_bonus.midnight_season_2_4pc|buff.unstable_empowerment.remains)",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 89,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "cooldown.dark_harvest.remains",
+    "Status": "bound",
+    "Detail": "(s.remains[1257052] or 0)"
+  },
+  {
+    "Number": 89,
+    "List": "SH_st",
+    "Kind": "expression",
+    "Text": "cooldown.dark_harvest.remains",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 89,
+    "List": "SH_st",
+    "Kind": "option",
+    "Text": "if=cooldown.dark_harvest.remains",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 89,
+    "List": "SH_st",
+    "Kind": "action",
+    "Text": "actions.SH_st\u002B=/summon_darkglare,if=cooldown.dark_harvest.remains",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 90,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "buff.nightfall.react",
+    "Status": "bound",
+    "Detail": "s.nightfall"
+  },
+  {
+    "Number": 90,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "pet.darkglare.remains",
+    "Status": "bound",
+    "Detail": "s.darkglareRemains"
+  },
+  {
+    "Number": 90,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "gcd",
+    "Status": "bound",
+    "Detail": "s.gcdMax"
+  },
+  {
+    "Number": 90,
+    "List": "SH_st",
+    "Kind": "expression",
+    "Text": "buff.nightfall.react\u003E1|pet.darkglare.remains\u003Cgcd",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 90,
+    "List": "SH_st",
+    "Kind": "option",
+    "Text": "if=buff.nightfall.react\u003E1|pet.darkglare.remains\u003Cgcd",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 90,
+    "List": "SH_st",
+    "Kind": "action",
+    "Text": "actions.SH_st\u002B=/malefic_grasp,if=buff.nightfall.react\u003E1|pet.darkglare.remains\u003Cgcd",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 91,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "buff.nightfall.react",
+    "Status": "bound",
+    "Detail": "s.nightfall"
+  },
+  {
+    "Number": 91,
+    "List": "SH_st",
+    "Kind": "expression",
+    "Text": "buff.nightfall.react\u003E1",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 91,
+    "List": "SH_st",
+    "Kind": "option",
+    "Text": "if=buff.nightfall.react\u003E1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 91,
+    "List": "SH_st",
+    "Kind": "action",
+    "Text": "actions.SH_st\u002B=/drain_soul,if=buff.nightfall.react\u003E1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 92,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "buff.nightfall.react",
+    "Status": "bound",
+    "Detail": "s.nightfall"
+  },
+  {
+    "Number": 92,
+    "List": "SH_st",
+    "Kind": "expression",
+    "Text": "buff.nightfall.react\u003E1",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 92,
+    "List": "SH_st",
+    "Kind": "option",
+    "Text": "if=buff.nightfall.react\u003E1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 92,
+    "List": "SH_st",
+    "Kind": "action",
+    "Text": "actions.SH_st\u002B=/shadow_bolt,if=buff.nightfall.react\u003E1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 93,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "set_bonus.midnight_season_2_4pc",
+    "Status": "bound",
+    "Detail": "N(s.setS2_4pc)"
+  },
+  {
+    "Number": 93,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "talent.siphon_life",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022siphon_life\u0022])"
+  },
+  {
+    "Number": 93,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "buff.shard_instability.react",
+    "Status": "bound",
+    "Detail": "s.shardInstability"
+  },
+  {
+    "Number": 93,
+    "List": "SH_st",
+    "Kind": "expression",
+    "Text": "set_bonus.midnight_season_2_4pc\u0026talent.siphon_life\u0026buff.shard_instability.react",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 93,
+    "List": "SH_st",
+    "Kind": "option",
+    "Text": "if=set_bonus.midnight_season_2_4pc\u0026talent.siphon_life\u0026buff.shard_instability.react",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 93,
+    "List": "SH_st",
+    "Kind": "action",
+    "Text": "actions.SH_st\u002B=/seed_of_corruption,if=set_bonus.midnight_season_2_4pc\u0026talent.siphon_life\u0026buff.shard_instability.react",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 94,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "soul_shard",
+    "Status": "bound",
+    "Detail": "s.shards"
+  },
+  {
+    "Number": 94,
+    "List": "SH_st",
+    "Kind": "binding",
+    "Text": "buff.shard_instability.react",
+    "Status": "bound",
+    "Detail": "s.shardInstability"
+  },
+  {
+    "Number": 94,
+    "List": "SH_st",
+    "Kind": "expression",
+    "Text": "soul_shard|buff.shard_instability.react",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 94,
+    "List": "SH_st",
+    "Kind": "option",
+    "Text": "if=soul_shard|buff.shard_instability.react",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 94,
+    "List": "SH_st",
+    "Kind": "action",
+    "Text": "actions.SH_st\u002B=/unstable_affliction,if=soul_shard|buff.shard_instability.react",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 96,
+    "List": "end_of_fight",
+    "Kind": "binding",
+    "Text": "soul_shard",
+    "Status": "bound",
+    "Detail": "s.shards"
+  },
+  {
+    "Number": 96,
+    "List": "end_of_fight",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 96,
+    "List": "end_of_fight",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 96,
+    "List": "end_of_fight",
+    "Kind": "expression",
+    "Text": "soul_shard\u0026fight_remains\u003C8\u0026active_enemies\u003C3",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 96,
+    "List": "end_of_fight",
+    "Kind": "option",
+    "Text": "if=soul_shard\u0026fight_remains\u003C8\u0026active_enemies\u003C3",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 96,
+    "List": "end_of_fight",
+    "Kind": "action",
+    "Text": "actions.end_of_fight=unstable_affliction,if=soul_shard\u0026fight_remains\u003C8\u0026active_enemies\u003C3",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 97,
+    "List": "end_of_fight",
+    "Kind": "binding",
+    "Text": "soul_shard",
+    "Status": "bound",
+    "Detail": "s.shards"
+  },
+  {
+    "Number": 97,
+    "List": "end_of_fight",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 97,
+    "List": "end_of_fight",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 97,
+    "List": "end_of_fight",
+    "Kind": "expression",
+    "Text": "soul_shard\u0026fight_remains\u003C8\u0026active_enemies\u003E2",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 97,
+    "List": "end_of_fight",
+    "Kind": "option",
+    "Text": "if=soul_shard\u0026fight_remains\u003C8\u0026active_enemies\u003E2",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 97,
+    "List": "end_of_fight",
+    "Kind": "action",
+    "Text": "actions.end_of_fight\u002B=/seed_of_corruption,if=soul_shard\u0026fight_remains\u003C8\u0026active_enemies\u003E2",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 98,
+    "List": "end_of_fight",
+    "Kind": "binding",
+    "Text": "buff.nightfall.react",
+    "Status": "bound",
+    "Detail": "s.nightfall"
+  },
+  {
+    "Number": 98,
+    "List": "end_of_fight",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 98,
+    "List": "end_of_fight",
+    "Kind": "expression",
+    "Text": "buff.nightfall.react\u0026fight_remains\u003C5",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 98,
+    "List": "end_of_fight",
+    "Kind": "option",
+    "Text": "if=buff.nightfall.react\u0026fight_remains\u003C5",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 98,
+    "List": "end_of_fight",
+    "Kind": "action",
+    "Text": "actions.end_of_fight\u002B=/drain_soul,if=buff.nightfall.react\u0026fight_remains\u003C5",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 99,
+    "List": "end_of_fight",
+    "Kind": "binding",
+    "Text": "buff.nightfall.react",
+    "Status": "bound",
+    "Detail": "s.nightfall"
+  },
+  {
+    "Number": 99,
+    "List": "end_of_fight",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 99,
+    "List": "end_of_fight",
+    "Kind": "expression",
+    "Text": "buff.nightfall.react\u0026fight_remains\u003C5",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 99,
+    "List": "end_of_fight",
+    "Kind": "option",
+    "Text": "if=buff.nightfall.react\u0026fight_remains\u003C5",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 99,
+    "List": "end_of_fight",
+    "Kind": "action",
+    "Text": "actions.end_of_fight\u002B=/shadow_bolt,if=buff.nightfall.react\u0026fight_remains\u003C5",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 101,
+    "List": "hellcaller",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 101,
+    "List": "hellcaller",
+    "Kind": "expression",
+    "Text": "active_enemies=1",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 101,
+    "List": "hellcaller",
+    "Kind": "option",
+    "Text": "name=HC_st",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 101,
+    "List": "hellcaller",
+    "Kind": "option",
+    "Text": "if=active_enemies=1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 101,
+    "List": "hellcaller",
+    "Kind": "action",
+    "Text": "actions.hellcaller=call_action_list,name=HC_st,if=active_enemies=1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 102,
+    "List": "hellcaller",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 102,
+    "List": "hellcaller",
+    "Kind": "expression",
+    "Text": "active_enemies=2",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 102,
+    "List": "hellcaller",
+    "Kind": "option",
+    "Text": "name=HC_cleave",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 102,
+    "List": "hellcaller",
+    "Kind": "option",
+    "Text": "if=active_enemies=2",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 102,
+    "List": "hellcaller",
+    "Kind": "action",
+    "Text": "actions.hellcaller\u002B=/call_action_list,name=HC_cleave,if=active_enemies=2",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 103,
+    "List": "hellcaller",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 103,
+    "List": "hellcaller",
+    "Kind": "expression",
+    "Text": "active_enemies\u003E2",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 103,
+    "List": "hellcaller",
+    "Kind": "option",
+    "Text": "name=HC_aoe",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 103,
+    "List": "hellcaller",
+    "Kind": "option",
+    "Text": "if=active_enemies\u003E2",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 103,
+    "List": "hellcaller",
+    "Kind": "action",
+    "Text": "actions.hellcaller\u002B=/call_action_list,name=HC_aoe,if=active_enemies\u003E2",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 105,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "cooldown.summon_darkglare.remains",
+    "Status": "bound",
+    "Detail": "(s.remains[205180] or 0)"
+  },
+  {
+    "Number": 105,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "dot.agony.remains",
+    "Status": "bound",
+    "Detail": "s.agonyRemains"
+  },
+  {
+    "Number": 105,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "dot.corruption.remains",
+    "Status": "bound",
+    "Detail": "s.corruptionRemains"
+  },
+  {
+    "Number": 105,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "dot.wither.remains",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 105,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "cooldown.dark_harvest.remains",
+    "Status": "bound",
+    "Detail": "(s.remains[1257052] or 0)"
+  },
+  {
+    "Number": 105,
+    "List": "items",
+    "Kind": "expression",
+    "Text": "cooldown.summon_darkglare.remains\u003C=4\u0026dot.agony.remains\u0026(dot.corruption.remains|dot.wither.remains)\u0026cooldown.dark_harvest.remains\u003E1",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: dot.wither.remains"
+  },
+  {
+    "Number": 105,
+    "List": "items",
+    "Kind": "option",
+    "Text": "name=stormbound_emblem_of_dazar",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 105,
+    "List": "items",
+    "Kind": "option",
+    "Text": "if=cooldown.summon_darkglare.remains\u003C=4\u0026dot.agony.remains\u0026(dot.corruption.remains|dot.wither.remains)\u0026cooldown.dark_harvest.remains\u003E1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 105,
+    "List": "items",
+    "Kind": "action",
+    "Text": "actions.items=use_item,name=stormbound_emblem_of_dazar,if=cooldown.summon_darkglare.remains\u003C=4\u0026dot.agony.remains\u0026(dot.corruption.remains|dot.wither.remains)\u0026cooldown.dark_harvest.remains\u003E1",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 106,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "buff.malevolence.up",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 106,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "pet.darkglare.active",
+    "Status": "bound",
+    "Detail": "N(s.darkglareRemains \u003E 0)"
+  },
+  {
+    "Number": 106,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 106,
+    "List": "items",
+    "Kind": "expression",
+    "Text": "(buff.malevolence.up|pet.darkglare.active)|fight_remains\u003C20",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: buff.malevolence.up"
+  },
+  {
+    "Number": 106,
+    "List": "items",
+    "Kind": "option",
+    "Text": "name=galactic_gladiators_badge_of_ferocity",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 106,
+    "List": "items",
+    "Kind": "option",
+    "Text": "if=(buff.malevolence.up|pet.darkglare.active)|fight_remains\u003C20",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 106,
+    "List": "items",
+    "Kind": "action",
+    "Text": "actions.items\u002B=/use_item,name=galactic_gladiators_badge_of_ferocity,if=(buff.malevolence.up|pet.darkglare.active)|fight_remains\u003C20",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 107,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "pet.darkglare.active",
+    "Status": "bound",
+    "Detail": "N(s.darkglareRemains \u003E 0)"
+  },
+  {
+    "Number": 107,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "buff.hex_lords_doom.stack",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 107,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 107,
+    "List": "items",
+    "Kind": "expression",
+    "Text": "pet.darkglare.active|buff.hex_lords_doom.stack\u003E19|fight_remains\u003C=30",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: buff.hex_lords_doom.stack"
+  },
+  {
+    "Number": 107,
+    "List": "items",
+    "Kind": "option",
+    "Text": "name=hex_lords_dooming_idol",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 107,
+    "List": "items",
+    "Kind": "option",
+    "Text": "if=pet.darkglare.active|buff.hex_lords_doom.stack\u003E19|fight_remains\u003C=30",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 107,
+    "List": "items",
+    "Kind": "action",
+    "Text": "actions.items\u002B=/use_item,name=hex_lords_dooming_idol,if=pet.darkglare.active|buff.hex_lords_doom.stack\u003E19|fight_remains\u003C=30",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 108,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "buff.malevolence.up",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 108,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "pet.darkglare.active",
+    "Status": "bound",
+    "Detail": "N(s.darkglareRemains \u003E 0)"
+  },
+  {
+    "Number": 108,
+    "List": "items",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 108,
+    "List": "items",
+    "Kind": "expression",
+    "Text": "(buff.malevolence.up|pet.darkglare.active)|fight_remains\u003C20",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: buff.malevolence.up"
+  },
+  {
+    "Number": 108,
+    "List": "items",
+    "Kind": "option",
+    "Text": "if=(buff.malevolence.up|pet.darkglare.active)|fight_remains\u003C20",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 108,
+    "List": "items",
+    "Kind": "action",
+    "Text": "actions.items\u002B=/use_items,if=(buff.malevolence.up|pet.darkglare.active)|fight_remains\u003C20",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 109,
+    "List": "items",
+    "Kind": "option",
+    "Text": "use_off_gcd=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 109,
+    "List": "items",
+    "Kind": "option",
+    "Text": "slot=main_hand",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 109,
+    "List": "items",
+    "Kind": "action",
+    "Text": "actions.items\u002B=/use_item,use_off_gcd=1,slot=main_hand",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 111,
+    "List": "ogcd",
+    "Kind": "binding",
+    "Text": "variable.cds_active",
+    "Status": "bound",
+    "Detail": "(v[\u0022cds_active\u0022] or 0)"
+  },
+  {
+    "Number": 111,
+    "List": "ogcd",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 111,
+    "List": "ogcd",
+    "Kind": "expression",
+    "Text": "variable.cds_active|fight_remains\u003C32",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 111,
+    "List": "ogcd",
+    "Kind": "option",
+    "Text": "use_off_gcd=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 111,
+    "List": "ogcd",
+    "Kind": "option",
+    "Text": "if=variable.cds_active|fight_remains\u003C32",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 111,
+    "List": "ogcd",
+    "Kind": "action",
+    "Text": "actions.ogcd=potion,use_off_gcd=1,if=variable.cds_active|fight_remains\u003C32",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 112,
+    "List": "ogcd",
+    "Kind": "binding",
+    "Text": "variable.cds_active",
+    "Status": "bound",
+    "Detail": "(v[\u0022cds_active\u0022] or 0)"
+  },
+  {
+    "Number": 112,
+    "List": "ogcd",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 112,
+    "List": "ogcd",
+    "Kind": "expression",
+    "Text": "variable.cds_active|fight_remains\u003C16",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 112,
+    "List": "ogcd",
+    "Kind": "option",
+    "Text": "name=power_infusion",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 112,
+    "List": "ogcd",
+    "Kind": "option",
+    "Text": "if=variable.cds_active|fight_remains\u003C16",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 112,
+    "List": "ogcd",
+    "Kind": "action",
+    "Text": "actions.ogcd\u002B=/invoke_external_buff,name=power_infusion,if=variable.cds_active|fight_remains\u003C16",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 113,
+    "List": "ogcd",
+    "Kind": "binding",
+    "Text": "variable.cds_active",
+    "Status": "bound",
+    "Detail": "(v[\u0022cds_active\u0022] or 0)"
+  },
+  {
+    "Number": 113,
+    "List": "ogcd",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 113,
+    "List": "ogcd",
+    "Kind": "expression",
+    "Text": "variable.cds_active|fight_remains\u003C14",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 113,
+    "List": "ogcd",
+    "Kind": "option",
+    "Text": "use_off_gcd=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 113,
+    "List": "ogcd",
+    "Kind": "option",
+    "Text": "if=variable.cds_active|fight_remains\u003C14",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 113,
+    "List": "ogcd",
+    "Kind": "action",
+    "Text": "actions.ogcd\u002B=/berserking,use_off_gcd=1,if=variable.cds_active|fight_remains\u003C14",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 114,
+    "List": "ogcd",
+    "Kind": "binding",
+    "Text": "variable.cds_active",
+    "Status": "bound",
+    "Detail": "(v[\u0022cds_active\u0022] or 0)"
+  },
+  {
+    "Number": 114,
+    "List": "ogcd",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 114,
+    "List": "ogcd",
+    "Kind": "expression",
+    "Text": "variable.cds_active|fight_remains\u003C17",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 114,
+    "List": "ogcd",
+    "Kind": "option",
+    "Text": "use_off_gcd=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 114,
+    "List": "ogcd",
+    "Kind": "option",
+    "Text": "if=variable.cds_active|fight_remains\u003C17",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 114,
+    "List": "ogcd",
+    "Kind": "action",
+    "Text": "actions.ogcd\u002B=/blood_fury,use_off_gcd=1,if=variable.cds_active|fight_remains\u003C17",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 115,
+    "List": "ogcd",
+    "Kind": "binding",
+    "Text": "variable.cds_active",
+    "Status": "bound",
+    "Detail": "(v[\u0022cds_active\u0022] or 0)"
+  },
+  {
+    "Number": 115,
+    "List": "ogcd",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 115,
+    "List": "ogcd",
+    "Kind": "expression",
+    "Text": "variable.cds_active|fight_remains\u003C10",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 115,
+    "List": "ogcd",
+    "Kind": "option",
+    "Text": "use_off_gcd=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 115,
+    "List": "ogcd",
+    "Kind": "option",
+    "Text": "if=variable.cds_active|fight_remains\u003C10",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 115,
+    "List": "ogcd",
+    "Kind": "action",
+    "Text": "actions.ogcd\u002B=/fireblood,use_off_gcd=1,if=variable.cds_active|fight_remains\u003C10",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 116,
+    "List": "ogcd",
+    "Kind": "binding",
+    "Text": "variable.cds_active",
+    "Status": "bound",
+    "Detail": "(v[\u0022cds_active\u0022] or 0)"
+  },
+  {
+    "Number": 116,
+    "List": "ogcd",
+    "Kind": "binding",
+    "Text": "fight_remains",
+    "Status": "bound",
+    "Detail": "s.fightRemains"
+  },
+  {
+    "Number": 116,
+    "List": "ogcd",
+    "Kind": "expression",
+    "Text": "variable.cds_active|fight_remains\u003C17",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 116,
+    "List": "ogcd",
+    "Kind": "option",
+    "Text": "use_off_gcd=1",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 116,
+    "List": "ogcd",
+    "Kind": "option",
+    "Text": "if=variable.cds_active|fight_remains\u003C17",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 116,
+    "List": "ogcd",
+    "Kind": "action",
+    "Text": "actions.ogcd\u002B=/ancestral_call,use_off_gcd=1,if=variable.cds_active|fight_remains\u003C17",
+    "Status": "unsupported",
+    "Detail": "List excluded by spec metadata"
+  },
+  {
+    "Number": 118,
+    "List": "soul_harvester",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 118,
+    "List": "soul_harvester",
+    "Kind": "expression",
+    "Text": "active_enemies=1",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 118,
+    "List": "soul_harvester",
+    "Kind": "option",
+    "Text": "name=SH_st",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 118,
+    "List": "soul_harvester",
+    "Kind": "option",
+    "Text": "if=active_enemies=1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 118,
+    "List": "soul_harvester",
+    "Kind": "action",
+    "Text": "actions.soul_harvester=call_action_list,name=SH_st,if=active_enemies=1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 119,
+    "List": "soul_harvester",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 119,
+    "List": "soul_harvester",
+    "Kind": "expression",
+    "Text": "active_enemies=2",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 119,
+    "List": "soul_harvester",
+    "Kind": "option",
+    "Text": "name=SH_cleave",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 119,
+    "List": "soul_harvester",
+    "Kind": "option",
+    "Text": "if=active_enemies=2",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 119,
+    "List": "soul_harvester",
+    "Kind": "action",
+    "Text": "actions.soul_harvester\u002B=/call_action_list,name=SH_cleave,if=active_enemies=2",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 120,
+    "List": "soul_harvester",
+    "Kind": "binding",
+    "Text": "active_enemies",
+    "Status": "bound",
+    "Detail": "s.enemies"
+  },
+  {
+    "Number": 120,
+    "List": "soul_harvester",
+    "Kind": "expression",
+    "Text": "active_enemies\u003E2",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 120,
+    "List": "soul_harvester",
+    "Kind": "option",
+    "Text": "name=SH_aoe",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 120,
+    "List": "soul_harvester",
+    "Kind": "option",
+    "Text": "if=active_enemies\u003E2",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 120,
+    "List": "soul_harvester",
+    "Kind": "action",
+    "Text": "actions.soul_harvester\u002B=/call_action_list,name=SH_aoe,if=active_enemies\u003E2",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 122,
+    "List": "variables",
+    "Kind": "binding",
+    "Text": "talent.summon_darkglare",
+    "Status": "bound",
+    "Detail": "V(s.talent[\u0022summon_darkglare\u0022])"
+  },
+  {
+    "Number": 122,
+    "List": "variables",
+    "Kind": "binding",
+    "Text": "pet.darkglare.remains",
+    "Status": "bound",
+    "Detail": "s.darkglareRemains"
+  },
+  {
+    "Number": 122,
+    "List": "variables",
+    "Kind": "expression",
+    "Text": "!talent.summon_darkglare|pet.darkglare.remains",
+    "Status": "bound",
+    "Detail": "value"
+  },
+  {
+    "Number": 122,
+    "List": "variables",
+    "Kind": "option",
+    "Text": "name=cds_active",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 122,
+    "List": "variables",
+    "Kind": "option",
+    "Text": "op=set",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 122,
+    "List": "variables",
+    "Kind": "option",
+    "Text": "value=!talent.summon_darkglare|pet.darkglare.remains",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 122,
+    "List": "variables",
+    "Kind": "action",
+    "Text": "actions.variables=variable,name=cds_active,op=set,value=!talent.summon_darkglare|pet.darkglare.remains",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 123,
+    "List": "variables",
+    "Kind": "binding",
+    "Text": "pet.darkglare.active",
+    "Status": "bound",
+    "Detail": "N(s.darkglareRemains \u003E 0)"
+  },
+  {
+    "Number": 123,
+    "List": "variables",
+    "Kind": "binding",
+    "Text": "cooldown.summon_darkglare.duration",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 123,
+    "List": "variables",
+    "Kind": "binding",
+    "Text": "cooldown.summon_darkglare.remains",
+    "Status": "bound",
+    "Detail": "(s.remains[205180] or 0)"
+  },
+  {
+    "Number": 123,
+    "List": "variables",
+    "Kind": "expression",
+    "Text": "pet.darkglare.active|(cooldown.summon_darkglare.duration-cooldown.summon_darkglare.remains)\u003C20",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: cooldown.summon_darkglare.duration"
+  },
+  {
+    "Number": 123,
+    "List": "variables",
+    "Kind": "option",
+    "Text": "name=darkglare_active",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 123,
+    "List": "variables",
+    "Kind": "option",
+    "Text": "op=set",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 123,
+    "List": "variables",
+    "Kind": "option",
+    "Text": "value=pet.darkglare.active|(cooldown.summon_darkglare.duration-cooldown.summon_darkglare.remains)\u003C20",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 123,
+    "List": "variables",
+    "Kind": "action",
+    "Text": "actions.variables\u002B=/variable,name=darkglare_active,op=set,value=pet.darkglare.active|(cooldown.summon_darkglare.duration-cooldown.summon_darkglare.remains)\u003C20",
+    "Status": "unsupported",
+    "Detail": "Only variable op=set with a bound value is supported"
+  },
+  {
+    "Number": 124,
+    "List": "variables",
+    "Kind": "binding",
+    "Text": "dot.agony.remains",
+    "Status": "bound",
+    "Detail": "s.agonyRemains"
+  },
+  {
+    "Number": 124,
+    "List": "variables",
+    "Kind": "binding",
+    "Text": "dot.agony.remains",
+    "Status": "bound",
+    "Detail": "s.agonyRemains"
+  },
+  {
+    "Number": 124,
+    "List": "variables",
+    "Kind": "expression",
+    "Text": "dot.agony.remains\u002B(99*!dot.agony.remains)",
+    "Status": "bound",
+    "Detail": "value"
+  },
+  {
+    "Number": 124,
+    "List": "variables",
+    "Kind": "option",
+    "Text": "name=min_agony",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 124,
+    "List": "variables",
+    "Kind": "option",
+    "Text": "op=min",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 124,
+    "List": "variables",
+    "Kind": "option",
+    "Text": "value=dot.agony.remains\u002B(99*!dot.agony.remains)",
+    "Status": "unsupported",
+    "Detail": ""
+  },
+  {
+    "Number": 124,
+    "List": "variables",
+    "Kind": "action",
+    "Text": "actions.variables\u002B=/cycling_variable,name=min_agony,op=min,value=dot.agony.remains\u002B(99*!dot.agony.remains)",
+    "Status": "unsupported",
+    "Detail": "Action has no supported spell metadata"
+  },
+  {
+    "Number": 125,
+    "List": "variables",
+    "Kind": "binding",
+    "Text": "buff.malevolence.up",
+    "Status": "unsupported",
+    "Detail": "No state binding"
+  },
+  {
+    "Number": 125,
+    "List": "variables",
+    "Kind": "expression",
+    "Text": "buff.malevolence.up=0",
+    "Status": "unsupported",
+    "Detail": "Unbound expression: buff.malevolence.up"
+  },
+  {
+    "Number": 125,
+    "List": "variables",
+    "Kind": "expression",
+    "Text": "0",
+    "Status": "bound",
+    "Detail": "value"
+  },
+  {
+    "Number": 125,
+    "List": "variables",
+    "Kind": "option",
+    "Text": "name=malevolence_from_cast",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 125,
+    "List": "variables",
+    "Kind": "option",
+    "Text": "value=0",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 125,
+    "List": "variables",
+    "Kind": "option",
+    "Text": "op=set",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 125,
+    "List": "variables",
+    "Kind": "option",
+    "Text": "if=buff.malevolence.up=0",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 125,
+    "List": "variables",
+    "Kind": "action",
+    "Text": "actions.variables\u002B=/variable,name=malevolence_from_cast,value=0,op=set,if=buff.malevolence.up=0",
+    "Status": "unsupported",
+    "Detail": "Unsupported expression or option; entire action omitted"
+  },
+  {
+    "Number": 126,
+    "List": "variables",
+    "Kind": "binding",
+    "Text": "prev_gcd.1.malevolence",
+    "Status": "bound",
+    "Detail": "N(s.prevGcd == 442726)"
+  },
+  {
+    "Number": 126,
+    "List": "variables",
+    "Kind": "expression",
+    "Text": "prev_gcd.1.malevolence",
+    "Status": "bound",
+    "Detail": "if"
+  },
+  {
+    "Number": 126,
+    "List": "variables",
+    "Kind": "expression",
+    "Text": "1",
+    "Status": "bound",
+    "Detail": "value"
+  },
+  {
+    "Number": 126,
+    "List": "variables",
+    "Kind": "option",
+    "Text": "name=malevolence_from_cast",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 126,
+    "List": "variables",
+    "Kind": "option",
+    "Text": "value=1",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 126,
+    "List": "variables",
+    "Kind": "option",
+    "Text": "op=set",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 126,
+    "List": "variables",
+    "Kind": "option",
+    "Text": "if=prev_gcd.1.malevolence",
+    "Status": "bound",
+    "Detail": ""
+  },
+  {
+    "Number": 126,
+    "List": "variables",
+    "Kind": "action",
+    "Text": "actions.variables\u002B=/variable,name=malevolence_from_cast,value=1,op=set,if=prev_gcd.1.malevolence",
+    "Status": "bound",
+    "Detail": ""
+  }
+]

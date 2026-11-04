@@ -15,6 +15,9 @@ public sealed class Translator(Metadata metadata)
         var actions = SimcParser.Parse(source);
         var coverage = new List<Coverage>();
         var variables = new HashSet<string>(StringComparer.Ordinal);
+        // A variable's numeric `default` is its value before (or without) an assignment.
+        var defaults = new Dictionary<string, string>(StringComparer.Ordinal);
+        var approximated = new HashSet<string>(metadata.ApproximatedOptions ?? [], StringComparer.Ordinal);
         var generated = new Dictionary<int, (string? Condition, string? Value)>();
         var clauses = new Dictionary<int, List<string>>();
         var supported = new HashSet<int>();
@@ -23,12 +26,14 @@ public sealed class Translator(Metadata metadata)
             if (!Regex.IsMatch(method, @"^[A-Za-z_][A-Za-z_0-9]*$") || method is "Evaluate" or "OffGcd"
                 || !lists.Contains(list) || list == "precombat" || metadata.ExcludedLists.Contains(list))
                 throw new NotSupportedException($"Invalid entry point {method}: {list}");
-        string? Bind(string name)
+        // `action:name` bindings give an action's bare names their meaning, e.g. agony's `refreshable`.
+        string? Bind(string name, string action)
         {
+            if (metadata.Bindings.TryGetValue($"{action}:{name}", out var contextual)) return contextual;
             if (metadata.Bindings.TryGetValue(name, out var binding)) return binding;
             var p = name.Split('.');
             if (p.Length == 2 && p[0] == "talent") return $"V(s.talent[{Q(p[1])}])";
-            if (p.Length == 2 && p[0] == "variable" && variables.Contains(p[1])) return $"(v[{Q(p[1])}] or 0)";
+            if (p.Length == 2 && p[0] == "variable" && variables.Contains(p[1])) return $"(v[{Q(p[1])}] or {defaults.GetValueOrDefault(p[1], "0")})";
             if (p.Length == 3 && p[0] == "cooldown" && metadata.Spells.TryGetValue(p[1], out var spell))
                 return p[2] switch
                 {
@@ -47,11 +52,11 @@ public sealed class Translator(Metadata metadata)
             if (!a.Options.TryGetValue(key, out var expression)) return null;
             // Report every identifier, including ones after an unbound identifier.
             foreach (Match m in Regex.Matches(expression, @"[a-zA-Z_][a-zA-Z_0-9.]*"))
-                coverage.Add(new(a.Number, a.List, "binding", m.Value, Bind(m.Value) is null ? "unsupported" : "bound",
-                    Bind(m.Value) ?? "No state binding"));
+                coverage.Add(new(a.Number, a.List, "binding", m.Value, Bind(m.Value, a.Action) is null ? "unsupported" : "bound",
+                    Bind(m.Value, a.Action) ?? "No state binding"));
             try
             {
-                var compiler = new ExpressionCompiler(Bind);
+                var compiler = new ExpressionCompiler(name => Bind(name, a.Action));
                 var lua = compiler.Compile(expression);
                 if (key == "if") clauses[a.Number] = [.. compiler.Clauses];
                 coverage.Add(new(a.Number, a.List, "expression", expression, "bound", key));
@@ -65,54 +70,73 @@ public sealed class Translator(Metadata metadata)
             }
         }
 
-        foreach (var a in actions)
+        // Two passes: the first finds the supported variables, so a rule can read one that
+        // its list declares later in source order (APLs often put the variables list last).
+        for (int pass = 0; pass < 2; pass++)
         {
-            bool valid = true;
-            var condition = Compile(a, "if", ref valid);
-            var value = Compile(a, "value", ref valid);
-            _ = Compile(a, "interrupt_if", ref valid);
-            string? reason = null;
-            if (metadata.ExcludedLists.Contains(a.List)) reason = metadata.Spec == 62
-                ? "List outside initial Sunfury scope" : "List excluded by spec metadata";
-            else if (a.Action == "variable")
+            coverage.Clear(); generated.Clear(); clauses.Clear(); supported.Clear();
+            foreach (var a in actions)
             {
-                if (!a.Options.ContainsKey("name") || value is null || a.Options.GetValueOrDefault("op", "set") != "set")
-                    reason = "Only variable op=set with a bound value is supported";
-            }
-            else if (a.List == "precombat") reason = "Precombat recommendations not implemented (variables only)";
-            else if (a.Action == "call_action_list")
-            {
-                if (!a.Options.TryGetValue("name", out var target) || !lists.Contains(target)) reason = "Missing action list";
-                else if (metadata.ExcludedLists.Contains(target)) reason = metadata.Spec == 62
-                    ? "Target list outside initial Sunfury scope" : "Target list excluded by spec metadata";
-            }
-            else if (!metadata.Spells.ContainsKey(a.Action)) reason = "Action has no supported spell metadata";
-
-            foreach (var (key, option) in a.Options)
-            {
-                var status = "bound";
-                var detail = "";
-                if (key == "chain" && option == "1")
+                bool valid = true;
+                var condition = Compile(a, "if", ref valid);
+                var value = Compile(a, "value", ref valid);
+                if (!approximated.Contains("interrupt_if")) _ = Compile(a, "interrupt_if", ref valid);
+                string? reason = null;
+                if (metadata.ExcludedLists.Contains(a.List)) reason = metadata.Spec == 62
+                    ? "List outside initial Sunfury scope" : "List excluded by spec metadata";
+                else if (a.Action == "variable")
                 {
-                    status = "approximated";
-                    detail = "Recommendation only; no channel timing/clip cue (D32)";
+                    if (!a.Options.ContainsKey("name") || value is null || a.Options.GetValueOrDefault("op", "set") != "set")
+                        reason = "Only variable op=set with a bound value is supported";
                 }
-                else if (key == "use_off_gcd" && option is not ("0" or "1")) status = "unsupported";
-                else if (key is not ("name" or "op" or "if" or "value" or "use_off_gcd")) status = "unsupported";
-                else if (key == "op" && option != "set") status = "unsupported";
-                if (key is "name" && a.Action is not ("call_action_list" or "variable")) status = "unsupported";
-                if (key is "op" or "value" && a.Action != "variable") status = "unsupported";
-                if (key == "use_off_gcd" && !metadata.Spells.ContainsKey(a.Action)) status = "unsupported";
-                if (status == "unsupported") valid = false;
-                coverage.Add(new(a.Number, a.List, "option", $"{key}={option}", status, detail));
+                else if (a.List == "precombat") reason = "Precombat recommendations not implemented (variables only)";
+                else if (a.Action == "call_action_list")
+                {
+                    if (!a.Options.TryGetValue("name", out var target) || !lists.Contains(target)) reason = "Missing action list";
+                    else if (metadata.ExcludedLists.Contains(target)) reason = metadata.Spec == 62
+                        ? "Target list outside initial Sunfury scope" : "Target list excluded by spec metadata";
+                }
+                else if (!metadata.Spells.ContainsKey(a.Action)) reason = "Action has no supported spell metadata";
+
+                foreach (var (key, option) in a.Options)
+                {
+                    var status = "bound";
+                    var detail = "";
+                    if (key == "chain" && option == "1")
+                    {
+                        status = "approximated";
+                        detail = "Recommendation only; no channel timing/clip cue (D32)";
+                    }
+                    else if (approximated.Contains(key))
+                    {
+                        status = "approximated";
+                        detail = "Channel timing not modeled; no clip cue (D32)";
+                    }
+                    else if (key == "use_off_gcd" && option is not ("0" or "1")) status = "unsupported";
+                    else if (key == "default")
+                    {
+                        if (a.Action != "variable" || !Regex.IsMatch(option, @"^\d+(\.\d+)?$")) status = "unsupported";
+                    }
+                    else if (key is not ("name" or "op" or "if" or "value" or "use_off_gcd")) status = "unsupported";
+                    else if (key == "op" && option != "set") status = "unsupported";
+                    if (key is "name" && a.Action is not ("call_action_list" or "variable")) status = "unsupported";
+                    if (key is "op" or "value" && a.Action != "variable") status = "unsupported";
+                    if (key == "use_off_gcd" && !metadata.Spells.ContainsKey(a.Action)) status = "unsupported";
+                    if (status == "unsupported") valid = false;
+                    coverage.Add(new(a.Number, a.List, "option", $"{key}={option}", status, detail));
+                }
+                valid &= reason is null;
+                coverage.Add(new(a.Number, a.List, "action", a.Source, valid ? "bound" : "unsupported",
+                    reason ?? (valid ? "" : "Unsupported expression or option; entire action omitted")));
+                if (!valid) continue;
+                supported.Add(a.Number);
+                generated[a.Number] = (condition, value);
+                if (a.Action == "variable")
+                {
+                    variables.Add(a.Options["name"]);
+                    if (a.Options.TryGetValue("default", out var initial)) defaults[a.Options["name"]] = initial;
+                }
             }
-            valid &= reason is null;
-            coverage.Add(new(a.Number, a.List, "action", a.Source, valid ? "bound" : "unsupported",
-                reason ?? (valid ? "" : "Unsupported expression or option; entire action omitted")));
-            if (!valid) continue;
-            supported.Add(a.Number);
-            generated[a.Number] = (condition, value);
-            if (a.Action == "variable") variables.Add(a.Options["name"]);
         }
 
         // Recursive list calls could overflow Lua's stack. Reject them before emitting anything.
