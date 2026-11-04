@@ -272,7 +272,9 @@ describe("Demonology live module", function()
         Stub.Fire("SPELLS_CHANGED")
         hold(S.DOGS); hold(S.TYRANT) -- the out-of-combat refresh reread them as idle
         assert.are.equal(S.SHADOW, K.APL:Recommend().queuedID)
-        -- A Hand that just landed may still grant its Demonic Art's Infernal Bolt.
+        -- A Hand that just landed may still grant its Demonic Art's Infernal Bolt when the
+        -- ritual model can't say which Art it consumed.
+        K.DemonologyRitual:Reset()
         A:OnCast(S.HAND, Stub.now)
         assert.are.equal(S.SHADOW, K.APL:Recommend().spellID)
         assert.is_nil(K.APL:Recommend().queuedID)

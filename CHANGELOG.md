@@ -4,6 +4,12 @@ All notable changes to Kairos are documented here. The format follows [Keep a Ch
 
 ## [Unreleased]
 
+## [0.2.11] - 2026-11-04
+
+### Fixed
+
+- Demonology names the right Demonic Art, and so the right Infernal Bolt or Ruination proc, far more often. In two Mythic+ +10 keys the ritual model got 325 of 374 Hands of Gul'dan right live (87%); replayed with these fixes, 368 of the 372 it could grade. Three things threw it off. A pull's opening Dreadstalkers, Grimoire or Hand lands a few milliseconds before the game reports combat, so it wasn't counted and that pull's rituals ran late. Ruination uses up a waiting Art (9 of 9 times in the logs), which the model didn't know. And a spender pressed 49 ms after a Hand that overran a ritual was counted toward the old ritual, though the new one had already begun; that window is now 30 ms. These were 8 of Kairos's 41 disagreements with the APL in those keys.
+
 ## [0.2.10] - 2026-11-04
 
 ### Added

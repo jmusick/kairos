@@ -1,5 +1,5 @@
 -- Diabolic Ritual (Diabolist), from own casts. Explicit times allow offline replay.
--- SimC 515f4a3fe9 and the 12.1.5 log agree: a shard spender in combat (Hand of Gul'dan,
+-- SimC 515f4a3fe9 and the 12.1.5 log agree: a shard spender (Hand of Gul'dan,
 -- Call Dreadstalkers, the Grimoires, Summon Doomguard; free Dreadstalkers too) starts the
 -- next ritual if none is running, and every such cast takes 1 s per shard off it, plus
 -- 1 s with Infernal Machine while a Demonic Tyrant is out. A ritual lasts 20 s before
@@ -7,7 +7,7 @@
 -- Art appears 0.2 s later (replacing any older Art) and the cycle moves on: Overlord,
 -- Mother of Chaos, Pit Lord. A Hand consumes the Art only
 -- if one was up when its cast began; Mother of Chaos then grants Infernal Bolt and Pit
--- Lord Ruination. The auras are secret in combat, so readable ones anchor the model and
+-- Lord Ruination. A Ruination consumes any Art up at its success. The auras are secret in combat, so readable ones anchor the model and
 -- an observed proc names the Art a Hand consumed.
 local _, Kairos = ...
 local Ritual = Kairos:NewModule("DemonologyRitual")
@@ -19,9 +19,10 @@ Ritual.MACHINE = 1
 -- and Reign of Tyranny adds 5 s (12.1.5 log: last casts 19.2-20.4 s after 9 summons).
 Ritual.TYRANT, Ritual.REIGN = 15.38, 5
 Ritual.ART_DELAY = 0.2
--- A ritual a cast overruns ends just after it (12.1.5: 6-25 ms), so a cast inside that gap
--- (Dreadstalkers or a Grimoire pressed with the Hand) still counts toward it.
-Ritual.END_LAG = 0.05
+-- A ritual a cast overruns ends just after it (12.1.5: 6-31 ms), so a cast inside that gap
+-- (Dreadstalkers or a Grimoire pressed with the Hand: 2-6 ms after it in five logs) still
+-- counts toward it. One 49 ms after it began the next ritual (Nov. 4), so 0.05 was too long.
+Ritual.END_LAG = 0.03
 Ritual.ART_LIFE = 60
 Ritual.KINDS = { "overlord", "mother", "pit_lord" }
 Ritual.AURAS = { overlord = { ritual = 431944, art = 428524 }, mother = { ritual = 432815, art = 432794 },
@@ -92,6 +93,13 @@ function Ritual:Hand(t, start, shards, machine)
     end
     self:Spend(t, shards, machine)
     return consumed
+end
+
+--- A Ruination's success at t consumes the Art up then, even one that appeared mid-cast
+--- (12.1.5 logs: 9 of 9, every one an Overlord, which grants no proc). It spends nothing.
+function Ritual:Ruination(t)
+    self:Resolve(t)
+    if self.art and self.art.at <= t then self.art = nil end
 end
 
 --- A proc that only a consumed Art grants: that Art was `kind`, so the cycle has moved

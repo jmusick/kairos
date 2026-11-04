@@ -209,10 +209,14 @@ function State:OnCast(id, t)
         local gain = own + (held and held.base == base and t - held.at < self.POWER_LAG and held.gain or 0)
         self.heldGain = { gain = gain, base = base, at = t }
     end
-    -- Diabolic Ritual: spenders in combat advance it, and a Hand consumes the Art that was up
-    -- when its cast began. That Art's proc lands 0-0.1 s after the Hand (ART_LAG).
+    -- Diabolic Ritual: spenders advance it, and a Hand consumes the Art that was up when its
+    -- cast began. That Art's proc lands 0-0.1 s after the Hand (ART_LAG). A pull's opening
+    -- spender succeeds ~20 ms before PLAYER_REGEN_DISABLED (Nov. 4: every opener) yet starts
+    -- the ritual, so out of combat counts too; the out-of-combat aura anchor corrects any
+    -- spender that didn't.
     if id == S.HAND then self.handArt = nil end
-    if self.SPENDERS[id] and talent("diabolic_ritual") and Kairos.State.inCombat then
+    if id == S.RUINATION and talent("diabolic_ritual") then Kairos.DemonologyRitual:Ruination(t) end
+    if self.SPENDERS[id] and talent("diabolic_ritual") then
         local R = Kairos.DemonologyRitual
         local machine = talent("infernal_machine") and self.tyrantAt ~= nil
             and t < self.tyrantAt + R.TYRANT + (talent("reign_of_tyranny") and R.REIGN or 0)

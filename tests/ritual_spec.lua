@@ -38,7 +38,7 @@ describe("Diabolic Ritual model", function()
         for t = 101, 106 do R:Spend(t, 3, false) end
         -- 119 - 3 a second reaches 104 at the 105 s spend, which ends it END_LAG later.
         local _, art = R:At(106)
-        assert.are.equal(105.25, art.at)
+        assert.are.equal(105 + R.END_LAG + R.ART_DELAY, art.at)
         assert.are.equal(126 - 3, R.ritual.ends) -- the 106 s spend began the next one
     end)
 
@@ -47,13 +47,53 @@ describe("Diabolic Ritual model", function()
         R.nextKind = "mother"
         R:Spend(100, 3, false)
         R:Spend(110, 3, false) -- 117 - 3 = 114: still running
-        R:Spend(113, 3, false) -- 111 < 113: it ends just after, at 113.05
+        R:Spend(113, 3, false) -- 111 < 113: it ends just after, at 113.03
         R:Spend(113.002, 0, false) -- Dreadstalkers inside that gap starts nothing
-        assert.are.equal(113.05, R.ritual.ends)
+        assert.are.equal(113 + R.END_LAG, R.ritual.ends)
         assert.are.equal("mother", R.ritual.kind)
         R:Spend(115, 3, false) -- the next spend starts Pit Lord
         assert.are.equal("pit_lord", R.ritual.kind)
         assert.are.equal("mother", R:ArtAt(115))
+    end)
+
+    it("starts the next ritual on a cast 49 ms after an overrunning Hand", function()
+        -- Nov. 4, 13:50:14: the Hand's ritual ended 15 ms after it; Dreadstalkers at +49 ms began
+        -- Mother of Chaos.
+        R:Anchor(100, empty())
+        R.nextKind = "overlord"
+        R:Spend(100, 3, false)
+        R:Spend(116, 3, false) -- 117 - 3 = 114 < 116: it ends just after
+        R:Spend(116.049, 0, false)
+        assert.are.equal("mother", R.ritual.kind)
+        assert.are.equal(136.049, R.ritual.ends)
+    end)
+
+    it("lets a Ruination consume the Art up at its success", function()
+        local readings = empty()
+        readings.overlord = { ritual = false, art = 160 }
+        R:Anchor(100, readings)
+        assert.are.equal("overlord", R:ArtAt(100))
+        R:Ruination(100.5)
+        assert.is_false(R:ArtAt(100.6))
+        assert.is_false(R:Hand(103, 101.8, 3, false)) -- the next Hand finds none
+    end)
+
+    it("counts a pull's opening spender before combat starts", function()
+        A:AnchorRitual(Stub.now) -- out of combat: no ritual running
+        A:Refresh(Stub.now)
+        A:OnCast(S.DOGS, 100) -- succeeds ~20 ms before PLAYER_REGEN_DISABLED
+        Stub.Fire("PLAYER_REGEN_DISABLED")
+        assert.is_not_nil(R.ritual)
+        assert.are.equal(120, R.ritual.ends)
+    end)
+
+    it("lets a cast Ruination take the waiting Art", function()
+        Stub.auras[428524] = { spellId = 428524, expirationTime = 150 } -- Overlord Art up
+        A:AnchorRitual(Stub.now)
+        A:Refresh(Stub.now)
+        Stub.Fire("PLAYER_REGEN_DISABLED")
+        A:OnCast(S.RUINATION, 100)
+        assert.is_false(R:ArtAt(100.1))
     end)
 
     it("lets a Hand consume only an Art that was up when its cast began", function()

@@ -648,6 +648,20 @@ local function alignRecorder(entries, records)
     return best, bestHits, #recCasts
 end
 
+--- The recorder entries that land on this log's clock. A client restart resets GetTime,
+--- so the archive can hold earlier sessions whose clocks run past the log's; scans that
+--- walk entries in time order would stop at the first of them.
+local function onLogClock(entries, offset, records)
+    if not offset or not records[1] then return entries end
+    local first, last = records[1].t - 3600, records[#records].t + 3600
+    local out = {}
+    for _, e in ipairs(entries) do
+        local t = e.t and e.t + offset
+        if not t or (t >= first and t <= last) then out[#out + 1] = e end
+    end
+    return out
+end
+
 local function recorderForPlayer(recorded, player, spec)
     local hasSessions = false
     for _, e in ipairs(recorded) do
@@ -683,6 +697,7 @@ local function aplArcane(logPath, svPath, player, ...)
 
     local recorded = recorderForPlayer(replayEntries(db), player, 62)
     local offset, hits, recCasts = alignRecorder(recorded, successes)
+    recorded = onLogClock(recorded, offset, successes)
     -- GetTime can coalesce consecutive successes into one frame. Match each log
     -- success to its ordered recorder cast so a post-cast pick cannot be scored
     -- as the recommendation for that cast, even if its aligned clock is a few ms early.
@@ -1255,19 +1270,22 @@ local function pickDemonology(adapter, s)
     return pick or { spellID = 0, label = "no available action", line = "no available action" }, uncertain
 end
 
-local function aplDemonology(logPath, svPath, player, ...)
-    local from, to, verbose = parseOptions(...)
+--- The recorder's Demonology inputs for a replay: its entries, haste and talents from the
+--- captured evaluations, and a function that puts the client's traced shard readings,
+--- combat and target changes, Implosion counts and Inner Demons phases on the log's clock.
+local function demonologyInputs(svPath, player)
     local db = loadDB(svPath)
     local recorded = recorderForPlayer(replayEntries(db), player, 266)
     -- The live imp estimate uses cached haste; recover it from a captured GCD.
-    local haste, toHellAndBack
+    local haste, talents
     for _, e in ipairs(recorded) do
         local p = e.recommendation and e.recommendation.diagnostic and e.recommendation.diagnostic.projected
         if p and type(p.gcdMax) == "number" and p.gcdMax > 0.75 and not (p.unknown or {}).gcdMax then
             haste = (1.5 / p.gcdMax - 1) * 100
         end
-        if p and p.talent then toHellAndBack = p.talent.to_hell_and_back == true end
+        if p and p.talent then talents = p.talent end
     end
+    local toHellAndBack = talents and talents.to_hell_and_back == true
     -- The client's traced shard readings on the log's clock, aligned by the log's casts.
     local clientReadings, combat, counts, phases = {}, {}, {}, {}
     local function readings(casts)
@@ -1294,14 +1312,23 @@ local function aplDemonology(logPath, svPath, player, ...)
         table.sort(phases, function(a, b) return a.t < b.t end)
         return clientReadings, combat, counts, phases
     end
+    return { db = db, recorded = recorded, talents = talents or {}, clientReadings = clientReadings,
+        combat = combat, options = { haste = haste, toHellAndBack = toHellAndBack, readings = readings } }
+end
+
+local function aplDemonology(logPath, svPath, player, ...)
+    local from, to, verbose = parseOptions(...)
+    local inputs = demonologyInputs(svPath, player)
+    local db, recorded, clientReadings = inputs.db, inputs.recorded, inputs.clientReadings
     local all, APL, successes, adapter, timeline, ownGains, tickSource = replayDemonology(logPath, player,
-        { haste = haste, toHellAndBack = toHellAndBack, readings = readings })
+        inputs.options)
     local records = inWindow(all, from, to)
     local S = APL.SPELLS
     local names = spellNames(db, loadProbe())
     for key, id in pairs(S) do names[id] = names[id] or key:sub(1, 1) .. key:sub(2):lower() end
 
     local offset, hits, recCasts = alignRecorder(recorded, successes)
+    recorded = onLogClock(recorded, offset, successes)
     local boundaries, lastCastIndex = {}, 0
     if offset then
         for successIndex, success in ipairs(successes) do
@@ -1571,6 +1598,122 @@ local function aplDemonology(logPath, svPath, player, ...)
     end
 end
 
+--- Replays Diabolic Ritual (Specs/WarlockDemonology/Ritual.lua) on the log's casts as the
+--- live adapter drives it, and grades the Art it says each Hand consumed against the log's
+--- Demonic Art removals, and its ritual ends against the log's. The model is anchored at the
+--- first ritual end after each zone change, then runs on casts alone (plus the procs a Hand
+--- grants, as live). A Hand's shards come from the APL replay's shard model. Options:
+--- "gate" counts spenders only while the recorder says the client was in combat (the live
+--- rule before 0.2.11); "endlag=<s>" overrides Ritual.END_LAG.
+function commands.ritual(logPath, svPath, player, ...)
+    player = player or fail("Usage: ritual <WoWCombatLog.txt> <Kairos.lua> <player> [from [to]] [gate] [endlag=s] [verbose]")
+    local rest, gate, endLag = {}, false, nil
+    for _, option in ipairs({ ... }) do
+        if option == "gate" then gate = true
+        elseif option:match("^endlag=") then endLag = tonumber(option:match("^endlag=(.*)$"))
+        else rest[#rest + 1] = option end
+    end
+    local from, to, verbose = parseOptions((table.unpack or unpack)(rest))
+    local inputs = demonologyInputs(svPath, player)
+    local _, APL, _, _, timeline = replayDemonology(logPath, player, inputs.options)
+    local S = APL.SPELLS
+    local ns = loadAddonFiles({ "Specs/WarlockDemonology/Ritual.lua" })
+    local R = ns.DemonologyRitual
+    if endLag then R.END_LAG = endLag end
+    local talents = inputs.talents
+    local spenders = { [S.HAND] = 3, [S.DOGS] = 0, [S.IMP_LORD] = 1, [S.RAVAGER] = 1, [S.DOOMGUARD] = 1 }
+    local kindOf, ritualKind = {}, {}
+    for kind, ids in pairs(R.AURAS) do kindOf[ids.art], ritualKind[ids.ritual] = kind, kind end
+    local procKind = { [D.INFERNAL_PROC] = "mother", [D.RUINATION_PROC] = "pit_lord" }
+
+    local events = {}
+    local file = io.open(logPath, "r") or fail("Can't open " .. logPath)
+    for line in file:lines() do
+        local stamp, payload = line:match("^(%S+ %S+)%s%s(.*)$")
+        if payload and payload:sub(1, 11) == "ZONE_CHANGE" then
+            events[#events + 1] = { t = clock(stamp), zone = true }
+        elseif payload and payload:find(player, 1, true) then
+            local f = splitCSV(payload)
+            if f[3] and f[3]:sub(1, #player) == player then
+                events[#events + 1] = { t = clock(stamp), event = f[1], id = tonumber(f[10]) }
+            end
+        end
+    end
+    file:close()
+
+    local point = 1
+    local function shardsBefore(t)
+        while timeline[point + 1] and timeline[point + 1].t < t do point = point + 1 end
+        while point > 1 and timeline[point].t >= t do point = point - 1 end
+        return timeline[point] and timeline[point].t < t and math.floor(timeline[point].n + 1e-6) or 3
+    end
+    local combat, nextCombat, inCombat = inputs.combat, 1, false
+    local handStart, handAt, tyrantAt = nil, nil, nil
+    local hands = { right = 0, wrong = 0, unknown = 0 }
+    local ends = { hit = 0, total = 0 }
+    R:Reset()
+    for index, e in ipairs(events) do
+        local t = e.t
+        while combat[nextCombat] and combat[nextCombat].t < t do
+            if combat[nextCombat].on ~= nil then inCombat = combat[nextCombat].on end
+            nextCombat = nextCombat + 1
+        end
+        local scored = (not from or t >= from) and (not to or t <= to)
+        if e.zone then
+            R:Reset()
+        elseif e.event == "SPELL_AURA_REMOVED" and ritualKind[e.id] then
+            if R.known then
+                local modelEnds = R.ritual and R.ritual.ends or (R.art and R.art.at - R.ART_DELAY)
+                if scored then
+                    ends.total = ends.total + 1
+                    if modelEnds and math.abs(modelEnds - t) <= 0.05 then ends.hit = ends.hit + 1 end
+                end
+            else
+                local readings = {}
+                for kind in pairs(R.AURAS) do readings[kind] = { ritual = false, art = false } end
+                readings[ritualKind[e.id]].art = t + R.ART_DELAY + R.ART_LIFE
+                R:Anchor(t, readings)
+            end
+        elseif e.event == "SPELL_AURA_APPLIED" and procKind[e.id] and handAt and t - handAt < 2 then
+            R:Learn(procKind[e.id])
+        elseif e.event == "SPELL_CAST_START" and e.id == S.HAND then
+            handStart = t
+        elseif e.event == "SPELL_CAST_SUCCESS" and e.id then
+            if e.id == S.TYRANT then tyrantAt = t end
+            if e.id == S.RUINATION and R.Ruination then R:Ruination(t) end
+            if spenders[e.id] and (inCombat or not gate) then
+                local machine = talents.infernal_machine ~= false and tyrantAt ~= nil
+                    and t < tyrantAt + R.TYRANT + (talents.reign_of_tyranny ~= false and R.REIGN or 0)
+                if e.id == S.HAND then
+                    local spent = math.min(3, shardsBefore(t))
+                    local consumed = R:Hand(t, handStart or t - 1.2, spent, machine)
+                    local truth = "none"
+                    for j = index + 1, #events do
+                        local n = events[j]
+                        if n.t - t > 0.005 then break end
+                        if n.event == "SPELL_AURA_REMOVED" and kindOf[n.id] then truth = kindOf[n.id] end
+                    end
+                    local said = consumed == false and "none" or consumed
+                    if scored then
+                        if consumed == nil then hands.unknown = hands.unknown + 1
+                        elseif said == truth then hands.right = hands.right + 1
+                        else hands.wrong = hands.wrong + 1 end
+                        if verbose and consumed ~= nil and said ~= truth then
+                            print(("  %s  Hand: log %s, model %s (%d shards)"):format(clockText(t), truth, said, spent))
+                        end
+                    end
+                else
+                    R:Spend(t, spenders[e.id], machine)
+                end
+            end
+            if e.id == S.HAND then handStart, handAt = nil, t end
+        end
+    end
+    print(("Ritual replay (END_LAG %.3f s%s): Hands with the right Art %d/%d, unknown %d; ritual ends within 0.05 s %d/%d")
+        :format(R.END_LAG, gate and ", spenders only in client combat" or "", hands.right, hands.right + hands.wrong,
+            hands.unknown, ends.hit, ends.total))
+end
+
 function commands.apl(logPath, svPath, player, ...)
     player = player or fail("Usage: apl <WoWCombatLog.txt> <Kairos.lua> <player> [from [to]] [verbose]")
     -- The player's first own-spec cast picks the replay.
@@ -1817,6 +1960,6 @@ end
 
 local command = arg and arg[1]
 if not command or not commands[command] then
-    fail("Usage: lua tools/kairos-dump.lua probes|fights|summary|events|combatlog|salvo|apl|watch <file> [...]")
+    fail("Usage: lua tools/kairos-dump.lua probes|fights|summary|events|combatlog|salvo|apl|ritual|watch <file> [...]")
 end
 commands[command](select(2, (table.unpack or unpack)(arg)))
